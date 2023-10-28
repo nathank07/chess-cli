@@ -30,11 +30,8 @@ class Piece {
     availableMoves(xPos, yPos) {
         return []
     }
-    showAvailableMoves(xPos, yPos) {
-        return this.availableMoves(xPos, yPos)
-    }
     move(fromX, fromY, toX, toY) {
-        const moves = this.showAvailableMoves(fromX, fromY)
+        const moves = this.availableMoves(fromX, fromY)
         if(moves.some(xy => xy[0] === toX && xy[1] === toY)) {
             this.board[toX][toY] = this.board[fromX][fromY]
             this.board[fromX][fromY] = null
@@ -47,14 +44,17 @@ class Pawn extends Piece {
         super("pawn", isWhite, board);
     }
     availableMoves(xPos, yPos) {
-        const x = this.isWhite ? xPos + 1 : xPos - 1
+        const direction = this.isWhite ? 1 : -1
+        const starting = this.isWhite ? xPos === 1 : xPos === 6
         let moves = []
         for(let i = -1; i <= 1; i++) {
+            const x = xPos + direction
             const y = yPos + i
             if(i !== 0 && this.canCapture(this.board[x][y])) {
                 moves.push([x, y])
             } else if (i === 0 && !this.canCapture(this.board[x][y])) {
                 moves.push([x, y])
+                if(starting) { moves.push([xPos + (direction * 2), y]) }
             }
         }
         return moves
@@ -93,7 +93,8 @@ for(let i = 0; i < 8; i++) {
     grid[6][i] = new Pawn(false, grid)
 }
 
-grid[1][0].move(1, 0, 2, 0)
+grid[1][0].move(1, 0, 3, 0)
+grid[6][0].move(6, 0, 5, 0);
 
 function renderBoard() {
     const boardDiv = document.querySelector('.board') 
@@ -109,8 +110,8 @@ function renderBoard() {
     });
 }
 renderBoard()
-grid[2][0].move(2, 0, 3, 0)
-renderBoard()
+//grid[2][0].move(2, 0, 3, 0)
+//renderBoard()
 
 
 console.log(grid)
