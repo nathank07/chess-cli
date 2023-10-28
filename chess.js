@@ -92,26 +92,49 @@ for(let i = 0; i < 8; i++) {
     grid[1][i] = new Pawn(true, grid)
     grid[6][i] = new Pawn(false, grid)
 }
-
-grid[1][0].move(1, 0, 3, 0)
-grid[6][0].move(6, 0, 5, 0);
+//grid[1][7].move(1, 7, 2, 7)
+//grid[6][6].move(6, 6, 5, 6);
 
 function renderBoard() {
     const boardDiv = document.querySelector('.board') 
     boardDiv.innerHTML = ""
+    let num = 0
     grid.forEach(row => {
         r = document.createElement('div');
+        numDiv = document.createElement('span')
+        numDiv.innerHTML = num
+        r.appendChild(numDiv)
         row.forEach(square => {
             s = document.createElement('span');
             s.innerHTML = square ? square.display() : "#"
             r.appendChild(s);
         });
+        num += 1
         boardDiv.appendChild(r)
     });
+    r = document.createElement('div');
+    for(let i = 0; i < 8; i++) {
+        s = document.createElement('span');
+        s.innerHTML = ` ${i}`
+        r.appendChild(s)
+    }
+    boardDiv.appendChild(r)
 }
 renderBoard()
-//grid[2][0].move(2, 0, 3, 0)
-//renderBoard()
+processInputs()
+function processInputs() {
+    const input = document.querySelector('input')
+    input.addEventListener('keypress', (e) => {
+        if(e.key === "Enter")
+        {
+            values = input.value.split(" ")
+            values = values.map(x => Number(x))
+            console.log(values)
+            grid[values[0]][values[1]].move(values[0], values[1], values[2], values[3])
+            renderBoard()
+        }
+    })
+}
 
 
 console.log(grid)
