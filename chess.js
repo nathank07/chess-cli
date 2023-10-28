@@ -1,10 +1,18 @@
-const pieces = {
+const blackPieces = {
     "pawn": "♟",
     "king": "♚", 
     "queen": "♛", 
     "bishop": "♝", 
     "knight": "♞", 
     "rook": "♜"
+}
+const whitePieces = { 
+    "pawn": "♙",
+    "king": "♔", 
+    "queen": "♕", 
+    "bishop": "♗", 
+    "knight": "♘", 
+    "rook": "♖"
 }
 
 class Piece { 
@@ -14,10 +22,16 @@ class Piece {
         this.board = board
     }
     display() {
-        return console.log(pieces[this.piece])
+        return this.isWhite ? whitePieces[this.piece] : blackPieces[this.piece]
     }
     canCapture(capturedPiece) {
-        return capturedPiece !== "#" ? this.isWhite !== capturedPiece.isWhite : false
+        return capturedPiece ? this.isWhite !== capturedPiece.isWhite : false
+    }
+    availableMoves(xPos, yPos) {
+        return []
+    }
+    showAvailableMoves(xPos, yPos) {
+        return this.availableMoves(xPos, yPos)
     }
 }
 
@@ -65,16 +79,24 @@ class Rook extends Piece {
     }
 }
 
-let grid = [...Array(8)].map(e => Array(8).fill('#'));
+let grid = [...Array(8)].map(e => Array(8).fill(null));
 
+for(let i = 0; i < 8; i++) {
+    grid[1][i] = new Pawn(true, grid)
+    grid[6][i] = new Pawn(false, grid)
+}
 
-grid[2][0] = new Pawn(false, grid)
-grid[2][1] = new Pawn(false, grid)
-grid[1][1] = new Pawn(true, grid)
-grid[2][2] = new Pawn(false, grid)
+const board = document.querySelector('.board') 
 
-grid[1][1].availableMoves(1, 1).forEach(array => {
-    console.log(array[0], array[1])
+grid.forEach(row => {
+    r = document.createElement('div');
+    row.forEach(square => {
+        s = document.createElement('span');
+        s.innerHTML = square ? square.display() : "#"
+        r.appendChild(s);
+    });
+    board.appendChild(r)
 });
+
 
 console.log(grid)
