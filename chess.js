@@ -19,7 +19,7 @@ class Piece {
     constructor(piece, isWhite, board) {
         this.piece = piece;
         this.isWhite = isWhite;
-        this.board = board
+        this.board = board;
     }
     display() {
         return this.isWhite ? whitePieces[this.piece] : blackPieces[this.piece]
@@ -32,6 +32,13 @@ class Piece {
     }
     showAvailableMoves(xPos, yPos) {
         return this.availableMoves(xPos, yPos)
+    }
+    move(fromX, fromY, toX, toY) {
+        const moves = this.showAvailableMoves(fromX, fromY)
+        if(moves.some(xy => xy[0] === toX && xy[1] === toY)) {
+            this.board[toX][toY] = this.board[fromX][fromY]
+            this.board[fromX][fromY] = null
+        }
     }
 }
 
@@ -86,17 +93,24 @@ for(let i = 0; i < 8; i++) {
     grid[6][i] = new Pawn(false, grid)
 }
 
-const board = document.querySelector('.board') 
+grid[1][0].move(1, 0, 2, 0)
 
-grid.forEach(row => {
-    r = document.createElement('div');
-    row.forEach(square => {
-        s = document.createElement('span');
-        s.innerHTML = square ? square.display() : "#"
-        r.appendChild(s);
+function renderBoard() {
+    const boardDiv = document.querySelector('.board') 
+    boardDiv.innerHTML = ""
+    grid.forEach(row => {
+        r = document.createElement('div');
+        row.forEach(square => {
+            s = document.createElement('span');
+            s.innerHTML = square ? square.display() : "#"
+            r.appendChild(s);
+        });
+        boardDiv.appendChild(r)
     });
-    board.appendChild(r)
-});
+}
+renderBoard()
+grid[2][0].move(2, 0, 3, 0)
+renderBoard()
 
 
 console.log(grid)
