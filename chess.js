@@ -164,6 +164,9 @@ function createPiece(piece, isWhite) {
         case "bishop":
             createdPiece = Bishop( { isWhite: isWhite, board: grid } )
             break
+        case "queen":
+            createdPiece = Queen( { isWhite: isWhite, board: grid } )
+            break
         default:
             createdPiece = { availableMoves: () => [] }
             break
@@ -182,10 +185,18 @@ function createPiece(piece, isWhite) {
     }
 }
 
-class Queen extends Piece {
-    constructor(isWhite, board) {
-        super("queen", isWhite, board);
-    }
+function Queen( { isWhite, board } ) {
+    const piece = Piece({
+        name: "queen",
+        isWhite: isWhite,
+        board: board,
+        availableMoves: (xPos, yPos) => {
+            const bishop = Bishop({ isWhite: isWhite, board: grid });
+            const rook = Rook({ isWhite: isWhite, board: grid });
+            return bishop.availableMoves(xPos, yPos).concat(rook.availableMoves(xPos, yPos))
+        }
+    })
+    return piece;
 }
 function Bishop( { isWhite, board } ) {
     const piece = Piece({
@@ -316,7 +327,9 @@ function processInputs() {
 //grid[1][1].availableMoves(1, 1)
 
 grid[3][3] = createPiece("rook", true)
-console.log(grid[3][3].availableMoves(3, 3))
+grid[3][2] = createPiece("queen", false)
+//console.log(grid[3][3].availableMoves(3, 3))
+console.log(grid[3][2].availableMoves(3,2))
 
 
 renderBoard()
