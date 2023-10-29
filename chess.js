@@ -285,20 +285,23 @@ for(let i = 0; i < 8; i++) {
 }
 
 function renderBoard() {
-    const boardDiv = document.querySelector('.board') 
+    const boardDiv = document.querySelector('#board') 
     boardDiv.innerHTML = ""
     let num = 0
+    let darkSquare = false;
     grid.forEach(row => {
         r = document.createElement('div');
-        numDiv = document.createElement('span')
-        numDiv.innerHTML = num
-        r.appendChild(numDiv)
+        r.classList.add('row')
         row.forEach(square => {
-            s = document.createElement('span');
-            s.innerHTML = square ? square.display() : "#"
+            s = document.createElement('div');
+            s.classList.add("square")
+            darkSquare = !darkSquare
+            if(darkSquare) { s.classList.add('darkSquare') }
+            s.innerHTML = square ? square.display() : ""
             r.appendChild(s);
         });
         num += 1
+        darkSquare = !darkSquare
         boardDiv.appendChild(r)
     });
     r = document.createElement('div');
@@ -307,7 +310,7 @@ function renderBoard() {
         s.innerHTML = ` ${i}`
         r.appendChild(s)
     }
-    boardDiv.appendChild(r)
+    //boardDiv.appendChild(r)
 }
 function processInputs() {
     const input = document.querySelector('input')
