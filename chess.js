@@ -158,6 +158,12 @@ function createPiece(piece, isWhite) {
         case "knight":
             createdPiece = Knight( { isWhite: isWhite, board: grid } )
             break
+        case "rook":
+            createdPiece = Rook( { isWhite: isWhite, board: grid } )
+            break
+        case "bishop":
+            createdPiece = Bishop( { isWhite: isWhite, board: grid } )
+            break
         default:
             createdPiece = { availableMoves: () => [] }
             break
@@ -176,26 +182,91 @@ function createPiece(piece, isWhite) {
     }
 }
 
-function outOfBounds(x, y){
-    return x < 0 || y < 0 || x >= 8 || y >= 8
-}
-
 class Queen extends Piece {
     constructor(isWhite, board) {
         super("queen", isWhite, board);
     }
 }
-class Bishop extends Piece {
-    constructor(isWhite, board) {
-        super("bishop", isWhite, board);
-    }
+function Bishop( { isWhite, board } ) {
+    const piece = Piece({
+        name: "bishop",
+        isWhite: isWhite,
+        board: board,
+
+        availableMoves: (xPos, yPos) => {
+            const directions = [
+                [1, 1],
+                [1, -1], 
+                [-1, 1], 
+                [-1, -1]  
+              ];
+            let moves = []
+            for (const direction of directions) {
+                let [dx, dy] = direction;
+                let x = xPos + dx;
+                let y = yPos + dy;
+                while (!outOfBounds(x, y)) {
+                    if (board[x][y] === null || piece.canCapture(board[x][y])) {
+                        moves.push([x, y]);
+                        if (piece.canCapture(board[x][y])) {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                    x += dx;
+                    y += dy;
+                }
+              }
+              
+            return moves
+        }
+    })
+
+    return piece;
 }
-class Rook extends Piece {
-    constructor(isWhite, board) {
-        super("rook", isWhite, board);
-    }
+function Rook( { isWhite, board } ) {
+    const piece = Piece({
+        name: "rook",
+        isWhite: isWhite,
+        board: board,
+
+        availableMoves: (xPos, yPos) => {
+            const directions = [
+                [1, 0],
+                [-1, 0], 
+                [0, 1], 
+                [0, -1]  
+              ];
+            let moves = []
+            for (const direction of directions) {
+                let [dx, dy] = direction;
+                let x = xPos + dx;
+                let y = yPos + dy;
+                while (!outOfBounds(x, y)) {
+                    if (board[x][y] === null || piece.canCapture(board[x][y])) {
+                        moves.push([x, y]);
+                        if (piece.canCapture(board[x][y])) {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                    x += dx;
+                    y += dy;
+                }
+              }
+              
+            return moves
+        }
+    })
+
+    return piece;
 }
 
+function outOfBounds(x, y){
+    return x < 0 || y < 0 || x >= 8 || y >= 8
+}
 
 for(let i = 0; i < 8; i++) {
     grid[1][i] = createPiece("knight", true)
@@ -227,8 +298,6 @@ function renderBoard() {
     }
     boardDiv.appendChild(r)
 }
-renderBoard()
-processInputs()
 function processInputs() {
     const input = document.querySelector('input')
     input.addEventListener('keypress', (e) => {
@@ -243,7 +312,13 @@ function processInputs() {
     })
 }
 
-console.log(grid[1][1].availableMoves(1, 1))
-grid[1][1].availableMoves(1, 1)
+//console.log(grid[1][1].availableMoves(1, 1))
+//grid[1][1].availableMoves(1, 1)
 
+grid[3][3] = createPiece("rook", true)
+console.log(grid[3][3].availableMoves(3, 3))
+
+
+renderBoard()
+processInputs()
 console.log(grid)
