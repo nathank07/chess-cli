@@ -41,9 +41,11 @@ function Piece ( { name, isWhite, availableMoves, board } ) {
                 for(let i = 0; i < 7; i++) {
                     if(board[2][i] && board[2][i].name === "passant") {
                         board[2][i] = null
+                        break
                     }
                     if(board[5][i] && board[5][i].name === "passant") {
                         board[5][i] = null
+                        break
                     }
                 }
                 board[toX][toY] = board[fromX][fromY]
