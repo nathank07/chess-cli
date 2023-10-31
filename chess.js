@@ -26,7 +26,7 @@ function Piece ( { name, isWhite, availableMoves, board } ) {
         board: board,
 
         display: () => {
-            return isWhite ? whitePieces[name] : blackPieces[name]
+            return isWhite ? whitePieces[name] || "" : blackPieces[name] || ""
         },
 
         canCapture: (capturedPiece) => {
@@ -34,10 +34,25 @@ function Piece ( { name, isWhite, availableMoves, board } ) {
         },
 
         move: (fromX, fromY, toX, toY) => {
-            const moves = availableMoves(fromX, fromY) || [] 
+            const moves = availableMoves(fromX, fromY)
             if(moves.some(xy => xy[0] === toX && xy[1] === toY)) {
+                const index = moves.findIndex(xy => xy[0] === toX && xy[1] === toY);
+                // Remove any en passant remnants
+                for(let i = 0; i < 7; i++) {
+                    if(board[2][i] && board[2][i].name === "passant") {
+                        board[2][i] = null
+                    }
+                    if(board[5][i] && board[5][i].name === "passant") {
+                        board[5][i] = null
+                    }
+                }
                 board[toX][toY] = board[fromX][fromY]
                 board[fromX][fromY] = null
+                // Any additional things you may want a piece to do
+                if(moves[index].length > 2) {
+                    moves[index][2]()
+                }
+                
             }
         }
 
@@ -61,17 +76,27 @@ function Pawn( { isWhite, board } ) {
                 if(outOfBounds(x, y)) { continue }
 
                 if(i !== 0 && piece.canCapture(board[x][y])) {
+                    if(board[x][y].name === "passant") {
+                        moves.push([x, y, () => {
+                            board[x - direction][y] = null
+                        }])
+                    }
                     moves.push([x, y])
                 } 
 
                 else if (i === 0 && !piece.canCapture(board[x][y])) {
-                    if(starting) { moves.push([xPos + (direction * 2), y]) }
+                    if(starting) { 
+                        // add en passant object for this move
+                        moves.push([xPos + (direction * 2), y, () => {
+                            board[xPos + direction][y] = createPiece("passant", isWhite);
+                        }]) 
+                    }
                     moves.push([x, y])
                 }
 
             }
             return moves
-        }
+        },
     })
     return piece;
 }
@@ -147,25 +172,25 @@ function Knight( { isWhite, board } ) {
 }
 function createPiece(piece, isWhite) {
     let createdPiece = {};
-
+    const pieceInfo = { isWhite: isWhite, board: grid }
     switch(piece){
         case "pawn":
-            createdPiece = Pawn( { isWhite: isWhite, board: grid } )
+            createdPiece = Pawn(pieceInfo)
             break
         case "king":
-            createdPiece = King( { isWhite: isWhite, board: grid } )
+            createdPiece = King(pieceInfo)
             break
         case "knight":
-            createdPiece = Knight( { isWhite: isWhite, board: grid } )
+            createdPiece = Knight(pieceInfo)
             break
         case "rook":
-            createdPiece = Rook( { isWhite: isWhite, board: grid } )
+            createdPiece = Rook(pieceInfo)
             break
         case "bishop":
-            createdPiece = Bishop( { isWhite: isWhite, board: grid } )
+            createdPiece = Bishop(pieceInfo)
             break
         case "queen":
-            createdPiece = Queen( { isWhite: isWhite, board: grid } )
+            createdPiece = Queen(pieceInfo)
             break
         default:
             createdPiece = { availableMoves: () => [] }
@@ -279,10 +304,6 @@ function outOfBounds(x, y){
     return x < 0 || y < 0 || x >= 8 || y >= 8
 }
 
-for(let i = 0; i < 8; i++) {
-    grid[1][i] = createPiece("knight", true)
-    grid[6][i] = createPiece("knight", false)
-}
 
 function renderBoard() {
     const boardDiv = document.querySelector('#board') 
@@ -322,18 +343,13 @@ function processInputs() {
             console.log(values)
             grid[values[0]][values[1]].move(values[0], values[1], values[2], values[3])
             renderBoard()
+            console.log(grid)
         }
     })
 }
 
-//console.log(grid[1][1].availableMoves(1, 1))
-//grid[1][1].availableMoves(1, 1)
-
-grid[3][3] = createPiece("rook", true)
-grid[3][2] = createPiece("queen", false)
-//console.log(grid[3][3].availableMoves(3, 3))
-console.log(grid[3][2].availableMoves(3,2))
-
+grid[1][1] = createPiece("pawn", true)
+grid[3][2] = createPiece("pawn", false)
 
 renderBoard()
 processInputs()
