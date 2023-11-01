@@ -57,8 +57,9 @@ function Piece ( { name, isWhite, standardMoves, board } ) {
                 if(moves[index].length > 2) {
                     moves[index][2]()
                 }
-                
+                return true;
             }
+            return false
         }
 
     }
@@ -89,8 +90,8 @@ function Pawn( { isWhite, board } ) {
                     moves.push([x, y])
                 } 
 
-                else if (i === 0 && !piece.canCapture(board[x][y])) {
-                    if(starting) { 
+                else if (i === 0 && board[xPos + direction][y] == null) {
+                    if(starting && board[xPos + (direction * 2)][y] == null) { 
                         // add en passant object for this move
                         moves.push([xPos + (direction * 2), y, () => {
                             board[xPos + direction][y] = createPiece("passant", isWhite);
@@ -117,12 +118,12 @@ function King( { isWhite, board } ) {
             for(let i = -1; i <= 1; i++) {
                 const x = i + xPos
                 for(let j = -1; j <= 1; j++) {
-                    const y = i + yPos
+                    const y = j + yPos
 
                     if(outOfBounds(x, y)) { continue }
 
                     if(board[x][y] === null || piece.canCapture(board[x][y])) {
-                        moves.push([(x, y)])
+                        moves.push([x, y])
                     }
                 }
             }
@@ -314,6 +315,7 @@ function isLegal(fromX, fromY, toX, toY, isWhite, board) {
     boardClone[toX][toY] = boardClone[fromX][fromY]
     boardClone[fromX][fromY] = null
     let kingSquare;
+    let moves = []
     for(let i = 0; i < 8; i++) {
         for(let j = 0; j < 8; j++) {
             if(boardClone[i][j]) {
@@ -322,11 +324,15 @@ function isLegal(fromX, fromY, toX, toY, isWhite, board) {
                 if(boardClone[i][j].name == "king" && color == isWhite){
                     kingSquare = [i, j]
                 }
-                if(color != isWhite && pieceMoves.some(move => move[0] === kingSquare[0] && move[1] === kingSquare[1])) {
-                    return false;
+                if(color != isWhite) {
+                    pieceMoves.map(move => moves.push(move))
                 }
             }            
         }
+    }
+    if(kingSquare && moves.some(move => move[0] === kingSquare[0] && move[1] === kingSquare[1])) {
+        console.log(moves)
+        return false;
     }
     return true
 }
@@ -411,13 +417,16 @@ grid[0][5] = createPiece("bishop", true)
 grid[7][5] = createPiece("bishop", false)
 grid[7][2] = createPiece("bishop", false)
 
-grid[0][3] = createPiece("king", true)
+//grid[0][3] = createPiece("king", true)
 grid[0][4] = createPiece("queen", true)
 grid[7][3] = createPiece("king", false)
 grid[7][4] = createPiece("queen", false)
 
-grid[1][4] = createPiece("queen", false)
+//grid[1][4] = createPiece("queen", false)
 
+grid[3][3] = createPiece("king", true)
+
+console.log(grid[3][3].standardMoves(3, 3))
 
 renderBoard()
 processInputs()
