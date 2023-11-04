@@ -11,38 +11,26 @@ body {
     grid-template-columns: 1fr 9fr;
 }
 
-#board{
-    display: grid;
-    grid-template-rows: repeat(8, 1fr);
-    aspect-ratio: 1 / 1;
-    background-color: #F0D9B5;
-    position: relative;
-    width: 500px;
-    height: 500px;
+#board {
+	display: grid;
+	grid-template-columns: repeat(8, 1fr);
+	aspect-ratio: 1 / 1;
+	background-color: #F0D9B5;
+	position: relative;
+	width: 600px;
 }
 
 #board .darkSquare{
     background-color: #B58863;
 }
 
-#board .row>*{
-    width: 100%;
-    position: relative;
-    aspect-ratio: 1 / 1;
-    text-align: center;
-    font-size: 50px;
+.square {
+	aspect-ratio: 1/1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 3rem;
 }
-
-
-#board .row{
-    display: grid;
-    grid-template-columns: repeat(8, 1fr);
-}
-
-span {
-    position: relative;
-}
-
 .vertical, .horizontal {
     display: grid;
     grid-template-rows: repeat(7, 1fr);

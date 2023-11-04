@@ -19,44 +19,21 @@ export default chessGame
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 function renderBoard() {
-    const boardDiv = document.querySelector('#board') 
+    const boardDiv = document.querySelector("#board")
     boardDiv.innerHTML = ""
-    let num = 0
-    let darkSquare = false;
+    let darkSquare = false
     chessGame.board.forEach(row => {
-        let r = document.createElement('div');
-        r.classList.add('row')
         row.forEach(square => {
-            let s = document.createElement('div');
-            s.classList.add("square")
+            const div = document.createElement('div')
+            div.classList.add("square")
             darkSquare = !darkSquare
-            if(darkSquare) { s.classList.add('darkSquare') }
-            s.innerHTML = square ? square.display() : ""
-            r.appendChild(s);
+            if(darkSquare) { div.classList.add('darkSquare') }
+            div.innerHTML = square ? square.display() : ""
+            boardDiv.appendChild(div)
         });
-        num += 1
         darkSquare = !darkSquare
-        boardDiv.appendChild(r)
     });
-    let r = document.createElement('div');
-    for(let i = 0; i < 8; i++) {
-        let s = document.createElement('span');
-        s.innerHTML = ` ${i}`
-        r.appendChild(s)
-    }
-    //boardDiv.appendChild(r)
 }
 function processInputs() {
     const input = document.querySelector('input')
