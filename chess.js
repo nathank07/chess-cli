@@ -155,14 +155,16 @@ function King( { isWhite, xPos, yPos, game } ) {
                     moves.push([kingRow, 1, () => {
                         castleState.longCastle = false
                         castleState.shortCastle = false
-                        console.log("move rook")
+                        game.board[kingRow][0] = null
+                        createPiece("rook", isWhite, kingRow, 2, game)
                     }])
                 }
                 if(canCastle.long) {
                     moves.push([kingRow, 5, () => {
                         castleState.longCastle = false
                         castleState.shortCastle = false
-                        console.log("move rook")
+                        game.board[kingRow][7] = null
+                        createPiece("rook", isWhite, kingRow, 4, game)
                     }])
                 }
             }
@@ -299,7 +301,7 @@ function Bishop( { isWhite, xPos, yPos, game } ) {
                 while (!outOfBounds(x, y)) {
                     if (game.board[x][y] === null || piece.canCapture(game.board[x][y])) {
                         moves.push([x, y]);
-                        if (piece.canCapture(game.board[x][y])) {
+                        if (piece.canCapture(game.board[x][y]) && game.board[x][y].name !== "passant") {
                             break;
                         }
                     } else {
@@ -338,8 +340,13 @@ function Rook( { isWhite, xPos, yPos, game } ) {
                 let y = yPos + dy;
                 while (!outOfBounds(x, y)) {
                     if (game.board[x][y] === null || piece.canCapture(game.board[x][y])) {
-                        moves.push([x, y]);
-                        if (piece.canCapture(game.board[x][y])) {
+                        moves.push([x, y, () => {
+                            if(xPos === 0 && yPos === 0) { game.whiteState.shortCastle = false }
+                            if(xPos === 0 && yPos === 7) { game.whiteState.longCastle = false }
+                            if(xPos === 7 && yPos === 0) { game.blackState.shortCastle = false }
+                            if(xPos === 7 && yPos === 7) { game.blackState.longCastle = false }
+                        }]);
+                        if (piece.canCapture(game.board[x][y]) && game.board[x][y].name !== "passant") {
                             break;
                         }
                     } else {
@@ -491,29 +498,25 @@ createPiece("rook", true, 0, 0)
 createPiece("rook", true, 0, 7)
 createPiece("rook", false, 7, 7)
 createPiece("rook", false, 7, 0)
+createPiece("rook", false, 2, 1)
+
+createPiece("knight", true, 0, 1)
+createPiece("knight", true, 0, 6)
+createPiece("knight", false, 7, 6)
+createPiece("knight", false, 7, 1)
+
+createPiece("bishop", true, 0, 2)
+createPiece("bishop", true, 0, 5)
+createPiece("bishop", false, 7, 5)
+createPiece("bishop", false, 7, 2)
 
 
-// createPiece("knight", true, 0, 1)
-// createPiece("knight", true, 0, 6)
-// createPiece("knight", false, 7, 6)
-// createPiece("knight", false, 7, 1)
-
-// createPiece("bishop", true, 0, 2)
-// createPiece("bishop", true, 0, 5)
-// createPiece("bishop", false, 7, 5)
-// createPiece("bishop", false, 7, 2)
-
-
-// createPiece("queen", true, 0, 4)
+createPiece("queen", true, 0, 4)
 createPiece("king", false, 7, 3)
-// createPiece("queen", false, 7, 4)
+createPiece("queen", false, 7, 4)
 createPiece("king", true, 0, 3)
 
-createPiece("rook", false, 1, 2)
-console.log("gguu", chessGame.board[1][2].standardMoves())
-
-console.log(chessGame.board[0][3].standardMoves())
-
+//createPiece("rook", false, 1, 2)
 
 
 
