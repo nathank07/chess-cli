@@ -17,11 +17,13 @@ const whitePieces = {
 
 const grid = [...Array(8)].map(e => Array(8).fill(null));
 
-function Piece ( { name, isWhite, standardMoves, board } ) { 
+function Piece ( { name, isWhite, xPos, yPos, standardMoves, board } ) { 
     return {
 
         name: name,
         isWhite: isWhite,
+        xPos: xPos,
+        yPos: yPos,
         standardMoves: standardMoves,
         board: board,
 
@@ -33,10 +35,10 @@ function Piece ( { name, isWhite, standardMoves, board } ) {
             return capturedPiece ? isWhite !== capturedPiece.isWhite : false
         },
 
-        move: (fromX, fromY, toX, toY) => {
-            const moves = filterLegal(fromX, fromY, isWhite, standardMoves(fromX, fromY), board)
-            if(moves.some(xy => xy[0] === toX && xy[1] === toY)) {
-                const index = moves.findIndex(xy => xy[0] === toX && xy[1] === toY);
+        move: (toX, toY) => {
+            const moves = filterLegal(xPos, yPos, isWhite, standardMoves(), board)
+            if(moves.some(pos => pos[0] === toX && pos[1] === toY)) {
+                const index = moves.findIndex(pos => pos[0] === toX && pos[1] === toY);
                 // Remove any en passant remnants
                 for(let i = 0; i < 8; i++) {
                     if(board[2][i] && board[2][i].name === "passant") {
@@ -50,8 +52,8 @@ function Piece ( { name, isWhite, standardMoves, board } ) {
                 }
 
                 // Move piece
-                board[toX][toY] = board[fromX][fromY]
-                board[fromX][fromY] = null
+                createPiece(name, isWhite, toX, toY, board)
+                board[xPos][yPos] = null
 
                 // Any additional things you may want a piece to do
                 if(moves[index].length > 2) {
@@ -65,13 +67,15 @@ function Piece ( { name, isWhite, standardMoves, board } ) {
     }
 }
 
-function Pawn( { isWhite, board } ) {
+function Pawn( { isWhite, xPos, yPos, board } ) {
     const piece = Piece({
         name: "pawn",
         isWhite: isWhite,
+        xPos: xPos,
+        yPos: yPos,
         board: board,
 
-        standardMoves: (xPos, yPos) => {
+        standardMoves: () => {
             const direction = isWhite ? 1 : -1
             const starting = isWhite ? xPos === 1 : xPos === 6
             let moves = []
@@ -94,7 +98,7 @@ function Pawn( { isWhite, board } ) {
                     if(starting && board[xPos + (direction * 2)][y] == null) { 
                         // add en passant object for this move
                         moves.push([xPos + (direction * 2), y, () => {
-                            board[xPos + direction][y] = createPiece("passant", isWhite);
+                            createPiece("passant", isWhite, xPos + direction, y);
                         }]) 
                     }
                     moves.push([x, y])
@@ -106,14 +110,15 @@ function Pawn( { isWhite, board } ) {
     })
     return piece;
 }
-function King( { isWhite, board } ) {
+function King( { isWhite, xPos, yPos, board } ) {
     const piece = Piece({
-        
         name: "king",
         isWhite: isWhite,
+        xPos: xPos,
+        yPos: yPos,
         board: board,
 
-        standardMoves: (xPos, yPos) => {
+        standardMoves: () => {
             let moves = []
             for(let i = -1; i <= 1; i++) {
                 const x = i + xPos
@@ -135,7 +140,7 @@ function King( { isWhite, board } ) {
     piece.inCheck = (xPos, yPos) => {
         for(let i = 0; i < 8; i++){
             for(let j = 0; j < 8; j++){
-                if(board[i][j] && board[i][j].standardMoves(i, j).some(xy => xy[0] === xPos && xy[1] === yPos)) {
+                if(board[i][j] && board[i][j].standardMoves().some(pos => pos[0] === xPos && pos[1] === yPos)) {
                     return true
                 }
             }
@@ -145,13 +150,15 @@ function King( { isWhite, board } ) {
 
     return piece;
 }
-function Knight( { isWhite, board } ) {
+function Knight( { isWhite, xPos, yPos, board } ) {
     const piece = Piece({
         name: "knight",
         isWhite: isWhite,
+        xPos: xPos,
+        yPos: yPos,
         board: board,
 
-        standardMoves: (xPos, yPos) => {
+        standardMoves: () => {
             let moves = [];
             const knightMoves = [
                 [2, 1],
@@ -176,9 +183,9 @@ function Knight( { isWhite, board } ) {
     })
     return piece;
 }
-function createPiece(piece, isWhite, board = grid) {
+function createPiece(piece, isWhite, xPos, yPos, board = grid) {
     let createdPiece = {};
-    const pieceInfo = { isWhite: isWhite, board: board }
+    const pieceInfo = { isWhite: isWhite, xPos: xPos, yPos: yPos, board: board }
     switch(piece){
         case "pawn":
             createdPiece = Pawn(pieceInfo)
@@ -206,36 +213,44 @@ function createPiece(piece, isWhite, board = grid) {
     const genericPiece = Piece( {
         name: piece, 
         isWhite: isWhite,
+        xPos: xPos,
+        yPos, yPos,
         standardMoves: createdPiece.standardMoves,
-        board: grid
+        board: board
     })
 
-    return {
+    board[xPos][yPos] = {
         ...genericPiece,
         ...createdPiece
     }
+
+    return board[xPos][yPos]
 }
 
-function Queen( { isWhite, board } ) {
+function Queen( { isWhite, xPos, yPos, board } ) {
     const piece = Piece({
         name: "queen",
         isWhite: isWhite,
+        xPos: xPos,
+        yPos: yPos,
         board: board,
-        standardMoves: (xPos, yPos) => {
-            const bishop = Bishop({ isWhite: isWhite, board: grid });
-            const rook = Rook({ isWhite: isWhite, board: grid });
-            return bishop.standardMoves(xPos, yPos).concat(rook.standardMoves(xPos, yPos))
+        standardMoves: () => {
+            const bishop = Bishop({ isWhite: isWhite, xPos: xPos, yPos: yPos, board: grid });
+            const rook = Rook({ isWhite: isWhite, xPos: xPos, yPos: yPos, board: grid });
+            return bishop.standardMoves().concat(rook.standardMoves())
         }
     })
     return piece;
 }
-function Bishop( { isWhite, board } ) {
+function Bishop( { isWhite, xPos, yPos, board } ) {
     const piece = Piece({
         name: "bishop",
         isWhite: isWhite,
+        xPos: xPos,
+        yPos: yPos,
         board: board,
 
-        standardMoves: (xPos, yPos) => {
+        standardMoves: () => {
             const directions = [
                 [1, 1],
                 [1, -1], 
@@ -267,13 +282,15 @@ function Bishop( { isWhite, board } ) {
 
     return piece;
 }
-function Rook( { isWhite, board } ) {
+function Rook( { isWhite, xPos, yPos, board } ) {
     const piece = Piece({
         name: "rook",
         isWhite: isWhite,
+        xPos: xPos,
+        yPos: yPos,
         board: board,
 
-        standardMoves: (xPos, yPos) => {
+        standardMoves: () => {
             const directions = [
                 [1, 0],
                 [-1, 0], 
@@ -312,14 +329,15 @@ function outOfBounds(x, y){
 
 function isLegal(fromX, fromY, toX, toY, isWhite, board) {
     const boardClone = cloneBoard(board)
-    boardClone[toX][toY] = boardClone[fromX][fromY]
+    const piece = boardClone[fromX][fromY]
+    createPiece(piece.name, piece.isWhite, toX, toY, boardClone)
     boardClone[fromX][fromY] = null
     let kingSquare;
     let moves = []
     for(let i = 0; i < 8; i++) {
         for(let j = 0; j < 8; j++) {
             if(boardClone[i][j]) {
-                const pieceMoves = boardClone[i][j].standardMoves(i, j)
+                const pieceMoves = boardClone[i][j].standardMoves()
                 const color = boardClone[i][j].isWhite
                 if(boardClone[i][j].name == "king" && color == isWhite){
                     kingSquare = [i, j]
@@ -331,25 +349,24 @@ function isLegal(fromX, fromY, toX, toY, isWhite, board) {
         }
     }
     if(kingSquare && moves.some(move => move[0] === kingSquare[0] && move[1] === kingSquare[1])) {
-        console.log(moves)
         return false;
     }
     return true
 }
 
-function filterLegal(fromX, fromY, isWhite, standardMoves, board) {
+function filterLegal(xPos, yPos, isWhite, standardMoves, board) {
     return standardMoves.filter(move => 
-        isLegal(fromX, fromY, move[0], move[1], isWhite, board)
+        isLegal(xPos, yPos, move[0], move[1], isWhite, board)
     );
 }
 
 
 function cloneBoard(board) {
     const newBoard = [...Array(8)].map(e => Array(8).fill(null));
-    for (let i = 0; i < 8; i++) {
-        for (let j = 0; j < 8; j++) {
-            if(board[i][j]) {
-                newBoard[i][j] = createPiece(board[i][j].name, board[i][j].isWhite, newBoard);
+    for (let x = 0; x < 8; x++) {
+        for (let y = 0; y < 8; y++) {
+            if(board[x][y]) {
+                createPiece(board[x][y].name, board[x][y].isWhite, x, y, newBoard);
             }
         }
     }
@@ -392,41 +409,41 @@ function processInputs() {
         {
             values = input.value.split(" ")
             values = values.map(x => Number(x))
-            grid[values[0]][values[1]].move(values[0], values[1], values[2], values[3])
+            grid[values[0]][values[1]].move(values[2], values[3])
             renderBoard()
             console.log(grid)
         }
     })
 }
 for(let i = 0; i < 8; i++) {
-    grid[1][i] = createPiece("pawn", true)
-    grid[6][i] = createPiece("pawn", false)
+    createPiece("pawn", true, 1, i)
+    createPiece("pawn", false, 6, i)
 }
-grid[0][0] = createPiece("rook", true)
-grid[0][7] = createPiece("rook", true)
-grid[7][7] = createPiece("rook", false)
-grid[7][0] = createPiece("rook", false)
+createPiece("rook", true, 0, 0)
+createPiece("rook", true, 0, 7)
+createPiece("rook", false, 7, 7)
+createPiece("rook", false, 7, 0)
 
-grid[0][1] = createPiece("knight", true)
-grid[0][6] = createPiece("knight", true)
-grid[7][6] = createPiece("knight", false)
-grid[7][1] = createPiece("knight", false)
+createPiece("knight", true, 0, 1)
+createPiece("knight", true, 0, 6)
+createPiece("knight", false, 7, 6)
+createPiece("knight", false, 7, 1)
 
-grid[0][2] = createPiece("bishop", true)
-grid[0][5] = createPiece("bishop", true)
-grid[7][5] = createPiece("bishop", false)
-grid[7][2] = createPiece("bishop", false)
+createPiece("bishop", true, 0, 2)
+createPiece("bishop", true, 0, 5)
+createPiece("bishop", false, 7, 5)
+createPiece("bishop", false, 7, 2)
 
-//grid[0][3] = createPiece("king", true)
-grid[0][4] = createPiece("queen", true)
-grid[7][3] = createPiece("king", false)
-grid[7][4] = createPiece("queen", false)
+//createPiece("king", true, 0, 3)
 
-//grid[1][4] = createPiece("queen", false)
+createPiece("queen", true, 0, 4)
+createPiece("king", false, 7, 3)
+createPiece("queen", false, 7, 4)
+createPiece("king", true, 0, 3)
 
-grid[3][3] = createPiece("king", true)
+//createPiece("queen", false, 1, 4)
 
-console.log(grid[3][3].standardMoves(3, 3))
+
 
 renderBoard()
 processInputs()
