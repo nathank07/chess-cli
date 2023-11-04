@@ -18,10 +18,14 @@ const whitePieces = {
 const chessGame = {
     board: [...Array(8)].map(e => Array(8).fill(null)),
     whitesMove: true,
-    whiteShortCastle: true,
-    whiteLongCastle: true,
-    blackShortCastle: true,
-    blackLongCastle: true,
+    whiteState: {
+        shortCastle: true,
+        longCastle: true,
+    },
+    blackState: {
+        shortCastle: true,
+        longCastle: true,
+    }
 }
 
 function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) { 
@@ -127,7 +131,10 @@ function King( { isWhite, xPos, yPos, game } ) {
         game: game,
 
         standardMoves: () => {
-            let moves = []
+            const moves = []
+            const canCastle = game.whiteState === undefined ? false : checkCastleLegality(isWhite, game)
+            const castleState = isWhite ? game.whiteState : game.blackState
+            const kingRow = isWhite ? 0 : 7
             for(let i = -1; i <= 1; i++) {
                 const x = i + xPos
                 for(let j = -1; j <= 1; j++) {
@@ -136,8 +143,27 @@ function King( { isWhite, xPos, yPos, game } ) {
                     if(outOfBounds(x, y)) { continue }
 
                     if(game.board[x][y] === null || piece.canCapture(game.board[x][y])) {
-                        moves.push([x, y])
+                        moves.push([x, y, () => {
+                            castleState.longCastle = false
+                            castleState.shortCastle = false
+                        }])
                     }
+                }
+            }
+            if(canCastle) {
+                if(canCastle.short) {
+                    moves.push([kingRow, 1, () => {
+                        castleState.longCastle = false
+                        castleState.shortCastle = false
+                        console.log("move rook")
+                    }])
+                }
+                if(canCastle.long) {
+                    moves.push([kingRow, 5, () => {
+                        castleState.longCastle = false
+                        castleState.shortCastle = false
+                        console.log("move rook")
+                    }])
                 }
             }
             return moves
@@ -362,6 +388,40 @@ function isLegal(fromX, fromY, toX, toY, isWhite, board) {
     return true
 }
 
+function checkCastleLegality(isWhite, game) {
+    const castleState = isWhite ? game.whiteState : game.blackState
+    const kingRow = isWhite ? 0 : 7
+    if(castleState === undefined || !castleState.shortCastle && !castleState.longCastle) {
+        return false
+    }
+    // Get all of the moves here instead of isLegal because these don't have to be legal captures
+    const moves = []
+    const boardClone = cloneBoard(game.board)
+    for(let i = 0; i < 8; i++) {
+        for(let j = 0; j < 8; j++) {
+            if(game.board[i][j] && game.board[i][j].isWhite === !isWhite) {
+                boardClone[i][j].standardMoves().map(move => moves.push(move))
+            }            
+        }
+    }
+    let short = true
+    let long = true
+    if(castleState.shortCastle) {
+        if(moves.some(move => move[0] === kingRow && move[1] === 2) 
+        || moves.some(move => move[0] === kingRow && move[1] === 1)) {
+            short = false
+        }
+    }
+    if(castleState.longCastle) {
+        if(moves.some(move => move[0] === kingRow && move[1] === 4) 
+        || moves.some(move => move[0] === kingRow && move[1] === 5)) {
+            long = false
+        }
+    }
+    console.log(short, long)
+    return {short, long}
+}
+
 function filterLegal(xPos, yPos, isWhite, standardMoves, board) {
     return standardMoves.filter(move => 
         isLegal(xPos, yPos, move[0], move[1], isWhite, board)
@@ -432,24 +492,28 @@ createPiece("rook", true, 0, 7)
 createPiece("rook", false, 7, 7)
 createPiece("rook", false, 7, 0)
 
-createPiece("knight", true, 0, 1)
-createPiece("knight", true, 0, 6)
-createPiece("knight", false, 7, 6)
-createPiece("knight", false, 7, 1)
 
-createPiece("bishop", true, 0, 2)
-createPiece("bishop", true, 0, 5)
-createPiece("bishop", false, 7, 5)
-createPiece("bishop", false, 7, 2)
+// createPiece("knight", true, 0, 1)
+// createPiece("knight", true, 0, 6)
+// createPiece("knight", false, 7, 6)
+// createPiece("knight", false, 7, 1)
 
-//createPiece("king", true, 0, 3)
+// createPiece("bishop", true, 0, 2)
+// createPiece("bishop", true, 0, 5)
+// createPiece("bishop", false, 7, 5)
+// createPiece("bishop", false, 7, 2)
 
-createPiece("queen", true, 0, 4)
+
+// createPiece("queen", true, 0, 4)
 createPiece("king", false, 7, 3)
-createPiece("queen", false, 7, 4)
+// createPiece("queen", false, 7, 4)
 createPiece("king", true, 0, 3)
 
-//createPiece("queen", false, 1, 4)
+createPiece("rook", false, 1, 2)
+console.log("gguu", chessGame.board[1][2].standardMoves())
+
+console.log(chessGame.board[0][3].standardMoves())
+
 
 
 
