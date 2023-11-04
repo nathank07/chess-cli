@@ -1,4 +1,4 @@
-import { Piece, outOfBounds } from "./piece.js"
+import createPiece, { Piece, outOfBounds } from "./piece.js"
 
 export default function Pawn( { isWhite, xPos, yPos, game } ) {
     const piece = Piece({

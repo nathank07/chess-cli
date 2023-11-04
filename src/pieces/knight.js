@@ -1,4 +1,4 @@
-import { Piece } from "./piece.js"
+import { Piece, outOfBounds } from "./piece.js"
 
 export default function Knight( { isWhite, xPos, yPos, game } ) {
     const piece = Piece({
