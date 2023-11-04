@@ -15,9 +15,16 @@ const whitePieces = {
     "rook": "♖"
 }
 
-const grid = [...Array(8)].map(e => Array(8).fill(null));
+const chessGame = {
+    board: [...Array(8)].map(e => Array(8).fill(null)),
+    whitesMove: true,
+    whiteShortCastle: true,
+    whiteLongCastle: true,
+    blackShortCastle: true,
+    blackLongCastle: true,
+}
 
-function Piece ( { name, isWhite, xPos, yPos, standardMoves, board } ) { 
+function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) { 
     return {
 
         name: name,
@@ -25,7 +32,7 @@ function Piece ( { name, isWhite, xPos, yPos, standardMoves, board } ) {
         xPos: xPos,
         yPos: yPos,
         standardMoves: standardMoves,
-        board: board,
+        game: game,
 
         display: () => {
             return isWhite ? whitePieces[name] || "" : blackPieces[name] || ""
@@ -36,24 +43,25 @@ function Piece ( { name, isWhite, xPos, yPos, standardMoves, board } ) {
         },
 
         move: (toX, toY) => {
-            const moves = filterLegal(xPos, yPos, isWhite, standardMoves(), board)
-            if(moves.some(pos => pos[0] === toX && pos[1] === toY)) {
+            const moves = filterLegal(xPos, yPos, isWhite, standardMoves(), game.board)
+            if(game.whitesMove === isWhite && moves.some(pos => pos[0] === toX && pos[1] === toY)) {
                 const index = moves.findIndex(pos => pos[0] === toX && pos[1] === toY);
                 // Remove any en passant remnants
                 for(let i = 0; i < 8; i++) {
-                    if(board[2][i] && board[2][i].name === "passant") {
-                        board[2][i] = null
+                    if(game.board[2][i] && game.board[2][i].name === "passant") {
+                        game.board[2][i] = null
                         break
                     }
-                    if(board[5][i] && board[5][i].name === "passant") {
-                        board[5][i] = null
+                    if(game.board[5][i] && game.board[5][i].name === "passant") {
+                        game.board[5][i] = null
                         break
                     }
                 }
 
-                // Move piece
-                createPiece(name, isWhite, toX, toY, board)
-                board[xPos][yPos] = null
+                // Move piece and change side's move
+                createPiece(name, isWhite, toX, toY, game)
+                game.board[xPos][yPos] = null
+                game.whitesMove = !game.whitesMove
 
                 // Any additional things you may want a piece to do
                 if(moves[index].length > 2) {
@@ -67,13 +75,13 @@ function Piece ( { name, isWhite, xPos, yPos, standardMoves, board } ) {
     }
 }
 
-function Pawn( { isWhite, xPos, yPos, board } ) {
+function Pawn( { isWhite, xPos, yPos, game } ) {
     const piece = Piece({
         name: "pawn",
         isWhite: isWhite,
         xPos: xPos,
         yPos: yPos,
-        board: board,
+        game: game,
 
         standardMoves: () => {
             const direction = isWhite ? 1 : -1
@@ -85,20 +93,20 @@ function Pawn( { isWhite, xPos, yPos, board } ) {
 
                 if(outOfBounds(x, y)) { continue }
 
-                if(i !== 0 && piece.canCapture(board[x][y])) {
-                    if(board[x][y].name === "passant") {
+                if(i !== 0 && piece.canCapture(game.board[x][y])) {
+                    if(game.board[x][y].name === "passant") {
                         moves.push([x, y, () => {
-                            board[x - direction][y] = null
+                            game.board[x - direction][y] = null
                         }])
                     }
                     moves.push([x, y])
                 } 
 
-                else if (i === 0 && board[xPos + direction][y] == null) {
-                    if(starting && board[xPos + (direction * 2)][y] == null) { 
+                else if (i === 0 && game.board[xPos + direction][y] == null) {
+                    if(starting && game.board[xPos + (direction * 2)][y] == null) { 
                         // add en passant object for this move
                         moves.push([xPos + (direction * 2), y, () => {
-                            createPiece("passant", isWhite, xPos + direction, y);
+                            createPiece("passant", isWhite, xPos + direction, y, game);
                         }]) 
                     }
                     moves.push([x, y])
@@ -110,13 +118,13 @@ function Pawn( { isWhite, xPos, yPos, board } ) {
     })
     return piece;
 }
-function King( { isWhite, xPos, yPos, board } ) {
+function King( { isWhite, xPos, yPos, game } ) {
     const piece = Piece({
         name: "king",
         isWhite: isWhite,
         xPos: xPos,
         yPos: yPos,
-        board: board,
+        game: game,
 
         standardMoves: () => {
             let moves = []
@@ -127,7 +135,7 @@ function King( { isWhite, xPos, yPos, board } ) {
 
                     if(outOfBounds(x, y)) { continue }
 
-                    if(board[x][y] === null || piece.canCapture(board[x][y])) {
+                    if(game.board[x][y] === null || piece.canCapture(game.board[x][y])) {
                         moves.push([x, y])
                     }
                 }
@@ -137,10 +145,10 @@ function King( { isWhite, xPos, yPos, board } ) {
 
     })
 
-    piece.inCheck = (xPos, yPos) => {
+    piece.inCheck = () => {
         for(let i = 0; i < 8; i++){
             for(let j = 0; j < 8; j++){
-                if(board[i][j] && board[i][j].standardMoves().some(pos => pos[0] === xPos && pos[1] === yPos)) {
+                if(game.board[i][j] && game.board[i][j].standardMoves().some(pos => pos[0] === xPos && pos[1] === yPos)) {
                     return true
                 }
             }
@@ -150,13 +158,13 @@ function King( { isWhite, xPos, yPos, board } ) {
 
     return piece;
 }
-function Knight( { isWhite, xPos, yPos, board } ) {
+function Knight( { isWhite, xPos, yPos, game } ) {
     const piece = Piece({
         name: "knight",
         isWhite: isWhite,
         xPos: xPos,
         yPos: yPos,
-        board: board,
+        game: game,
 
         standardMoves: () => {
             let moves = [];
@@ -173,7 +181,7 @@ function Knight( { isWhite, xPos, yPos, board } ) {
             knightMoves.forEach(move => {
                 const x = xPos + move[0]
                 const y = yPos + move[1]
-                if(!outOfBounds(x, y) && (board[x][y] === null || piece.canCapture(board[x][y]))) {
+                if(!outOfBounds(x, y) && (game.board[x][y] === null || piece.canCapture(game.board[x][y]))) {
                     moves.push([x, y])
                 }
             });
@@ -183,9 +191,9 @@ function Knight( { isWhite, xPos, yPos, board } ) {
     })
     return piece;
 }
-function createPiece(piece, isWhite, xPos, yPos, board = grid) {
+function createPiece(piece, isWhite, xPos, yPos, game = chessGame) {
     let createdPiece = {};
-    const pieceInfo = { isWhite: isWhite, xPos: xPos, yPos: yPos, board: board }
+    const pieceInfo = { isWhite: isWhite, xPos: xPos, yPos: yPos, game: game }
     switch(piece){
         case "pawn":
             createdPiece = Pawn(pieceInfo)
@@ -216,39 +224,39 @@ function createPiece(piece, isWhite, xPos, yPos, board = grid) {
         xPos: xPos,
         yPos, yPos,
         standardMoves: createdPiece.standardMoves,
-        board: board
+        game: game
     })
 
-    board[xPos][yPos] = {
+    game.board[xPos][yPos] = {
         ...genericPiece,
         ...createdPiece
     }
 
-    return board[xPos][yPos]
+    return game.board[xPos][yPos]
 }
 
-function Queen( { isWhite, xPos, yPos, board } ) {
+function Queen( { isWhite, xPos, yPos, game } ) {
     const piece = Piece({
         name: "queen",
         isWhite: isWhite,
         xPos: xPos,
         yPos: yPos,
-        board: board,
+        game: game,
         standardMoves: () => {
-            const bishop = Bishop({ isWhite: isWhite, xPos: xPos, yPos: yPos, board: grid });
-            const rook = Rook({ isWhite: isWhite, xPos: xPos, yPos: yPos, board: grid });
+            const bishop = Bishop({ isWhite: isWhite, xPos: xPos, yPos: yPos, game: game });
+            const rook = Rook({ isWhite: isWhite, xPos: xPos, yPos: yPos, game: game });
             return bishop.standardMoves().concat(rook.standardMoves())
         }
     })
     return piece;
 }
-function Bishop( { isWhite, xPos, yPos, board } ) {
+function Bishop( { isWhite, xPos, yPos, game } ) {
     const piece = Piece({
         name: "bishop",
         isWhite: isWhite,
         xPos: xPos,
         yPos: yPos,
-        board: board,
+        game: game,
 
         standardMoves: () => {
             const directions = [
@@ -263,9 +271,9 @@ function Bishop( { isWhite, xPos, yPos, board } ) {
                 let x = xPos + dx;
                 let y = yPos + dy;
                 while (!outOfBounds(x, y)) {
-                    if (board[x][y] === null || piece.canCapture(board[x][y])) {
+                    if (game.board[x][y] === null || piece.canCapture(game.board[x][y])) {
                         moves.push([x, y]);
-                        if (piece.canCapture(board[x][y])) {
+                        if (piece.canCapture(game.board[x][y])) {
                             break;
                         }
                     } else {
@@ -282,13 +290,13 @@ function Bishop( { isWhite, xPos, yPos, board } ) {
 
     return piece;
 }
-function Rook( { isWhite, xPos, yPos, board } ) {
+function Rook( { isWhite, xPos, yPos, game } ) {
     const piece = Piece({
         name: "rook",
         isWhite: isWhite,
         xPos: xPos,
         yPos: yPos,
-        board: board,
+        game: game,
 
         standardMoves: () => {
             const directions = [
@@ -303,9 +311,9 @@ function Rook( { isWhite, xPos, yPos, board } ) {
                 let x = xPos + dx;
                 let y = yPos + dy;
                 while (!outOfBounds(x, y)) {
-                    if (board[x][y] === null || piece.canCapture(board[x][y])) {
+                    if (game.board[x][y] === null || piece.canCapture(game.board[x][y])) {
                         moves.push([x, y]);
-                        if (piece.canCapture(board[x][y])) {
+                        if (piece.canCapture(game.board[x][y])) {
                             break;
                         }
                     } else {
@@ -330,7 +338,7 @@ function outOfBounds(x, y){
 function isLegal(fromX, fromY, toX, toY, isWhite, board) {
     const boardClone = cloneBoard(board)
     const piece = boardClone[fromX][fromY]
-    createPiece(piece.name, piece.isWhite, toX, toY, boardClone)
+    createPiece(piece.name, piece.isWhite, toX, toY, {board: boardClone})
     boardClone[fromX][fromY] = null
     let kingSquare;
     let moves = []
@@ -366,7 +374,7 @@ function cloneBoard(board) {
     for (let x = 0; x < 8; x++) {
         for (let y = 0; y < 8; y++) {
             if(board[x][y]) {
-                createPiece(board[x][y].name, board[x][y].isWhite, x, y, newBoard);
+                createPiece(board[x][y].name, board[x][y].isWhite, x, y, {board: newBoard});
             }
         }
     }
@@ -379,7 +387,7 @@ function renderBoard() {
     boardDiv.innerHTML = ""
     let num = 0
     let darkSquare = false;
-    grid.forEach(row => {
+    chessGame.board.forEach(row => {
         r = document.createElement('div');
         r.classList.add('row')
         row.forEach(square => {
@@ -409,9 +417,9 @@ function processInputs() {
         {
             values = input.value.split(" ")
             values = values.map(x => Number(x))
-            grid[values[0]][values[1]].move(values[2], values[3])
+            chessGame.board[values[0]][values[1]].move(values[2], values[3])
             renderBoard()
-            console.log(grid)
+            console.log(chessGame)
         }
     })
 }
@@ -447,4 +455,4 @@ createPiece("king", true, 0, 3)
 
 renderBoard()
 processInputs()
-console.log(grid)
+console.log(chessGame)
