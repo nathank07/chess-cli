@@ -5,7 +5,6 @@ import Rook from "./rook.js"
 import Knight from "./knight.js"
 import Bishop from "./bishop.js"
 import Pawn from "./pawn.js"
-
 import blackKing from '../cburnett/bK.svg' 
 import whiteKing from '../cburnett/wK.svg' 
 import blackQueen from '../cburnett/bQ.svg'
@@ -52,6 +51,7 @@ export function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) {
         },
 
         move: (toX, toY) => {
+            console.log(toX, toY)
             const moves = filterLegal(xPos, yPos, isWhite, standardMoves(), game.board)
             if(game.whitesMove === isWhite && moves.some(pos => pos[0] === toX && pos[1] === toY)) {
                 const index = moves.findIndex(pos => pos[0] === toX && pos[1] === toY);
@@ -84,6 +84,35 @@ export function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) {
     }
 }
 
+export function makeDraggable(square, svg, renderBoard){
+    let drag
+    svg.addEventListener('mousedown', (e) => {
+        e.preventDefault()
+        drag = true
+    })
+    document.addEventListener('mousemove', (e) => {
+        e.preventDefault()
+        if(e.buttons === 1 && drag) {
+            const offset = svg.width / 2
+            const x = e.clientX - svg.x - offset
+            const y = e.clientY - svg.y - offset
+            svg.style.transform = `translate(${x}px, ${y}px)`
+        }
+    })
+    svg.addEventListener('mouseup', (e) => {
+        e.preventDefault()
+        const regex = /translate\(([-\d.]+)px, ([-\d.]+)px\)/;
+        const xy = svg.style.transform.match(regex)
+        drag = false
+        if(xy) {
+            const y = Math.round(xy[1] / svg.width) + square.yPos
+            const x = Math.round(xy[2] / svg.width) + square.xPos
+            square.move(x, y)
+            renderBoard()
+        }
+    })
+} 
+
 function isLegal(fromX, fromY, toX, toY, isWhite, board) {
     const boardClone = cloneBoard(board)
     const piece = boardClone[fromX][fromY]
@@ -111,8 +140,6 @@ function isLegal(fromX, fromY, toX, toY, isWhite, board) {
     return true
 }
 
-
-
 function filterLegal(xPos, yPos, isWhite, standardMoves, board) {
     return standardMoves.filter(move => 
         isLegal(xPos, yPos, move[0], move[1], isWhite, board)
@@ -120,7 +147,7 @@ function filterLegal(xPos, yPos, isWhite, standardMoves, board) {
 }
 
 
-function cloneBoard(board) {
+export function cloneBoard(board) {
     const newBoard = [...Array(8)].map(e => Array(8).fill(null));
     for (let x = 0; x < 8; x++) {
         for (let y = 0; y < 8; y++) {

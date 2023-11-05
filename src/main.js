@@ -1,5 +1,5 @@
 import "./styles.css"
-import createPiece from "./pieces/piece.js"
+import createPiece, { makeDraggable } from "./pieces/piece.js"
 
 
 const chessGame = {
@@ -18,7 +18,6 @@ const chessGame = {
 export default chessGame
 
 
-
 function renderBoard() {
     const boardDiv = document.querySelector("#board")
     boardDiv.innerHTML = ""
@@ -33,12 +32,15 @@ function renderBoard() {
             if(pieceSvg) {
                 const svg = document.createElement('img')
                 svg.src = pieceSvg
+                makeDraggable(square, svg, renderBoard)
                 div.appendChild(svg)
             }
             boardDiv.appendChild(div)
         });
         darkSquare = !darkSquare
     });
+    return document.querySelector("#board img");
+
 }
 function processInputs() {
     const input = document.querySelector('input')
@@ -53,6 +55,9 @@ function processInputs() {
         }
     })
 }
+
+
+
 for(let i = 0; i < 8; i++) {
     createPiece("pawn", true, 1, i)
     createPiece("pawn", false, 6, i)
@@ -61,7 +66,6 @@ createPiece("rook", true, 0, 0)
 createPiece("rook", true, 0, 7)
 createPiece("rook", false, 7, 7)
 createPiece("rook", false, 7, 0)
-createPiece("rook", false, 2, 1)
 
 createPiece("knight", true, 0, 1)
 createPiece("knight", true, 0, 6)
