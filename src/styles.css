@@ -29,7 +29,10 @@ body {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	font-size: 3rem;
+}
+.square > img {
+	width: 100%;
+	height: 100%;
 }
 .vertical, .horizontal {
     display: grid;

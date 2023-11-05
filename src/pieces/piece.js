@@ -6,21 +6,34 @@ import Knight from "./knight.js"
 import Bishop from "./bishop.js"
 import Pawn from "./pawn.js"
 
+import blackKing from '../cburnett/bK.svg' 
+import whiteKing from '../cburnett/wK.svg' 
+import blackQueen from '../cburnett/bQ.svg'
+import whiteQueen from '../cburnett/wQ.svg'
+import blackRook from '../cburnett/bR.svg' 
+import whiteRook from '../cburnett/wR.svg' 
+import blackBishop from '../cburnett/bB.svg' 
+import whiteBishop from '../cburnett/wB.svg' 
+import blackKnight from '../cburnett/bN.svg' 
+import whiteKnight from '../cburnett/wN.svg' 
+import blackPawn from '../cburnett/bP.svg' 
+import whitePawn from '../cburnett/wP.svg' 
+
 const blackPieces = {
-    "pawn": "♟",
-    "king": "♚", 
-    "queen": "♛", 
-    "bishop": "♝", 
-    "knight": "♞", 
-    "rook": "♜"
+    "pawn": blackPawn,
+    "king": blackKing, 
+    "queen": blackQueen, 
+    "bishop": blackBishop, 
+    "knight": blackKnight, 
+    "rook": blackRook
 }
 const whitePieces = { 
-    "pawn": "♙",
-    "king": "♔", 
-    "queen": "♕", 
-    "bishop": "♗", 
-    "knight": "♘", 
-    "rook": "♖"
+    "pawn": whitePawn,
+    "king": whiteKing, 
+    "queen": whiteQueen, 
+    "bishop": whiteBishop, 
+    "knight": whiteKnight, 
+    "rook": whiteRook
 }
 
 export function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) { 
@@ -32,10 +45,7 @@ export function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) {
         yPos: yPos,
         standardMoves: standardMoves,
         game: game,
-
-        display: () => {
-            return isWhite ? whitePieces[name] || "" : blackPieces[name] || ""
-        },
+        svg: isWhite ? whitePieces[name] || false : blackPieces[name] || false,
 
         canCapture: (capturedPiece) => {
             return capturedPiece ? isWhite !== capturedPiece.isWhite : false

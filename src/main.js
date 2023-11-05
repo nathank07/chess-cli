@@ -29,7 +29,12 @@ function renderBoard() {
             div.classList.add("square")
             darkSquare = !darkSquare
             if(darkSquare) { div.classList.add('darkSquare') }
-            div.innerHTML = square ? square.display() : ""
+            const pieceSvg = square ? square.svg : false
+            if(pieceSvg) {
+                const svg = document.createElement('img')
+                svg.src = pieceSvg
+                div.appendChild(svg)
+            }
             boardDiv.appendChild(div)
         });
         darkSquare = !darkSquare
