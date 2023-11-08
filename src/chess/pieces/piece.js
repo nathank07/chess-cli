@@ -1,4 +1,4 @@
-import chessGame from "../main.js"
+import chessGame from "../board.js"
 import King from "./king.js"
 import Queen from "./queen.js"
 import Rook from "./rook.js"
@@ -51,7 +51,6 @@ export function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) {
         },
 
         move: (toX, toY) => {
-            console.log(toX, toY)
             const moves = filterLegal(xPos, yPos, isWhite, standardMoves(), game.board)
             if(game.whitesMove === isWhite && moves.some(pos => pos[0] === toX && pos[1] === toY)) {
                 const index = moves.findIndex(pos => pos[0] === toX && pos[1] === toY);
@@ -86,32 +85,62 @@ export function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) {
 
 export function makeDraggable(square, svg, renderBoard){
     let drag
+    let size = svg.offsetWidth
     svg.addEventListener('mousedown', (e) => {
         e.preventDefault()
-        drag = true
+        if(e.buttons === 1) {
+            drag = true
+            // Set size here everytime in case user resizes window
+            size = svg.offsetWidth
+            moveToCursor(e, svg, size)
+        } else {
+            drag = false
+            renderBoard()
+        }
     })
     document.addEventListener('mousemove', (e) => {
         e.preventDefault()
         if(e.buttons === 1 && drag) {
-            const offset = svg.width / 2
-            const x = e.clientX - svg.x - offset
-            const y = e.clientY - svg.y - offset
-            svg.style.transform = `translate(${x}px, ${y}px)`
+            moveToCursor(e, svg, size)
         }
     })
     svg.addEventListener('mouseup', (e) => {
         e.preventDefault()
-        const regex = /translate\(([-\d.]+)px, ([-\d.]+)px\)/;
-        const xy = svg.style.transform.match(regex)
         drag = false
-        if(xy) {
-            const y = Math.round(xy[1] / svg.width) + square.yPos
-            const x = Math.round(xy[2] / svg.width) + square.xPos
-            square.move(x, y)
-            renderBoard()
+        const move = hoveredSquare(e)
+        if(move) {
+            square.move(move[0], move[1])
         }
+        renderBoard()
     })
+    
 } 
+
+function moveToCursor(event, svg, size) {
+    // Using fixed style here instead of transform because 
+    // transform did not work for some users
+    svg.style.position = "fixed"
+    svg.style.width = `${size}px`
+    svg.style.height = `${size}px`
+    const x = event.clientX - (size / 2)
+    const y = event.clientY - (size / 2)
+    svg.style.left = `${x}px`
+    svg.style.top = `${y}px`
+}
+
+function hoveredSquare(event) {
+    // Cannot use :hover because while dragging child div it will target parent div
+    // instead of div lower and pointer-style: none breaks event listeners
+    const board = document.querySelector("#board").getBoundingClientRect()
+    const squareWidth = board.width / 8
+    const x = event.clientX - board.left
+    const y = event.clientY - board.top
+    // If cursor not in the board return null
+    if(x > board.width || x < 0 || y > board.width || y < 0) {
+        return null
+    }
+    return [Math.trunc((y / squareWidth)), Math.trunc((x / squareWidth))]
+}
 
 function isLegal(fromX, fromY, toX, toY, isWhite, board) {
     const boardClone = cloneBoard(board)
