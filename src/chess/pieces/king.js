@@ -1,4 +1,4 @@
-import { Piece, outOfBounds, cloneBoard } from "./piece.js"
+import createPiece, { Piece, outOfBounds, cloneBoard } from "./piece.js"
 
 export default function King( { isWhite, xPos, yPos, game } ) {
     const piece = Piece({

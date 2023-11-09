@@ -87,15 +87,26 @@ export function makeDraggable(square, svg, renderBoard){
     let size = svg.offsetWidth
     svg.addEventListener('mousedown', (e) => {
         e.preventDefault()
-        if(e.buttons === 1) {
+        if(e.buttons === 1) { 
             // Set size here everytime in case user resizes window
             size = svg.offsetWidth
             // We declare the event listeners here to the document 
-            // because it pointer-events: none unbinds the svg event listeners 
+            // because pointer-events: none unbinds the svg event listeners
+            document.addEventListener('mousedown', mouseDown) 
             document.addEventListener('mousemove', mouseMove)
             document.addEventListener('mouseup', mouseUp)
             moveToCursor(e, svg, size)
             displaySelectSquare()
+        }
+        function mouseDown(event) {
+            // This is done so users can cancel their moves with any button
+            if(event.buttons !== 1) {
+                event.preventDefault()
+                document.removeEventListener('mousedown', mouseDown) 
+                document.removeEventListener('mouseup', mouseUp)
+                document.removeEventListener('mousemove', mouseMove)
+                renderBoard()
+            }
         }
         function mouseMove(event) {
             moveToCursor(event, svg, size)
@@ -103,11 +114,12 @@ export function makeDraggable(square, svg, renderBoard){
         }
         function mouseUp(event) {
             event.preventDefault()
+            document.removeEventListener('mousedown', mouseDown) 
             document.removeEventListener('mouseup', mouseUp)
             document.removeEventListener('mousemove', mouseMove)
             svg.style.pointerEvents = "auto"
             const move = selectSquare()
-            if(move) {
+            if(move && event.buttons === 0) {
                 square.move(move[0], move[1])
             }
             renderBoard()
