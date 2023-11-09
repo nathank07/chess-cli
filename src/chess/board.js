@@ -54,6 +54,28 @@ function markHoveredPieces() {
     });
 }
 
+function animateMove(game, fromX, fromY, toX, toY, side = true, duration = 200) {
+    if(game.board[fromX][fromY] && game.board[fromX][fromY].move(toX, toY)) {
+        const initialDiv = document.querySelector(`[notation=${convertLocationToNotation(fromX, fromY)}]`).firstChild
+        const destination = document.querySelector(`[notation=${convertLocationToNotation(toX, toY)}]`).getBoundingClientRect()
+        const size = initialDiv.offsetWidth / 2
+        const fromXloc = initialDiv.getBoundingClientRect().left + size
+        const fromYloc = initialDiv.getBoundingClientRect().top + size
+        const toXloc = destination.left + size
+        const toYloc = destination.top + size
+        initialDiv.animate([
+            { transform: 'translate(0px, 0px)' },
+            { transform: `translate(${toXloc - fromXloc}px, ${toYloc - fromYloc}px)` }
+        ], {
+            duration: duration,
+            iterations: 1
+        })
+        setTimeout(() => {
+            renderBoard(side)
+        }, duration)
+    }
+}
+
 function renderBoard(whiteSide = true) {
     const boardDiv = document.querySelector("#board")
     boardDiv.innerHTML = ""
@@ -88,7 +110,7 @@ function renderBoard(whiteSide = true) {
 }
 
 
-export function loadGame() {
+export function loadGame(white) {
     for(let i = 0; i < 8; i++) {
         createPiece("pawn", true, 1, i)
         createPiece("pawn", false, 6, i)
@@ -114,8 +136,12 @@ export function loadGame() {
     createPiece("queen", false, 7, 4)
     createPiece("king", true, 0, 3)
     
-    renderBoard()
+    createPiece("pawn", false, 4, 4)
+
+    renderBoard(white)
     console.log(chessGame)
+    animateMove(chessGame, 1, 3, 3, 3, white)
+    setTimeout(() => animateMove(chessGame, 4, 4, 3, 3, white), 200)
 }
 
 

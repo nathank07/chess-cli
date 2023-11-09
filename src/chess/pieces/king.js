@@ -81,7 +81,7 @@ function checkCastleLegality(isWhite, game) {
                 if(game.board[i][j].isWhite === !isWhite) {
                     boardClone[i][j].standardMoves().map(move => moves.push(move))
                 }
-                if(game.board[i][j].name == "king" && game.board[i][j].isWhite == isWhite){
+                if(game.board[i][j].name === "king" && game.board[i][j].isWhite === isWhite){
                     if(boardClone[i][j].inCheck()) {
                         return false;
                     }
