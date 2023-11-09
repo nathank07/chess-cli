@@ -54,14 +54,17 @@ function markHoveredPieces() {
     });
 }
 
-function renderBoard() {
+function renderBoard(whiteSide = true) {
     const boardDiv = document.querySelector("#board")
     boardDiv.innerHTML = ""
+    const board = whiteSide ? [...chessGame.board].reverse() : chessGame.board
+    const increment = whiteSide ? -1 : 1
     let darkSquare = true
-    let x = 0
-    chessGame.board.forEach(row => {
-        let y = 0
-        row.forEach(square => {
+    let x = whiteSide ? 7 : 0
+    board.forEach(row => {
+        let y = whiteSide ? 7 : 0
+        const newRow = whiteSide ? [...row].reverse() : row
+        newRow.forEach(square => {
             const div = document.createElement('div')
             div.setAttribute("notation", convertLocationToNotation(x, y))
             div.classList.add("square")
@@ -75,10 +78,10 @@ function renderBoard() {
                 div.appendChild(svg)
             }
             boardDiv.appendChild(div)
-            y += 1
+            y += increment
         });
         darkSquare = !darkSquare
-        x += 1
+        x += increment
     });
     markHoveredPieces()
     return document.querySelector("#board img");
