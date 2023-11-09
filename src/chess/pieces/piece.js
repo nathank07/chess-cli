@@ -54,6 +54,7 @@ export function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) {
             const moves = filterLegal(xPos, yPos, isWhite, standardMoves(), game.board)
             if(game.whitesMove === isWhite && moves.some(pos => pos[0] === toX && pos[1] === toY)) {
                 const index = moves.findIndex(pos => pos[0] === toX && pos[1] === toY);
+                game.history.push(cloneGame(game))
                 // Remove any en passant remnants
                 for(let i = 0; i < 8; i++) {
                     if(game.board[2][i] && game.board[2][i].name === "passant") {
@@ -83,6 +84,21 @@ export function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) {
     }
 }
 
+export function cloneGame(game) {
+    return {
+        board: cloneBoard(game.board),
+        whitesMove: game.whitesMove,
+        whiteState: {
+            shortCastle: game.whiteState.shortCastle,
+            longCastle: game.whiteState.longCastle,
+        },
+        blackState: {
+            shortCastle: game.blackState.shortCastle,
+            longCastle: game.blackState.longCastle,
+        }
+    }
+}
+
 export function makeDraggable(square, svg, renderBoard){
     let size = svg.offsetWidth
     svg.addEventListener('mousedown', (e) => {
@@ -105,12 +121,12 @@ export function makeDraggable(square, svg, renderBoard){
                 document.removeEventListener('mousedown', mouseDown) 
                 document.removeEventListener('mouseup', mouseUp)
                 document.removeEventListener('mousemove', mouseMove)
-                renderBoard()
+                renderBoard(square.game)
             }
         }
         function mouseMove(event) {
             moveToCursor(event, svg, size)
-            displaySelectSquare()
+            displaySelectSquare(square.game)
         }
         function mouseUp(event) {
             event.preventDefault()
@@ -122,7 +138,7 @@ export function makeDraggable(square, svg, renderBoard){
             if(move && event.buttons === 0) {
                 square.move(move[0], move[1])
             }
-            renderBoard()
+            renderBoard(square.game)
         }
     })
 } 

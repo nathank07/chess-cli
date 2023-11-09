@@ -1,5 +1,28 @@
 import "./styles.css"
-import { loadGame } from "./chess/board.js"
+import chessGame, { loadGame, renderBoard } from "./chess/board.js"
 
+const whiteSide = true
 
-loadGame(true)
+loadGame(chessGame, whiteSide)
+
+let history = 0
+
+document.addEventListener('keydown', (e) => {
+    const length = chessGame.history.length
+    if(e.code === "ArrowLeft") {
+        if(history < length - 1) {
+            history++
+            renderBoard(chessGame.history[length - history], whiteSide, true)
+        }
+    }
+    if(e.code === "ArrowRight") {
+        history--
+        if(history >= 1) {
+            renderBoard(chessGame.history[length - history], whiteSide, true)
+        } else {
+            history = 0
+            renderBoard(chessGame, whiteSide)
+        }
+    }
+    console.log(history)
+})

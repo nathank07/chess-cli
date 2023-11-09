@@ -1,4 +1,4 @@
-import createPiece, { makeDraggable } from "./pieces/piece.js"
+import createPiece, { cloneGame, makeDraggable } from "./pieces/piece.js"
 
 
 const chessGame = {
@@ -11,7 +11,15 @@ const chessGame = {
     blackState: {
         shortCastle: true,
         longCastle: true,
+    },
+    history: []
+}
+
+export function firstPosition(chessGame) {
+    if(chessGame.previousPosition === null) {
+        return chessGame
     }
+    return firstPosition(chessGame.previousPosition)
 }
 
 export function convertLocationToNotation(xPos, yPos) {
@@ -71,15 +79,15 @@ function animateMove(game, fromX, fromY, toX, toY, side = true, duration = 200) 
             iterations: 1
         })
         setTimeout(() => {
-            renderBoard(side)
+            renderBoard(game, side)
         }, duration)
     }
 }
 
-function renderBoard(whiteSide = true) {
+export function renderBoard(game, whiteSide = true, history = false) {
     const boardDiv = document.querySelector("#board")
     boardDiv.innerHTML = ""
-    const board = whiteSide ? [...chessGame.board].reverse() : chessGame.board
+    const board = whiteSide ? [...game.board].reverse() : game.board
     const increment = whiteSide ? -1 : 1
     let darkSquare = true
     let x = whiteSide ? 7 : 0
@@ -96,7 +104,7 @@ function renderBoard(whiteSide = true) {
             if(pieceSvg) {
                 const svg = document.createElement('img')
                 svg.src = pieceSvg
-                makeDraggable(square, svg, renderBoard)
+                !history ? makeDraggable(square, svg, renderBoard) : ""
                 div.appendChild(svg)
             }
             boardDiv.appendChild(div)
@@ -110,7 +118,7 @@ function renderBoard(whiteSide = true) {
 }
 
 
-export function loadGame(white) {
+export function loadGame(game, white) {
     for(let i = 0; i < 8; i++) {
         createPiece("pawn", true, 1, i)
         createPiece("pawn", false, 6, i)
@@ -137,12 +145,10 @@ export function loadGame(white) {
     createPiece("king", true, 0, 3)
     
     createPiece("pawn", false, 4, 4)
-
-    renderBoard(white)
-    console.log(chessGame)
-    animateMove(chessGame, 1, 3, 3, 3, white)
-    setTimeout(() => animateMove(chessGame, 4, 4, 3, 3, white), 200)
+    renderBoard(game, white)
+    game.history.push(cloneGame(game))
+    animateMove(game, 1, 3, 3, 3, white)
+    setTimeout(() => animateMove(game, 4, 4, 3, 3, white), 200)
 }
-
 
 export default chessGame
