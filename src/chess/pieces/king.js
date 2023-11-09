@@ -68,6 +68,7 @@ export default function King( { isWhite, xPos, yPos, game } ) {
 function checkCastleLegality(isWhite, game) {
     const castleState = isWhite ? game.whiteState : game.blackState
     const kingRow = isWhite ? 0 : 7
+    let kingSquare
     if(castleState === undefined || !castleState.shortCastle && !castleState.longCastle) {
         return false
     }
@@ -76,9 +77,16 @@ function checkCastleLegality(isWhite, game) {
     const boardClone = cloneBoard(game.board)
     for(let i = 0; i < 8; i++) {
         for(let j = 0; j < 8; j++) {
-            if(game.board[i][j] && game.board[i][j].isWhite === !isWhite) {
-                boardClone[i][j].standardMoves().map(move => moves.push(move))
-            }            
+            if(game.board[i][j]) {
+                if(game.board[i][j].isWhite === !isWhite) {
+                    boardClone[i][j].standardMoves().map(move => moves.push(move))
+                }
+                if(game.board[i][j].name == "king" && game.board[i][j].isWhite == isWhite){
+                    if(boardClone[i][j].inCheck()) {
+                        return false;
+                    }
+                }         
+            }   
         }
     }
     let short = true
