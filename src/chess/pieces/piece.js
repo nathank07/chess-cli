@@ -132,13 +132,15 @@ function displaySelectSquare() {
     const board = document.querySelector("#board")
     board.querySelectorAll(".square").forEach(square => {
         square.style.backgroundColor = null
-    }); 
-    board.querySelector(".select").style.backgroundColor = "aqua"
+    });
+    if(board.querySelector(".select")) {
+        board.querySelector(".select").style.backgroundColor = "aqua"
+    } 
 }
 
 function selectSquare() {
-    const notation = document.querySelector("#board .square.select").getAttribute("notation")
-    return convertNotationtoLocation(notation)
+    const notation = document.querySelector("#board .square.select")
+    return notation ? convertNotationtoLocation(notation.getAttribute("notation")) : false
 }
 
 function isLegal(fromX, fromY, toX, toY, isWhite, board) {
