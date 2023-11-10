@@ -53,7 +53,6 @@ export function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) {
         move: (toX, toY) => {
             const moves = filterLegal(xPos, yPos, isWhite, standardMoves(), game.board)
             if(game.whitesMove === isWhite && moves.some(pos => pos[0] === toX && pos[1] === toY)) {
-                console.log(xPos, yPos, toX, toY)
                 const index = moves.findIndex(pos => pos[0] === toX && pos[1] === toY);
                 game.history.push(cloneGame(game))
                 game.lastMove = [convertLocationToNotation(xPos, yPos), convertLocationToNotation(toX, toY)]
