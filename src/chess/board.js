@@ -78,6 +78,46 @@ function animateMove(game, fromX, fromY, toX, toY, side = true, duration = 200) 
     }
 }
 
+export function animatePiece(fromNotation, toNotation, speedMultiplier = 1) {
+    const initialDiv = document.querySelector(`[notation=${fromNotation}]`)
+    const destination = document.querySelector(`[notation=${toNotation}]`)
+    const size = initialDiv.offsetWidth / 2
+    const fromXloc = initialDiv.getBoundingClientRect().left + size
+    const fromYloc = initialDiv.getBoundingClientRect().top + size
+    const toXloc = destination.getBoundingClientRect().left + size
+    const toYloc = destination.getBoundingClientRect().top + size
+    // 1 speedMultipler = 1 square per second 
+    const duration = ((Math.sqrt(Math.pow(((fromXloc - toXloc) / size), 2) + Math.pow(((fromYloc - toYloc) / size), 2))) * (1 / speedMultiplier)) * 250
+    const child = initialDiv.firstChild
+    let error;
+    
+    if(child) {
+        document.querySelectorAll(".highlighted").forEach(square => {
+            square.classList.remove("highlighted")
+        });
+        document.querySelector(`[notation=${fromNotation}`).classList.add("highlighted")
+        document.querySelector(`[notation=${toNotation}`).classList.add("highlighted")
+        child.animate([
+            { transform: 'translate(0px, 0px)' },
+            { transform: `translate(${toXloc - fromXloc}px, ${toYloc - fromYloc}px)` }
+        ], {
+            duration: duration,
+            iterations: 1
+        })
+    } else {
+        error = new Error(`Nothing to animate from ${fromNotation}`)
+    }
+
+    return new Promise((resolve, reject) => {
+        if(error) {
+            reject(error)
+        }
+        setTimeout(() => {
+            resolve()
+        }, duration)
+    })
+}
+
 export function renderBoard(game, whiteSide = true, history = false) {
     const boardDiv = document.querySelector("#board")
     boardDiv.innerHTML = ""
