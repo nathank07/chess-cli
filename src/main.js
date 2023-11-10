@@ -2,10 +2,10 @@ import "./styles.css"
 import chessGame, { loadGame, renderBoard } from "./chess/board.js"
 import { setPromisetoNull, animateHistory } from "./chess/animations.js"
 
-const white = false
+let whiteSide = false
 let history = 0
 
-loadGame(chessGame, white)
+loadGame(chessGame)
 
 document.addEventListener('keydown', (e) => {
     const current = chessGame.history.length
@@ -25,9 +25,16 @@ document.addEventListener('keydown', (e) => {
     } 
     if(history !== prevHistory){
         animateHistory(chessGame, current, prevHistory, speed)
-    }  
+    }
+    if(e.code === "KeyF") {
+        whiteSide = !whiteSide
+        renderBoard(chessGame)
+    }
 })
 
+export default function isWhite() {
+    return whiteSide
+}
 
 export function resetHistory() {
     if(history !== 0) {
@@ -36,6 +43,4 @@ export function resetHistory() {
         history = 0
     }
 }
-
-export default white
 export { history }

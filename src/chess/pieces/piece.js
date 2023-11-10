@@ -37,7 +37,6 @@ const whitePieces = {
 
 export function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) { 
     return {
-
         name: name,
         isWhite: isWhite,
         xPos: xPos,

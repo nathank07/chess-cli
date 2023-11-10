@@ -1,4 +1,4 @@
-import white, { history, resetHistory } from "../main.js"
+import { history, resetHistory } from "../main.js"
 import { renderBoard, convertLocationToNotation } from "./board.js"
 
 const speed = 1
@@ -17,11 +17,11 @@ export function animateHistory(chessGame, current, prevHistory) {
     // If the move isn't one move ahead/behind
     if(Math.abs(prevHistory - history) !== 1) {
         if(history === 0) {
-            renderBoard(chessGame, white)
+            renderBoard(chessGame)
             promise = null
         }
         if(history === current - 1) {
-            renderBoard(chessGame.history[0], white, true)
+            renderBoard(chessGame.history[0], true)
             promise = null
         }
         return
@@ -47,7 +47,7 @@ export function animateHistory(chessGame, current, prevHistory) {
         animatePiece(promise[0], promise[1], promise[2], promise[3])
             .then(() => {
                 if(promise !== null && runningPromise.every((value, index) => value === promise[index])) {
-                    renderBoard(game, white, history !== 0)
+                    renderBoard(game, history !== 0)
                 }
             })
             .catch((e) => {
@@ -59,12 +59,12 @@ export function animateHistory(chessGame, current, prevHistory) {
             })
     } else {
         console.log("else called")
-        renderBoard(game, white, history !== 0)
+        renderBoard(game, history !== 0)
         promise = null
     }
 }
 
-export default function animateMove(game, isWhite, fromX, fromY, toX, toY) {
+export default function animateMove(game, fromX, fromY, toX, toY) {
     if(game.board[fromX][fromY] && game.board[fromX][fromY].move(toX, toY)) {
         // If user is behind then show the current game
         resetHistory()
@@ -72,7 +72,7 @@ export default function animateMove(game, isWhite, fromX, fromY, toX, toY) {
         const start = convertLocationToNotation(fromX, fromY)
         const end = convertLocationToNotation(toX, toY)
         animatePiece(start, end).then(() => {
-            renderBoard(game, isWhite)
+            renderBoard(game)
         })
         return
     } else {

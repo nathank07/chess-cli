@@ -1,5 +1,5 @@
 import createPiece, { cloneGame, makeDraggable } from "./pieces/piece.js"
-import white, { resetHistory } from "../main.js"
+import isWhite from "../main.js"
 import animateMove from "./animations.js"
 
 const chessGame = {
@@ -59,7 +59,8 @@ function markHoveredPieces() {
 
 
 
-export function renderBoard(game, whiteSide = white, history = false) {
+export function renderBoard(game, history = false) {
+    const whiteSide = isWhite()
     const boardDiv = document.querySelector("#board")
     boardDiv.innerHTML = ""
     const board = whiteSide ? [...game.board].reverse() : game.board
@@ -98,12 +99,12 @@ export function renderBoard(game, whiteSide = white, history = false) {
     return document.querySelector("#board img");
 }
 
-function animateGame(game, moves, white, timeBetweenMoves) {
+function animateGame(game, moves, timeBetweenMoves) {
     let totalMoves = 0
     moves.map(move => {
         totalMoves++
         setTimeout(() => {
-            animateMove(game, white, move[0], move[1], move[2], move[3])
+            animateMove(game, move[0], move[1], move[2], move[3])
         }, timeBetweenMoves * totalMoves)
     })
 }
@@ -159,7 +160,7 @@ const moves = [
     [1, 7, 2, 5]
 ]
 
-export function loadGame(game, white) {
+export function loadGame(game) {
     for(let i = 0; i < 8; i++) {
         createPiece("pawn", true, 1, i)
         createPiece("pawn", false, 6, i)
@@ -185,10 +186,10 @@ export function loadGame(game, white) {
     createPiece("queen", false, 7, 4)
     createPiece("king", true, 0, 3)
     
-    renderBoard(game, white)
+    renderBoard(game)
     game.history.push(cloneGame(game))
 
-    animateGame(game, moves, white, 1000)
+    animateGame(game, moves, 100)
 }
 
 export default chessGame
