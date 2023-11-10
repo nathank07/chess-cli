@@ -58,7 +58,6 @@ export function animateHistory(chessGame, current, prevHistory) {
                 promise = null
             })
     } else {
-        console.log("else called")
         renderBoard(game, history !== 0)
         promise = null
     }
@@ -71,8 +70,14 @@ export default function animateMove(game, fromX, fromY, toX, toY) {
         
         const start = convertLocationToNotation(fromX, fromY)
         const end = convertLocationToNotation(toX, toY)
+        promise = null 
+        animating = true
         animatePiece(start, end).then(() => {
             renderBoard(game)
+        })
+        .finally(() => {
+            promise = null
+            animating = false
         })
         return
     } else {

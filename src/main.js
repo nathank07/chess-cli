@@ -5,9 +5,10 @@ import { setPromisetoNull, animateHistory } from "./chess/animations.js"
 let whiteSide = false
 let history = 0
 
-loadGame(chessGame)
+loadGame(chessGame, whiteSide)
 
 document.addEventListener('keydown', (e) => {
+    console.log(e.code)
     const current = chessGame.history.length
     const prevHistory = history
     const speed = 1

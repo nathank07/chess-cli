@@ -189,7 +189,7 @@ export function loadGame(game) {
     renderBoard(game)
     game.history.push(cloneGame(game))
 
-    animateGame(game, moves, 100)
+    animateGame(game, moves, 1000)
 }
 
 export default chessGame
