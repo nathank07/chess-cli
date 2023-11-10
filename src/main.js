@@ -10,7 +10,7 @@ let history = 0
 document.addEventListener('keydown', (e) => {
     const current = chessGame.history.length
     const prevHistory = history
-    const speed = 25
+    const speed = 10
     if(e.code === "ArrowLeft") {
         history < current - 1 ? history++ : history = current - 1
     }
@@ -22,47 +22,66 @@ document.addEventListener('keydown', (e) => {
     }
     if(e.code === "ArrowDown") {
         history = 0
-        renderBoard(chessGame, whiteSide)
-        return
-    }
-    if(history === current - 1 && prevHistory !== (current + 1)) {
-        renderBoard(chessGame.history[0], whiteSide, true)
-        console.log(history)
-        return
-    }
-
-    showHistory(chessGame, current, history, prevHistory, speed)
-    
+    } 
+    if(history !== prevHistory){
+        showHistory(chessGame, current, prevHistory, speed)
+    }  
 })
 
 
-function showHistory(chessGame, current, history, prevHistory, speed) {
+let animating = false
+let promise = null
+
+function showHistory(chessGame, current, prevHistory, speed) {
+    let game
+    let begin
+    let end
+
+    // If the move isn't one move ahead/behind
+    if(Math.abs(prevHistory - history) !== 1) {
+        if(history === 0) {
+            renderBoard(chessGame, whiteSide)
+            promise = null
+        }
+        if(history === current - 1) {
+            renderBoard(chessGame.history[0], whiteSide, true)
+            promise = null
+        }
+        return
+    }
     // Left Arrow
     if(history > prevHistory) {
-        const game = chessGame.history[current - history]
-        const begin = history === 1 ? chessGame.lastMove[0] : chessGame.history[current - history + 1].lastMove[0]
-        const end = history === 1 ? chessGame.lastMove[1] : chessGame.history[current - history + 1].lastMove[1]
-        animatePiece(end, begin, speed)
-            .then(() => {
-                renderBoard(game, whiteSide, true)
-            })
-            .catch((e) => {
-                renderBoard(game, whiteSide, true)
-                console.log("caught error", {e})
-            })
+        game = chessGame.history[current - history]
+        begin = history === 1 ? chessGame.lastMove[0] : chessGame.history[current - history + 1].lastMove[0]
+        end = history === 1 ? chessGame.lastMove[1] : chessGame.history[current - history + 1].lastMove[1]
     }
     // Right Arrow
     if(history < prevHistory) {
-        const game = history === 0 ? chessGame : chessGame.history[current - history]
-        const begin = game.lastMove[0]
-        const end = game.lastMove[1]
-        animatePiece(begin, end, speed)
+        game = history === 0 ? chessGame : chessGame.history[current - history]
+        end = game.lastMove[0]
+        begin = game.lastMove[1]
+    }
+
+    // Don't render animation if another board was already rendered
+    if(promise === null && !animating) {
+        animating = true
+        promise = [end, begin, speed, history]
+        const runningPromise = [end, begin, speed, history]
+        animatePiece(promise[0], promise[1], promise[2], promise[3])
             .then(() => {
-                renderBoard(game, whiteSide, history !== 0)
+                if(promise !== null && runningPromise.every((value, index) => value === promise[index])) {
+                    renderBoard(game, whiteSide, history !== 0)
+                }
             })
             .catch((e) => {
-                renderBoard(game, whiteSide, history !== 0)
-                console.log("caught error", {e})
+                console.log("caught error", e)
             })
+            .finally(() => {
+                animating = false
+                promise = null
+            })
+    } else {
+        renderBoard(game, whiteSide, history !== 0)
+        promise = null
     }
 }
