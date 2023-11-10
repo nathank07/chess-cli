@@ -1,5 +1,6 @@
 import createPiece, { cloneGame, makeDraggable } from "./pieces/piece.js"
-
+import white, { resetHistory } from "../main.js"
+import animateMove from "./animations.js"
 
 const chessGame = {
     board: [...Array(8)].map(e => Array(8).fill(null)),
@@ -56,69 +57,9 @@ function markHoveredPieces() {
     });
 }
 
-function animateMove(game, fromX, fromY, toX, toY, side = true, duration = 200) {
-    if(game.board[fromX][fromY] && game.board[fromX][fromY].move(toX, toY)) {
-        const initialDiv = document.querySelector(`[notation=${convertLocationToNotation(fromX, fromY)}]`).firstChild
-        const destination = document.querySelector(`[notation=${convertLocationToNotation(toX, toY)}]`).getBoundingClientRect()
-        const size = initialDiv.offsetWidth / 2
-        const fromXloc = initialDiv.getBoundingClientRect().left + size
-        const fromYloc = initialDiv.getBoundingClientRect().top + size
-        const toXloc = destination.left + size
-        const toYloc = destination.top + size
-        initialDiv.animate([
-            { transform: 'translate(0px, 0px)' },
-            { transform: `translate(${toXloc - fromXloc}px, ${toYloc - fromYloc}px)` }
-        ], {
-            duration: duration,
-            iterations: 1
-        })
-        setTimeout(() => {
-            renderBoard(game, side)
-        }, duration)
-    }
-}
 
-export function animatePiece(fromNotation, toNotation, speedMultiplier = 1) {
-    const initialDiv = document.querySelector(`[notation=${fromNotation}]`)
-    const destination = document.querySelector(`[notation=${toNotation}]`)
-    const size = initialDiv.offsetWidth / 2
-    const fromXloc = initialDiv.getBoundingClientRect().left + size
-    const fromYloc = initialDiv.getBoundingClientRect().top + size
-    const toXloc = destination.getBoundingClientRect().left + size
-    const toYloc = destination.getBoundingClientRect().top + size
-    // 1 speedMultipler = 1 square per second 
-    const duration = ((Math.sqrt(Math.pow(((fromXloc - toXloc) / size), 2) + Math.pow(((fromYloc - toYloc) / size), 2))) * (1 / speedMultiplier)) * 250
-    const child = initialDiv.firstChild
-    let error;
-    
-    if(child) {
-        document.querySelectorAll(".highlighted").forEach(square => {
-            square.classList.remove("highlighted")
-        });
-        document.querySelector(`[notation=${fromNotation}`).classList.add("highlighted")
-        document.querySelector(`[notation=${toNotation}`).classList.add("highlighted")
-        child.animate([
-            { transform: 'translate(0px, 0px)' },
-            { transform: `translate(${toXloc - fromXloc}px, ${toYloc - fromYloc}px)` }
-        ], {
-            duration: duration,
-            iterations: 1
-        })
-    } else {
-        error = new Error(`Nothing to animate from ${fromNotation}`)
-    }
 
-    return new Promise((resolve, reject) => {
-        if(error) {
-            reject(error)
-        }
-        setTimeout(() => {
-            resolve()
-        }, duration)
-    })
-}
-
-export function renderBoard(game, whiteSide = true, history = false) {
+export function renderBoard(game, whiteSide = white, history = false) {
     const boardDiv = document.querySelector("#board")
     boardDiv.innerHTML = ""
     const board = whiteSide ? [...game.board].reverse() : game.board
@@ -157,6 +98,66 @@ export function renderBoard(game, whiteSide = true, history = false) {
     return document.querySelector("#board img");
 }
 
+function animateGame(game, moves, white, timeBetweenMoves) {
+    let totalMoves = 0
+    moves.map(move => {
+        totalMoves++
+        setTimeout(() => {
+            animateMove(game, white, move[0], move[1], move[2], move[3])
+        }, timeBetweenMoves * totalMoves)
+    })
+}
+
+const moves = [
+    [1, 3, 3, 3],
+    [6, 4, 4, 4],
+    [0, 4, 2, 2],
+    [4, 4, 3, 3],
+    [2, 2, 3, 2],
+    [7, 1, 5, 2],
+    [0, 6, 2, 5],
+    [7, 4, 5, 4],
+    [1, 2, 2, 2],
+    [5, 4, 3, 2],
+    [1, 4, 2, 4],
+    [3, 2, 5, 4],
+    [0, 1, 2, 0],
+    [3, 3, 2, 4],
+    [0, 5, 3, 2],
+    [2, 4, 1, 4],
+    [0, 3, 0, 4],
+    [5, 4, 7, 4],
+    [2, 0, 4, 1],
+    [7, 0, 7, 1],
+    [0, 2, 3, 5],
+    [6, 0, 5, 0],
+    [3, 5, 6, 2],
+    [7, 3, 6, 4],
+    [6, 2, 7, 1],
+    [5, 2, 7, 1],
+    [4, 1, 3, 3],
+    [6, 1, 4, 1],
+    [3, 2, 4, 3],
+    [6, 4, 5, 3],
+    [4, 3, 2, 1],
+    [7, 1, 5, 2],
+    [0, 0, 0, 2],
+    [5, 2, 3 ,3],
+    [2, 2, 3, 3],
+    [7, 2, 6, 1],
+    [1, 0, 3, 0],
+    [4, 1, 3, 0],
+    [2, 1, 3, 0],
+    [6, 1, 2, 5],
+    [1, 6, 2, 5],
+    [7, 6, 5, 5],
+    [2, 5, 3, 5],
+    [5, 5, 3, 6],
+    [0, 7, 0, 6],
+    [3, 6, 1, 7],
+    [0, 6, 4, 6],
+    [1, 7, 2, 5]
+]
 
 export function loadGame(game, white) {
     for(let i = 0; i < 8; i++) {
@@ -184,11 +185,10 @@ export function loadGame(game, white) {
     createPiece("queen", false, 7, 4)
     createPiece("king", true, 0, 3)
     
-    createPiece("pawn", false, 4, 4)
     renderBoard(game, white)
     game.history.push(cloneGame(game))
-    animateMove(game, 1, 3, 3, 3, white)
-    setTimeout(() => animateMove(game, 4, 4, 3, 3, white), 200)
+
+    animateGame(game, moves, white, 1000)
 }
 
 export default chessGame
