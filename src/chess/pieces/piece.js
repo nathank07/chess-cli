@@ -1,4 +1,4 @@
-import chessGame, { convertNotationtoLocation } from "../board.js"
+import chessGame, { convertLocationToNotation, convertNotationtoLocation } from "../board.js"
 import King from "./king.js"
 import Queen from "./queen.js"
 import Rook from "./rook.js"
@@ -55,6 +55,7 @@ export function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) {
             if(game.whitesMove === isWhite && moves.some(pos => pos[0] === toX && pos[1] === toY)) {
                 const index = moves.findIndex(pos => pos[0] === toX && pos[1] === toY);
                 game.history.push(cloneGame(game))
+                game.lastMove = [convertLocationToNotation(xPos, yPos), convertLocationToNotation(toX, toY)]
                 // Remove any en passant remnants
                 for(let i = 0; i < 8; i++) {
                     if(game.board[2][i] && game.board[2][i].name === "passant") {
@@ -88,6 +89,7 @@ export function cloneGame(game) {
     return {
         board: cloneBoard(game.board),
         whitesMove: game.whitesMove,
+        lastMove: game.lastMove,
         whiteState: {
             shortCastle: game.whiteState.shortCastle,
             longCastle: game.whiteState.longCastle,

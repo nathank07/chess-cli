@@ -12,14 +12,8 @@ const chessGame = {
         shortCastle: true,
         longCastle: true,
     },
-    history: []
-}
-
-export function firstPosition(chessGame) {
-    if(chessGame.previousPosition === null) {
-        return chessGame
-    }
-    return firstPosition(chessGame.previousPosition)
+    history: [],
+    lastMove: null
 }
 
 export function convertLocationToNotation(xPos, yPos) {
@@ -89,6 +83,7 @@ export function renderBoard(game, whiteSide = true, history = false) {
     boardDiv.innerHTML = ""
     const board = whiteSide ? [...game.board].reverse() : game.board
     const increment = whiteSide ? -1 : 1
+    const highlighted = game.lastMove !== null
     let darkSquare = true
     let x = whiteSide ? 7 : 0
     board.forEach(row => {
@@ -96,7 +91,8 @@ export function renderBoard(game, whiteSide = true, history = false) {
         const newRow = whiteSide ? [...row].reverse() : row
         newRow.forEach(square => {
             const div = document.createElement('div')
-            div.setAttribute("notation", convertLocationToNotation(x, y))
+            const notation = convertLocationToNotation(x, y)
+            div.setAttribute("notation", notation)
             div.classList.add("square")
             darkSquare = !darkSquare
             if(darkSquare) { div.classList.add('darkSquare') }
@@ -113,6 +109,10 @@ export function renderBoard(game, whiteSide = true, history = false) {
         darkSquare = !darkSquare
         x += increment
     });
+    if(highlighted) {
+        document.querySelector(`[notation=${game.lastMove[0]}`).classList.add("highlighted")
+        document.querySelector(`[notation=${game.lastMove[1]}`).classList.add("highlighted")
+    }
     markHoveredPieces()
     return document.querySelector("#board img");
 }

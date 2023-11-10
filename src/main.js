@@ -24,5 +24,12 @@ document.addEventListener('keydown', (e) => {
             renderBoard(chessGame, whiteSide)
         }
     }
-    console.log(history)
+    if(e.code === "ArrowUp") {
+        history = length - 1
+        renderBoard(chessGame.history[length - history], whiteSide, true)
+    }
+    if(e.code === "ArrowDown") {
+        history = 0
+        renderBoard(chessGame, whiteSide)
+    }
 })
