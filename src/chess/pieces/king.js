@@ -29,7 +29,7 @@ export default function King( { isWhite, xPos, yPos, game } ) {
                 }
             }
             if(canCastle) {
-                if(canCastle.short) {
+                if(canCastle.short && game.board[kingRow][1] === null && game.board[kingRow][0] === null) {
                     moves.push([kingRow, 1, () => {
                         castleState.longCastle = false
                         castleState.shortCastle = false
@@ -37,7 +37,7 @@ export default function King( { isWhite, xPos, yPos, game } ) {
                         createPiece("rook", isWhite, kingRow, 2, game)
                     }])
                 }
-                if(canCastle.long) {
+                if(canCastle.long && game.board[kingRow][5] === null && game.board[kingRow][7] === null) {
                     moves.push([kingRow, 5, () => {
                         castleState.longCastle = false
                         castleState.shortCastle = false
@@ -68,7 +68,6 @@ export default function King( { isWhite, xPos, yPos, game } ) {
 function checkCastleLegality(isWhite, game) {
     const castleState = isWhite ? game.whiteState : game.blackState
     const kingRow = isWhite ? 0 : 7
-    let kingSquare
     if(castleState === undefined || !castleState.shortCastle && !castleState.longCastle) {
         return false
     }
