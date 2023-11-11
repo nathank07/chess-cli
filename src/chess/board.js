@@ -2,16 +2,16 @@ import createPiece, { cloneGame, makeDraggable } from "./pieces/piece.js"
 import isWhite from "../main.js"
 import animateMove from "./animations.js"
 
-const chessGame = {
+let chessGame = {
     board: [...Array(8)].map(e => Array(8).fill(null)),
     whitesMove: true,
     whiteState: {
-        shortCastle: true,
-        longCastle: true,
+        shortCastle: false,
+        longCastle: false,
     },
     blackState: {
-        shortCastle: true,
-        longCastle: true,
+        shortCastle: false,
+        longCastle: false,
     },
     history: [],
     lastMove: null
@@ -28,7 +28,7 @@ export function convertLocationToNotation(xPos, yPos) {
         6: "b",
         7: "a"
     }
-    return `${file[xPos]}${yPos + 1}`
+    return `${file[yPos]}${xPos + 1}`
 }
 
 export function convertNotationtoLocation(notation) {
@@ -42,7 +42,59 @@ export function convertNotationtoLocation(notation) {
         "b": 6,
         "a": 7
     }
-    return [file[notation[0]], Number(notation[1]) - 1]
+    return [Number(notation[1]) - 1, file[notation[0]]]
+}
+
+function FENtoBoard(FENstring) {
+    
+    const pieces = {
+        "p": "pawn",
+        "q": "queen",
+        "b": "bishop",
+        "n": "knight",
+        "r": "rook",
+        "k": "king"
+    }
+
+    FENstring = FENstring.split(" ")
+
+    const board = [...FENstring[0].split("/")].reverse()
+
+    board.forEach((row, i) => {
+        row = row.replace(/\d+/g, (number) => {
+            return "#".repeat(Number(number))
+        })
+        row.split("").reverse().forEach((char, j) => {
+            const isWhite = char === char.toUpperCase()
+            if(char !== "#") {
+                createPiece(pieces[char.toLowerCase()], isWhite, i, j, chessGame)
+            }
+        });
+    });
+    
+    chessGame.whitesMove = FENstring[1] === "w"
+
+    FENstring[2].split("").forEach(char => {
+        if(char === "k") {
+            chessGame.blackState.shortCastle = true
+        }
+        if(char === "q") {
+            chessGame.blackState.longCastle = true
+        }
+        if(char === "K") {
+            chessGame.whiteState.shortCastle = true
+        }
+        if(char === "Q") {
+            chessGame.whiteState.longCastle = true
+        }
+    });
+
+    if(FENstring[3] !== "-") {
+        const loc = convertNotationtoLocation(FENstring[3])
+        createPiece("passant", !chessGame.whitesMove, loc[0], loc[1], chessGame)
+    }
+
+    return chessGame
 }
 
 function markHoveredPieces() {
@@ -109,87 +161,10 @@ function animateGame(game, moves, timeBetweenMoves) {
     })
 }
 
-const moves = [
-    [1, 3, 3, 3],
-    [6, 4, 4, 4],
-    [0, 4, 2, 2],
-    [4, 4, 3, 3],
-    [2, 2, 3, 2],
-    [7, 1, 5, 2],
-    [0, 6, 2, 5],
-    [7, 4, 5, 4],
-    [1, 2, 2, 2],
-    [5, 4, 3, 2],
-    [1, 4, 2, 4],
-    [3, 2, 5, 4],
-    [0, 1, 2, 0],
-    [3, 3, 2, 4],
-    [0, 5, 3, 2],
-    [2, 4, 1, 4],
-    [0, 3, 0, 4],
-    [5, 4, 7, 4],
-    [2, 0, 4, 1],
-    [7, 0, 7, 1],
-    [0, 2, 3, 5],
-    [6, 0, 5, 0],
-    [3, 5, 6, 2],
-    [7, 3, 6, 4],
-    [6, 2, 7, 1],
-    [5, 2, 7, 1],
-    [4, 1, 3, 3],
-    [6, 1, 4, 1],
-    [3, 2, 4, 3],
-    [6, 4, 5, 3],
-    [4, 3, 2, 1],
-    [7, 1, 5, 2],
-    [0, 0, 0, 2],
-    [5, 2, 3 ,3],
-    [2, 2, 3, 3],
-    [7, 2, 6, 1],
-    [1, 0, 3, 0],
-    [4, 1, 3, 0],
-    [2, 1, 3, 0],
-    [6, 1, 2, 5],
-    [1, 6, 2, 5],
-    [7, 6, 5, 5],
-    [2, 5, 3, 5],
-    [5, 5, 3, 6],
-    [0, 7, 0, 6],
-    [3, 6, 1, 7],
-    [0, 6, 4, 6],
-    [1, 7, 2, 5]
-]
-
 export function loadGame(game) {
-    for(let i = 0; i < 8; i++) {
-        createPiece("pawn", true, 1, i)
-        createPiece("pawn", false, 6, i)
-    }
-    createPiece("rook", true, 0, 0)
-    createPiece("rook", true, 0, 7)
-    createPiece("rook", false, 7, 7)
-    createPiece("rook", false, 7, 0)
-    
-    createPiece("knight", true, 0, 1)
-    createPiece("knight", true, 0, 6)
-    createPiece("knight", false, 7, 6)
-    createPiece("knight", false, 7, 1)
-    
-    createPiece("bishop", true, 0, 2)
-    createPiece("bishop", true, 0, 5)
-    createPiece("bishop", false, 7, 5)
-    createPiece("bishop", false, 7, 2)
-    
-    
-    createPiece("queen", true, 0, 4)
-    createPiece("king", false, 7, 3)
-    createPiece("queen", false, 7, 4)
-    createPiece("king", true, 0, 3)
-    
-    renderBoard(game)
-    game.history.push(cloneGame(game))
-
-    animateGame(game, moves, 1000)
+    chessGame = FENtoBoard(game)
+    renderBoard(chessGame)
+    chessGame.history.push(cloneGame(chessGame))
 }
 
 export default chessGame

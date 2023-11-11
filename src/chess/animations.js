@@ -1,7 +1,10 @@
 import { history, resetHistory } from "../main.js"
 import { renderBoard, convertLocationToNotation } from "./board.js"
 
+// Default speed (going through history)
 const speed = 1
+// Speed when a new move is made
+const moveSpeed = 0.7
 let animating = false
 let promise = null
 
@@ -9,7 +12,7 @@ export function setPromisetoNull() {
     promise = null
 }
 
-export function animateHistory(chessGame, current, prevHistory) {
+export function animateHistory(chessGame, current, prevHistory, customSpeed = speed) {
     let game
     let begin
     let end
@@ -42,7 +45,7 @@ export function animateHistory(chessGame, current, prevHistory) {
     // Don't render animation if another board was already rendered
     if(promise === null && !animating) {
         animating = true
-        promise = [end, begin, speed, history]
+        promise = [end, begin, customSpeed, history]
         const runningPromise = [end, begin, speed, history]
         animatePiece(promise[0], promise[1], promise[2], promise[3])
             .then(() => {
@@ -72,7 +75,7 @@ export default function animateMove(game, fromX, fromY, toX, toY) {
         const end = convertLocationToNotation(toX, toY)
         promise = null 
         animating = true
-        animatePiece(start, end).then(() => {
+        animatePiece(start, end, moveSpeed).then(() => {
             renderBoard(game)
         })
         .finally(() => {

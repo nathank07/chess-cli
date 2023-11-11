@@ -2,16 +2,14 @@ import "./styles.css"
 import chessGame, { loadGame, renderBoard } from "./chess/board.js"
 import { setPromisetoNull, animateHistory } from "./chess/animations.js"
 
-let whiteSide = false
+let whiteSide = true
 let history = 0
 
-loadGame(chessGame, whiteSide)
+loadGame("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", whiteSide)
 
 document.addEventListener('keydown', (e) => {
-    console.log(e.code)
     const current = chessGame.history.length
     const prevHistory = history
-    const speed = 1
     if(e.code === "ArrowLeft") {
         history < current - 1 ? history++ : history = current - 1
     }
@@ -25,7 +23,7 @@ document.addEventListener('keydown', (e) => {
         history = 0
     } 
     if(history !== prevHistory){
-        animateHistory(chessGame, current, prevHistory, speed)
+        animateHistory(chessGame, current, prevHistory)
     }
     if(e.code === "KeyF") {
         whiteSide = !whiteSide
