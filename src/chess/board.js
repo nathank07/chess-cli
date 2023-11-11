@@ -1,6 +1,8 @@
 import createPiece, { cloneGame, makeDraggable } from "./pieces/piece.js"
 import isWhite from "../main.js"
 import animateMove from "./animations.js"
+import place from "./sounds/Move.ogg"
+import capture from "./sounds/Capture.ogg"
 
 let chessGame = {
     board: [...Array(8)].map(e => Array(8).fill(null)),
@@ -14,7 +16,13 @@ let chessGame = {
         longCastle: false,
     },
     history: [],
-    lastMove: null
+    lastMove: null,
+    lastMoveSound: null
+}
+
+const sounds = {
+    "place": place,
+    "capture": capture
 }
 
 export function convertLocationToNotation(xPos, yPos) {
@@ -115,6 +123,13 @@ export function markLegalMoves(moves) {
         const pieceDiv = document.querySelector(`[notation=${square}`)
         pieceDiv.classList.add("possible")
     });
+}
+
+export function playSound(game) {
+    if(game.lastMoveSound) {
+        const sound = new Audio(sounds[game.lastMoveSound])
+        sound.play()
+    }
 }
 
 export function renderBoard(game, history = false) {

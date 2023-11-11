@@ -1,5 +1,6 @@
 import { history, resetHistory } from "../main.js"
-import { renderBoard, convertLocationToNotation } from "./board.js"
+import { renderBoard, playSound, convertLocationToNotation } from "./board.js"
+
 
 // Default speed (going through history)
 const speed = 1
@@ -20,7 +21,7 @@ export function animateHistory(chessGame, current, prevHistory, customSpeed = sp
     // If the move isn't one move ahead/behind
     if(Math.abs(prevHistory - history) !== 1) {
         if(history === 0) {
-            renderBoard(chessGame)
+            renderBoard(chessGame, false)
             promise = null
         }
         if(history === current - 1) {
@@ -51,6 +52,9 @@ export function animateHistory(chessGame, current, prevHistory, customSpeed = sp
             .then(() => {
                 if(promise !== null && runningPromise.every((value, index) => value === promise[index])) {
                     renderBoard(game, history !== 0)
+                    if(history < prevHistory) {
+                        playSound(game)
+                    }
                 }
             })
             .catch((e) => {
@@ -62,6 +66,9 @@ export function animateHistory(chessGame, current, prevHistory, customSpeed = sp
             })
     } else {
         renderBoard(game, history !== 0)
+        if(history < prevHistory) {
+            playSound(game)
+        }
         promise = null
     }
 }
@@ -77,6 +84,7 @@ export default function animateMove(game, fromX, fromY, toX, toY) {
         animating = true
         animatePiece(start, end, moveSpeed).then(() => {
             renderBoard(game)
+            playSound(game)
         })
         .finally(() => {
             promise = null

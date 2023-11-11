@@ -1,4 +1,4 @@
-import chessGame, { convertLocationToNotation, convertNotationtoLocation, markLegalMoves } from "../board.js"
+import chessGame, { convertLocationToNotation, convertNotationtoLocation, markLegalMoves, playSound } from "../board.js"
 import King from "./king.js"
 import Queen from "./queen.js"
 import Rook from "./rook.js"
@@ -55,6 +55,7 @@ export function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) {
                 const index = moves.findIndex(pos => pos[0] === toX && pos[1] === toY);
                 game.history.push(cloneGame(game))
                 game.lastMove = [convertLocationToNotation(xPos, yPos), convertLocationToNotation(toX, toY)]
+                game.lastMoveSound = game.board[toX][toY] === null ? "place" : "capture"
                 // Remove any en passant remnants
                 for(let i = 0; i < 8; i++) {
                     if(game.board[2][i] && game.board[2][i].name === "passant") {
@@ -76,7 +77,7 @@ export function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) {
                 if(moves[index].length > 2) {
                     moves[index][2]()
                 }
-                return true;
+                return true
             }
             return false
         }
@@ -89,6 +90,7 @@ export function cloneGame(game) {
         board: cloneBoard(game.board),
         whitesMove: game.whitesMove,
         lastMove: game.lastMove,
+        lastMoveSound: game.lastMoveSound,
         whiteState: {
             shortCastle: game.whiteState.shortCastle,
             longCastle: game.whiteState.longCastle,
@@ -139,8 +141,10 @@ export function makeDraggable(square, svg, renderBoard){
             svg.style.pointerEvents = "auto"
             const move = selectSquare()
             if(move && event.buttons === 0) {
-                square.move(move[0], move[1])
-            }
+                if(square.move(move[0], move[1])) {
+                    playSound(square.game)
+                }
+            } 
             renderBoard(square.game)
         }
     })
