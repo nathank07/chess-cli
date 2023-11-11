@@ -109,7 +109,13 @@ function markHoveredPieces() {
     });
 }
 
-
+export function markLegalMoves(moves) {
+    moves.forEach(move => {
+        const square = convertLocationToNotation(move[0], move[1])
+        const pieceDiv = document.querySelector(`[notation=${square}`)
+        pieceDiv.classList.add("possible")
+    });
+}
 
 export function renderBoard(game, history = false) {
     const whiteSide = isWhite()

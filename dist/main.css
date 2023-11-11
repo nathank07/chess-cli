@@ -6,7 +6,8 @@
 	--light-square: #F0D9B5;
 	--dark-square: #B58863;
 	--highlight: rgba(255, 240, 0, 0.25);
-	--board-size: 600px
+	--board-size: 600px;
+	--possible: rgba(0, 0, 0, 0.2)
 }
 
 *{
@@ -46,6 +47,13 @@ body {
 .square > img {
 	width: 100%;
 	height: 100%;
+}
+
+.darkSquare.possible {
+	background: linear-gradient(var(--possible), var(--possible)), var(--dark-square);
+}
+.square.possible {
+	background: linear-gradient(var(--possible), var(--possible)), var(--light-square);
 }
 
 #board-container .promotion {

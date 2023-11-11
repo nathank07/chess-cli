@@ -1,4 +1,4 @@
-import chessGame, { convertLocationToNotation, convertNotationtoLocation } from "../board.js"
+import chessGame, { convertLocationToNotation, convertNotationtoLocation, markLegalMoves } from "../board.js"
 import King from "./king.js"
 import Queen from "./queen.js"
 import Rook from "./rook.js"
@@ -104,7 +104,9 @@ export function makeDraggable(square, svg, renderBoard){
     let size = svg.offsetWidth
     svg.addEventListener('mousedown', (e) => {
         e.preventDefault()
-        if(e.buttons === 1) { 
+        if(e.buttons === 1) {
+            const moves = filterLegal(square.xPos, square.yPos, square.isWhite, square.standardMoves(), square.game.board)
+            markLegalMoves(moves) 
             // Set size here everytime in case user resizes window
             size = svg.offsetWidth
             // We declare the event listeners here to the document 
@@ -162,8 +164,8 @@ function displaySelectSquare() {
     board.querySelectorAll(".square").forEach(square => {
         square.style.backgroundColor = null
     });
-    if(board.querySelector(".select")) {
-        board.querySelector(".select").style.backgroundColor = "aqua"
+    if(board.querySelector(".select.possible")) {
+        board.querySelector(".select.possible").style.backgroundColor = "aqua"
     } 
 }
 
