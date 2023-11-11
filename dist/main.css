@@ -6,6 +6,7 @@
 	--light-square: #F0D9B5;
 	--dark-square: #B58863;
 	--highlight: rgba(255, 240, 0, 0.25);
+	--board-size: 600px
 }
 
 *{
@@ -15,9 +16,12 @@ body {
     background-color: black;
 }
 
-.b {
+#board-container{
     display: grid;
     grid-template-columns: 1fr 9fr;
+	aspect-ratio: 1 / 1;
+	width: var(--board-size);
+	height: var(--board-size);
 }
 
 #board {
@@ -26,7 +30,7 @@ body {
 	aspect-ratio: 1 / 1;
 	background-color: var(--light-square);
 	position: relative;
-	width: 600px;
+	width: var(--board-size);
 }
 
 #board .darkSquare{
@@ -42,6 +46,38 @@ body {
 .square > img {
 	width: 100%;
 	height: 100%;
+}
+
+#board-container .promotion {
+	position: absolute;
+	width: var(--board-size);
+	height: var(--board-size);
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	background-color: rgba(0, 0, 0, 0.5);
+}
+
+#board-container .promotion>div {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#board-container .promotion>div:hover {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: rgba(0, 0, 0, 0.25);
+	cursor: pointer;
+}
+
+#board-container .promotion>div>img {
+	width: 50%;
+	height: 50%;
 }
 
 .darkSquare.highlighted {

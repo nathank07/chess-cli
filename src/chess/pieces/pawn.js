@@ -1,4 +1,14 @@
+import blackQueen from '../cburnett/bQ.svg'
+import whiteQueen from '../cburnett/wQ.svg'
+import blackRook from '../cburnett/bR.svg' 
+import whiteRook from '../cburnett/wR.svg' 
+import blackBishop from '../cburnett/bB.svg' 
+import whiteBishop from '../cburnett/wB.svg' 
+import blackKnight from '../cburnett/bN.svg' 
+import whiteKnight from '../cburnett/wN.svg' 
+
 import createPiece, { Piece, outOfBounds } from "./piece.js"
+import { renderBoard } from '../board.js'
 
 export default function Pawn( { isWhite, xPos, yPos, game } ) {
     const piece = Piece({
@@ -23,6 +33,16 @@ export default function Pawn( { isWhite, xPos, yPos, game } ) {
                         moves.push([x, y, () => {
                             game.board[x - direction][y] = null
                         }])
+                        continue
+                    }
+                    if(x === 0 || x === 7) {
+                        moves.push([x, y, async () => {
+                            //promotion logic
+                            const piece = await promoteMenu(isWhite)
+                            createPiece(piece, isWhite, x, y, game)
+                            renderBoard(game)
+                        }])
+                        continue
                     }
                     moves.push([x, y])
                 } 
@@ -34,6 +54,15 @@ export default function Pawn( { isWhite, xPos, yPos, game } ) {
                             createPiece("passant", isWhite, xPos + direction, y, game);
                         }]) 
                     }
+                    if(x === 0 || x === 7) {
+                        moves.push([x, y, async () => {
+                            //promotion logic
+                            const piece = await promoteMenu(isWhite)
+                            createPiece(piece, isWhite, x, y, game)
+                            renderBoard(game)
+                        }])
+                        continue
+                    }
                     moves.push([x, y])
                 }
 
@@ -42,4 +71,33 @@ export default function Pawn( { isWhite, xPos, yPos, game } ) {
         },
     })
     return piece;
+}
+
+async function promoteMenu(isWhite) {
+    return new Promise(resolve => {
+        const board = document.querySelector("#board-container")
+        const backdrop = document.createElement("div")
+        const pieces = [
+            [isWhite ? whiteQueen : blackQueen, "queen"],
+            [isWhite ? whiteKnight : blackKnight, "knight"],
+            [isWhite ? whiteBishop : blackBishop, "bishop"],
+            [isWhite ? whiteRook : blackRook, "rook"]
+        ]
+        backdrop.classList.add("promotion")
+
+        pieces.forEach(piece => {
+            const divParent = document.createElement("div")
+            const img = document.createElement("img")
+            img.src = piece[0]
+            divParent.appendChild(img)
+            divParent.setAttribute("value", piece[1])
+            divParent.addEventListener("click", () => {
+                const choice = divParent.getAttribute("value")
+                resolve(choice)
+                board.removeChild(backdrop)
+            })
+            backdrop.appendChild(divParent)
+        });
+        board.appendChild(backdrop)
+    })
 }
