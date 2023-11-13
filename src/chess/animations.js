@@ -48,13 +48,13 @@ export function animateHistory(chessGame, current, prevHistory, customSpeed = sp
         animating = true
         promise = [end, begin, customSpeed, history]
         const runningPromise = [end, begin, speed, history]
+        if(history < prevHistory) {
+            playSound(game)
+        }
         animatePiece(promise[0], promise[1], promise[2], promise[3])
             .then(() => {
                 if(promise !== null && runningPromise.every((value, index) => value === promise[index])) {
                     renderBoard(game, history !== 0)
-                    if(history < prevHistory) {
-                        playSound(game)
-                    }
                 }
             })
             .catch((e) => {
