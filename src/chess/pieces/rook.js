@@ -21,7 +21,7 @@ export default function Rook( { isWhite, xPos, yPos, game } ) {
                 let x = xPos + dx;
                 let y = yPos + dy;
                 while (!outOfBounds(x, y)) {
-                    if (game.board[x][y] === null || piece.canCapture(game.board[x][y])) {
+                    if (game.board[x][y] === null || piece.canCapture(game.board[x][y]) || game.board[x][y].name === "passant") {
                         moves.push([x, y, () => {
                             if(xPos === 0 && yPos === 0) { game.whiteState.shortCastle = false }
                             if(xPos === 0 && yPos === 7) { game.whiteState.longCastle = false }
