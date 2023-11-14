@@ -5,7 +5,7 @@ import { renderBoard, playSound, convertLocationToNotation } from "./board.js"
 // Default speed (going through history)
 const speed = 1
 // Speed when a new move is made
-const moveSpeed = 0.7
+const moveSpeed = 0.85
 let animating = false
 let promise = null
 
@@ -77,14 +77,13 @@ export default function animateMove(game, fromX, fromY, toX, toY) {
     if(game.board[fromX][fromY] && game.board[fromX][fromY].move(toX, toY)) {
         // If user is behind then show the current game
         resetHistory()
-        
+
         const start = convertLocationToNotation(fromX, fromY)
         const end = convertLocationToNotation(toX, toY)
         promise = null 
         animating = true
         animatePiece(start, end, moveSpeed).then(() => {
             renderBoard(game)
-            playSound(game)
         })
         .finally(() => {
             promise = null

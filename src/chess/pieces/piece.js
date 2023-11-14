@@ -17,6 +17,7 @@ import blackKnight from '../cburnett/bN.svg'
 import whiteKnight from '../cburnett/wN.svg' 
 import blackPawn from '../cburnett/bP.svg' 
 import whitePawn from '../cburnett/wP.svg' 
+import animateMove from "../animations.js"
 
 const blackPieces = {
     "pawn": blackPawn,
@@ -161,8 +162,20 @@ export function makeDraggable(square, svg, renderBoard){
             document.removeEventListener('mousemove', mouseMove)
             svg.style.pointerEvents = "auto"
             const move = selectSquare()
+            const originalPos = [square.xPos, square.yPos]
             if(move && event.buttons === 0) {
-                if(square.move(move[0], move[1])) {
+                if(event.type !== "click" && square.move(move[0], move[1])) {
+                    playSound(square.game)
+                    renderBoard(square.game)
+                } 
+                if(event.type === "click") {
+                    // Clear renders board and won't show animation
+                    document.removeEventListener('click', clear)
+                    // Remove indicators as they're no longer relevant
+                    document.querySelectorAll('.possible').forEach(square => {
+                        square.classList.remove('possible')
+                    });
+                    animateMove(square.game, originalPos[0], originalPos[1], move[0], move[1])
                     playSound(square.game)
                 }
             }
@@ -171,9 +184,7 @@ export function makeDraggable(square, svg, renderBoard){
                 if(alreadyHighlighted) {
                     clear(e)
                 }
-            } else {
-                renderBoard(square.game)
-            } 
+            }
         }
     })
 } 
