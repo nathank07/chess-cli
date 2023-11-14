@@ -163,12 +163,14 @@ export function makeDraggable(square, svg, renderBoard){
             svg.style.pointerEvents = "auto"
             const move = selectSquare()
             const originalPos = [square.xPos, square.yPos]
+            let animating = false
             if(move && event.buttons === 0) {
                 if(event.type !== "click" && square.move(move[0], move[1])) {
                     playSound(square.game)
                     renderBoard(square.game)
                 } 
                 if(event.type === "click") {
+                    animating = true
                     // Clear renders board and won't show animation
                     document.removeEventListener('click', clear)
                     // Remove indicators as they're no longer relevant
@@ -183,6 +185,10 @@ export function makeDraggable(square, svg, renderBoard){
                 svg.style.position = null
                 if(alreadyHighlighted) {
                     clear(e)
+                }
+            } else {
+                if(!animating){ 
+                    renderBoard(square.game)
                 }
             }
         }
