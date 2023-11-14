@@ -117,11 +117,12 @@ function markHoveredPieces() {
     });
 }
 
-export function markLegalMoves(moves) {
+export function markLegalMoves(moves, event) {
     moves.forEach(move => {
         const square = convertLocationToNotation(move[0], move[1])
-        const pieceDiv = document.querySelector(`[notation=${square}`)
-        pieceDiv.classList.add("possible")
+        const squareDiv = document.querySelector(`[notation=${square}`)
+        squareDiv.addEventListener('click', event)
+        squareDiv.classList.add("possible")
     });
 }
 
@@ -155,7 +156,11 @@ export function renderBoard(game, history = false) {
             if(pieceSvg) {
                 const svg = document.createElement('img')
                 svg.src = pieceSvg
-                !history ? makeDraggable(square, svg, renderBoard) : ""
+                if(!history) {
+                    if(square.isWhite === game.whitesMove) {
+                        makeDraggable(square, svg, renderBoard)
+                    }
+                }
                 div.appendChild(svg)
             }
             boardDiv.appendChild(div)

@@ -1,4 +1,5 @@
 import "./styles.css"
+import "./chess/cburnett/move.svg"
 import chessGame, { loadGame, renderBoard } from "./chess/board.js"
 import { setPromisetoNull, animateHistory } from "./chess/animations.js"
 

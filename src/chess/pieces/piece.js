@@ -56,6 +56,9 @@ export function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) {
                 game.history.push(cloneGame(game))
                 game.lastMove = [convertLocationToNotation(xPos, yPos), convertLocationToNotation(toX, toY)]
                 game.lastMoveSound = game.board[toX][toY] === null ? "place" : "capture"
+                if(game.board[toX][toY] && name !== "pawn" && game.board[toX][toY].name === "passant") {
+                    game.lastMoveSound = "place"
+                }
                 // Remove any en passant remnants
                 for(let i = 0; i < 8; i++) {
                     if(game.board[2][i] && game.board[2][i].name === "passant") {
@@ -103,12 +106,21 @@ export function cloneGame(game) {
 }
 
 export function makeDraggable(square, svg, renderBoard){
-    let size = svg.offsetWidth
     svg.addEventListener('mousedown', (e) => {
         e.preventDefault()
+
+        const alreadyHighlighted = svg.parentNode.classList.contains("highlighted")
+
+        // render board and set svg (since svg changes when you render board) so it resets users selection if there is one
+        renderBoard(square.game)
+        svg = document.querySelector(`[notation=${convertLocationToNotation(square.xPos, square.yPos)}`).lastChild
+
+        let size = svg.offsetWidth
+        const initialSquare = svg.parentNode
+        let outsideInitialSquare = false;
         if(e.buttons === 1) {
             const moves = filterLegal(square.xPos, square.yPos, square.isWhite, square.standardMoves(), square.game.board)
-            markLegalMoves(moves) 
+            markLegalMoves(moves, mouseUp)
             // Set size here everytime in case user resizes window
             size = svg.offsetWidth
             // We declare the event listeners here to the document 
@@ -116,8 +128,17 @@ export function makeDraggable(square, svg, renderBoard){
             document.addEventListener('mousedown', mouseDown) 
             document.addEventListener('mousemove', mouseMove)
             document.addEventListener('mouseup', mouseUp)
+            document.addEventListener('click', clear)
             moveToCursor(e, svg, size)
-            displaySelectSquare()
+        }
+        // Clears user selection if they click off a valid move
+        function clear(event) {
+            event.preventDefault()
+            document.removeEventListener('mousedown', mouseDown) 
+            document.removeEventListener('mouseup', mouseUp)
+            document.removeEventListener('mousemove', mouseMove)
+            document.removeEventListener('click', clear)
+            renderBoard(square.game)
         }
         function mouseDown(event) {
             // This is done so users can cancel their moves with any button
@@ -130,12 +151,13 @@ export function makeDraggable(square, svg, renderBoard){
             }
         }
         function mouseMove(event) {
+            if(document.querySelector("#board .square.select") !== initialSquare) {
+                outsideInitialSquare = true
+            }
             moveToCursor(event, svg, size)
-            displaySelectSquare(square.game)
         }
         function mouseUp(event) {
             event.preventDefault()
-            document.removeEventListener('mousedown', mouseDown) 
             document.removeEventListener('mouseup', mouseUp)
             document.removeEventListener('mousemove', mouseMove)
             svg.style.pointerEvents = "auto"
@@ -144,8 +166,15 @@ export function makeDraggable(square, svg, renderBoard){
                 if(square.move(move[0], move[1])) {
                     playSound(square.game)
                 }
+            }
+            if(!outsideInitialSquare && event.type !== "click") {
+                svg.style.position = null
+                if(alreadyHighlighted) {
+                    clear(e)
+                }
+            } else {
+                renderBoard(square.game)
             } 
-            renderBoard(square.game)
         }
     })
 } 
@@ -161,16 +190,7 @@ function moveToCursor(event, svg, size) {
     const y = event.clientY - (size / 2)
     svg.style.left = `${x}px`
     svg.style.top = `${y}px`
-}
-
-function displaySelectSquare() {
-    const board = document.querySelector("#board")
-    board.querySelectorAll(".square").forEach(square => {
-        square.style.backgroundColor = null
-    });
-    if(board.querySelector(".select.possible")) {
-        board.querySelector(".select.possible").style.backgroundColor = "aqua"
-    } 
+    svg.parentNode.classList.add('highlighted')
 }
 
 function selectSquare() {
