@@ -96,7 +96,7 @@ export default function animateMove(game, fromX, fromY, toX, toY) {
     }
 }
 
-function animatePiece(fromNotation, toNotation, speedMultiplier = speed) {
+export function animatePiece(fromNotation, toNotation, speedMultiplier = speed) {
     const initialDiv = document.querySelector(`[notation=${fromNotation}]`)
     const destination = document.querySelector(`[notation=${toNotation}]`)
     const size = initialDiv.offsetWidth / 2

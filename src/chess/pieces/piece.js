@@ -110,7 +110,6 @@ export function makeDraggable(square, svg, renderBoard){
         e.preventDefault()
 
         const alreadyHighlighted = svg.parentNode.classList.contains("highlighted")
-
         // render board and set svg (since svg changes when you render board) so it resets users selection if there is one
         renderBoard(square.game)
         svg = document.querySelector(`[notation=${convertLocationToNotation(square.xPos, square.yPos)}`).lastChild

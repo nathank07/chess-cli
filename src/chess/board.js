@@ -1,6 +1,6 @@
-import createPiece, { cloneGame, makeDraggable } from "./pieces/piece.js"
+import createPiece, { cloneBoard, cloneGame, makeDraggable } from "./pieces/piece.js"
 import isWhite from "../main.js"
-import animateMove from "./animations.js"
+import animateMove, { animatePiece } from "./animations.js"
 import place from "./sounds/Move.ogg"
 import capture from "./sounds/Capture.ogg"
 
@@ -115,6 +115,41 @@ function markHoveredPieces() {
             square.classList.remove("select")
         })
     });
+}
+
+export function undoMove(game) {
+    let animation;
+    if(game.lastMove) {
+        animation = game.lastMove
+    }
+    const oldBoard = cloneBoard(game.history[game.history.length - 1].board)
+    chessGame.board = [...Array(8)].map(e => Array(8).fill(null));
+    // We clone the board and create pieces because squares are binded to specific boards
+    oldBoard.forEach((row, x) => {
+        row.forEach((square, y) => {
+            if(square) {
+                createPiece(oldBoard[x][y].name, oldBoard[x][y].isWhite, x, y, game)
+            }
+        });
+    });
+    const oldGame = game.history[game.history.length - 1]
+    game.whiteState = oldGame.whiteState
+    game.blackState = oldGame.blackState
+    game.lastMove = oldGame.lastMove
+    game.lastMoveSound = oldGame.lastMoveSound
+    game.whitesMove = oldGame.whitesMove
+    if(game.history.length > 1) {
+        game.history.pop()
+    }
+    if(animation) {
+        animatePiece(animation[1], animation[0])
+            .then(() => {
+                renderBoard(game)
+            })
+    } else {
+        renderBoard(game)
+    }
+    return game
 }
 
 export function markLegalMoves(moves, event) {

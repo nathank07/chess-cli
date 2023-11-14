@@ -1,6 +1,6 @@
 import "./styles.css"
 import "./chess/cburnett/move.svg"
-import chessGame, { loadGame, renderBoard } from "./chess/board.js"
+import chessGame, { convertNotationtoLocation, loadGame, renderBoard, undoMove } from "./chess/board.js"
 import { setPromisetoNull, animateHistory } from "./chess/animations.js"
 
 let whiteSide = true
@@ -24,11 +24,22 @@ document.addEventListener('keydown', (e) => {
         history = 0
     } 
     if(history !== prevHistory){
-        animateHistory(chessGame, current, prevHistory)
+        const loc = convertNotationtoLocation(chessGame.lastMove[1])
+        const lastPieceMoved = chessGame.board[loc[0]][loc[1]].name
+        if(lastPieceMoved === "pawn" && (loc[0] === 0 || loc[0] === 7)) {
+            undoMove(chessGame)
+            document.querySelector('.promotion').remove()
+        } 
+        else {
+            animateHistory(chessGame, current, prevHistory)
+        }
     }
     if(e.code === "KeyF") {
         whiteSide = !whiteSide
         renderBoard(chessGame)
+    }
+    if(e.code === "KeyZ") {
+        undoMove(chessGame)
     }
 })
 
