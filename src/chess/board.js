@@ -157,7 +157,11 @@ export function markLegalMoves(moves, event) {
         const square = convertLocationToNotation(move[0], move[1])
         const squareDiv = document.querySelector(`[notation=${square}`)
         squareDiv.addEventListener('click', event)
-        squareDiv.classList.add("possible")
+        if(squareDiv.hasChildNodes()) {
+            squareDiv.classList.add("possiblepiece")
+        } else {
+            squareDiv.classList.add("possible")
+        }
     });
 }
 

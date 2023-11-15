@@ -57,6 +57,18 @@ body {
 	background-size: 150%;
 }
 
+.darkSquare.possiblepiece, .square.possiblepiece {
+	background-image: url('./chess/cburnett/movepiece.svg');
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 100%;
+}
+
+.darkSquare.possiblepiece:hover, .square.possiblepiece:hover {
+	background-image: url('./chess/cburnett/move.svg');
+	background-size: 150%;
+}
+
 
 .darkSquare.highlighted {
 	background: linear-gradient(var(--highlight), var(--highlight)), var(--dark-square);

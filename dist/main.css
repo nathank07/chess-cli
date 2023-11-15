@@ -50,13 +50,25 @@ body {
 }
 
 .darkSquare.possible, .square.possible {
-	background-image: url(4e33c9b05068cc4093ea.svg);
+	background-image: url(442b87d656904e4eba23.svg);
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: 30%;
 }
 
 .darkSquare.possible:hover, .square.possible:hover {
+	background-size: 150%;
+}
+
+.darkSquare.possiblepiece, .square.possiblepiece {
+	background-image: url(5c095d0b4a5558e548b4.svg);
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 100%;
+}
+
+.darkSquare.possiblepiece:hover, .square.possiblepiece:hover {
+	background-image: url(442b87d656904e4eba23.svg);
 	background-size: 150%;
 }
 

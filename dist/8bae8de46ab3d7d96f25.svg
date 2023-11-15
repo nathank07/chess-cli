@@ -21,13 +21,13 @@
      inkscape:pageopacity="0"
      inkscape:pagecheckerboard="1"
      showgrid="false"
-     inkscape:zoom="0.78320312"
-     inkscape:cx="-97.675811"
-     inkscape:cy="441.77556"
+     inkscape:zoom="0.39160156"
+     inkscape:cx="-105.97506"
+     inkscape:cy="681.81546"
      inkscape:window-width="1920"
-     inkscape:window-height="1043"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
+     inkscape:window-height="1011"
+     inkscape:window-x="1920"
+     inkscape:window-y="32"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg71" />
   <defs
@@ -38,10 +38,11 @@
        width="131"
        height="249.477" />
   </defs>
-  <circle
-     style="fill-opacity:0.35;fill-rule:nonzero;stroke-width:2.5"
+  <ellipse
+     style="fill-opacity:0.35;fill-rule:nonzero;stroke-width:2.49738"
      cx="250"
-     cy="250"
+     cy="249.47701"
      id="circle69"
-     r="250" />
+     rx="250"
+     ry="249.47701" />
 </svg>
