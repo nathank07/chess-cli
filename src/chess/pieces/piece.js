@@ -177,6 +177,9 @@ export function makeDraggable(square, svg, renderBoard){
                     document.querySelectorAll('.possible').forEach(square => {
                         square.classList.remove('possible')
                     });
+                    document.querySelectorAll('.possiblepiece').forEach(square => {
+                        square.classList.remove('possiblepiece')
+                    });
                     animateMove(square.game, originalPos[0], originalPos[1], move[0], move[1])
                     playSound(square.game)
                 }
