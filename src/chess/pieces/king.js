@@ -30,6 +30,7 @@ export default function King( { isWhite, xPos, yPos, game } ) {
             }
             if(canCastle) {
                 if(canCastle.short && game.board[kingRow][1] === null && game.board[kingRow][2] === null) {
+                    console.log(canCastle)
                     moves.push([kingRow, 1, () => {
                         castleState.longCastle = false
                         castleState.shortCastle = false
@@ -88,17 +89,25 @@ function checkCastleLegality(isWhite, game) {
             }   
         }
     }
-    let short = true
-    let long = true
+    let short = false
+    let long = false
     if(castleState.shortCastle) {
-        if(moves.some(move => move[0] === kingRow && move[1] === 2) 
-        || moves.some(move => move[0] === kingRow && move[1] === 1)) {
+        if(!moves.some(move => move[0] === kingRow && move[1] === 2) 
+        && !moves.some(move => move[0] === kingRow && move[1] === 1)) {
+            short = true
+        }
+        if(game.board[kingRow][0].isWhite !== isWhite || game.board[kingRow][0].name !== "rook") {
+            castleState.shortCastle = false
             short = false
         }
     }
     if(castleState.longCastle) {
-        if(moves.some(move => move[0] === kingRow && move[1] === 4) 
-        || moves.some(move => move[0] === kingRow && move[1] === 5)) {
+        if(!moves.some(move => move[0] === kingRow && move[1] === 4) 
+        && !moves.some(move => move[0] === kingRow && move[1] === 5)) {
+            long = true
+        }
+        if(game.board[kingRow][7].isWhite !== isWhite || game.board[kingRow][7].name !== "rook") {
+            castleState.longCastle = false
             long = false
         }
     }
