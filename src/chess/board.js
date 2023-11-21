@@ -3,6 +3,7 @@ import isWhite from "../main.js"
 import animateMove, { animatePiece } from "./animations.js"
 import place from "./sounds/Move.ogg"
 import capture from "./sounds/Capture.ogg"
+import check from "./sounds/Check.wav"
 
 let chessGame = {
     board: [...Array(8)].map(e => Array(8).fill(null)),
@@ -22,7 +23,8 @@ let chessGame = {
 
 const sounds = {
     "place": place,
-    "capture": capture
+    "capture": capture,
+    "check": check
 }
 
 export function convertLocationToNotation(xPos, yPos) {

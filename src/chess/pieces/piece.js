@@ -81,6 +81,12 @@ export function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) {
                 if(moves[index].length > 2) {
                     moves[index][2]()
                 }
+
+                if(inCheck(game)) {
+                    console.log("checl")
+                    game.lastMoveSound = "check"
+                }
+
                 return true
             }
             return false
@@ -239,6 +245,18 @@ function moveToCursor(event, svg, size) {
 function selectSquare() {
     const notation = document.querySelector("#board .square.select")
     return notation ? convertNotationtoLocation(notation.getAttribute("notation")) : false
+}
+
+function inCheck(game) {
+    let check = false
+    game.board.forEach((row, x) => {        
+        row.forEach((square, y) => {
+            if(game.board[x][y] && game.board[x][y].name === "king" && game.board[x][y].inCheck()) {
+                check = true
+            }
+        })
+    });
+    return check
 }
 
 function isLegal(fromX, fromY, toX, toY, isWhite, board) {
