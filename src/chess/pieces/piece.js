@@ -1,4 +1,4 @@
-import chessGame, { convertLocationToNotation, convertNotationtoLocation, markLegalMoves, playSound } from "../board.js"
+import chessGame, { convertLocationToNotation, convertNotationtoLocation, squareDivs, playSound } from "../board.js"
 import King from "./king.js"
 import Queen from "./queen.js"
 import Rook from "./rook.js"
@@ -111,16 +111,21 @@ export function makeDraggable(square, svg, renderBoard){
         e.preventDefault()
 
         const alreadyHighlighted = svg.parentNode.classList.contains("highlighted")
+
         // render board and set svg (since svg changes when you render board) so it resets users selection if there is one
         renderBoard(square.game)
         svg = document.querySelector(`[notation=${convertLocationToNotation(square.xPos, square.yPos)}`).lastChild
 
-        let size = svg.offsetWidth
+        const moves = filterLegal(square.xPos, square.yPos, square.isWhite, square.standardMoves(), square.game.board)
+        const legalSquares = squareDivs(moves)
+        const allSquares = document.querySelectorAll('#board .square')
         const initialSquare = svg.parentNode
+        
+        let size = svg.offsetWidth
         let outsideInitialSquare = false;
+
+        
         if(e.buttons === 1) {
-            const moves = filterLegal(square.xPos, square.yPos, square.isWhite, square.standardMoves(), square.game.board)
-            markLegalMoves(moves, mouseUp)
             // Set size here everytime in case user resizes window
             size = svg.offsetWidth
             // We declare the event listeners here to the document 
@@ -128,7 +133,18 @@ export function makeDraggable(square, svg, renderBoard){
             document.addEventListener('mousedown', mouseDown) 
             document.addEventListener('mousemove', mouseMove)
             document.addEventListener('mouseup', mouseUp)
-            document.addEventListener('click', clear)
+            allSquares.forEach(div => {
+                if(legalSquares.includes(div)) {
+                    if(div.hasChildNodes()) {
+                        div.classList.add("possiblepiece")
+                    } else {
+                        div.classList.add("possible")
+                    }
+                    div.addEventListener('click', click)
+                } else {
+                    div.addEventListener('click', clear)
+                }
+            });
             moveToCursor(e, svg, size)
         }
         // Clears user selection if they click off a valid move
@@ -138,6 +154,10 @@ export function makeDraggable(square, svg, renderBoard){
             document.removeEventListener('mouseup', mouseUp)
             document.removeEventListener('mousemove', mouseMove)
             document.removeEventListener('click', clear)
+            allSquares.forEach(div => {
+                div.removeEventListener('click', click)
+                div.removeEventListener('click', clear)
+            });
             renderBoard(square.game)
         }
         function mouseDown(event) {
@@ -147,6 +167,7 @@ export function makeDraggable(square, svg, renderBoard){
                 document.removeEventListener('mousedown', mouseDown) 
                 document.removeEventListener('mouseup', mouseUp)
                 document.removeEventListener('mousemove', mouseMove)
+                document.removeEventListener('click', clear)
                 renderBoard(square.game)
             }
         }
@@ -158,42 +179,45 @@ export function makeDraggable(square, svg, renderBoard){
         }
         function mouseUp(event) {
             event.preventDefault()
+            document.removeEventListener('mousedown', mouseDown) 
             document.removeEventListener('mouseup', mouseUp)
             document.removeEventListener('mousemove', mouseMove)
             svg.style.pointerEvents = "auto"
             const move = selectSquare()
-            const originalPos = [square.xPos, square.yPos]
-            let animating = false
-            if(move && event.buttons === 0) {
-                if(event.type !== "click" && square.move(move[0], move[1])) {
-                    playSound(square.game)
-                    renderBoard(square.game)
-                } 
-                if(event.type === "click") {
-                    animating = true
-                    // Clear renders board and won't show animation
-                    document.removeEventListener('click', clear)
-                    // Remove indicators as they're no longer relevant
-                    document.querySelectorAll('.possible').forEach(square => {
-                        square.classList.remove('possible')
-                    });
-                    document.querySelectorAll('.possiblepiece').forEach(square => {
-                        square.classList.remove('possiblepiece')
-                    });
-                    animateMove(square.game, originalPos[0], originalPos[1], move[0], move[1])
-                    playSound(square.game)
-                }
+            if(event.buttons === 0 && square.move(move[0], move[1])) {
+                playSound(square.game)
+                renderBoard(square.game)
             }
-            if(!outsideInitialSquare && event.type !== "click") {
+            if(!outsideInitialSquare) {
                 svg.style.position = null
                 if(alreadyHighlighted) {
                     clear(e)
                 }
             } else {
-                if(!animating){ 
-                    renderBoard(square.game)
-                }
+                clear(e)
             }
+        }
+        function click(event) {
+            event.preventDefault()
+            const move = selectSquare()
+            const originalPos = [square.xPos, square.yPos]
+            // Remove indicators as they're no longer relevant
+            document.querySelectorAll('.possible').forEach(square => {
+                square.classList.remove('possible')
+            });
+            document.querySelectorAll('.possiblepiece').forEach(square => {
+                square.classList.remove('possiblepiece')
+            });
+            animateMove(square.game, originalPos[0], originalPos[1], move[0], move[1])
+            playSound(square.game)
+            document.removeEventListener('mousedown', mouseDown) 
+            document.removeEventListener('mouseup', mouseUp)
+            document.removeEventListener('mousemove', mouseMove)
+            document.removeEventListener('click', clear)
+            allSquares.forEach(div => {
+                div.removeEventListener('click', click)
+                div.removeEventListener('click', clear)
+            });
         }
     })
 } 
