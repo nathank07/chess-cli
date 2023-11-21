@@ -169,6 +169,22 @@ export function playSound(game) {
     }
 }
 
+function addUserHighlighting(squareDiv) {
+    squareDiv.addEventListener('mousedown', (e) => {
+        if(e.button == 2) {
+            const classes = squareDiv.classList
+            classes.contains("userHighlight") ? classes.remove("userHighlight") : classes.add("userHighlight")
+        } else {
+            const board = squareDiv.parentNode
+            if(board) {
+                board.querySelectorAll(".square").forEach(div => {
+                    div.classList.remove("userHighlight")
+                });
+            }
+        }
+    })
+}
+
 export function renderBoard(game, history = false) {
     const whiteSide = isWhite()
     const boardDiv = document.querySelector("#board")
@@ -186,6 +202,7 @@ export function renderBoard(game, history = false) {
             const notation = convertLocationToNotation(x, y)
             div.setAttribute("notation", notation)
             div.classList.add("square")
+            addUserHighlighting(div)
             darkSquare = !darkSquare
             if(darkSquare) { div.classList.add('darkSquare') }
             const pieceSvg = square ? square.svg : false

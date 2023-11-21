@@ -111,10 +111,11 @@ export function makeDraggable(square, svg, renderBoard){
         e.preventDefault()
 
         const alreadyHighlighted = svg.parentNode.classList.contains("highlighted")
-
-        // render board and set svg (since svg changes when you render board) so it resets users selection if there is one
-        renderBoard(square.game)
-        svg = document.querySelector(`[notation=${convertLocationToNotation(square.xPos, square.yPos)}`).lastChild
+        if(e.buttons === 1) {
+            // render board and set svg (since svg changes when you render board) so it resets users selection if there is one
+            renderBoard(square.game)
+            svg = document.querySelector(`[notation=${convertLocationToNotation(square.xPos, square.yPos)}`).lastChild
+        }
 
         const moves = filterLegal(square.xPos, square.yPos, square.isWhite, square.standardMoves(), square.game.board)
         const legalSquares = squareDivs(moves)
@@ -179,7 +180,6 @@ export function makeDraggable(square, svg, renderBoard){
         }
         function mouseUp(event) {
             event.preventDefault()
-            document.removeEventListener('mousedown', mouseDown) 
             document.removeEventListener('mouseup', mouseUp)
             document.removeEventListener('mousemove', mouseMove)
             svg.style.pointerEvents = "auto"

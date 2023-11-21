@@ -4,7 +4,8 @@
 	--dark-square: #B58863;
 	--highlight: rgba(255, 240, 0, 0.25);
 	--board-size: 600px;
-	--possible: rgba(0, 0, 0, 0.2)
+	--possible: rgba(0, 0, 0, 0.2);
+    --user-highlight: rgba(255, 0, 0, 0.25);
 }
 
 *{
@@ -77,6 +78,13 @@ body {
 }
 .highlighted {
 	background: linear-gradient(var(--highlight), var(--highlight)), var(--light-square);
+}
+
+.darkSquare.userHighlight {
+	background: linear-gradient(var(--user-highlight), var(--user-highlight)), var(--dark-square);
+}
+.userHighlight {
+	background: linear-gradient(var(--user-highlight), var(--user-highlight)), var(--light-square);
 }
 
 #board-container .promotion {
