@@ -266,7 +266,7 @@ eval("module.exports = __webpack_require__.p + \"4c0d6b27175ec63ec634.ogg\";\n\n
   \************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-eval("module.exports = __webpack_require__.p + \"ed408840da2392d5a97f.wav\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/sounds/Check.wav?");
+eval("module.exports = __webpack_require__.p + \"08e1bc366728c6a042c1.wav\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/sounds/Check.wav?");
 
 /***/ }),
 
