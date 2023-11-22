@@ -50,7 +50,7 @@ body {
 	height: 100%;
 }
 
-.darkSquare.possible, .square.possible {
+.square.darkSquare.possible, .square.possible {
 	background-image: url(442b87d656904e4eba23.svg);
 	background-repeat: no-repeat;
 	background-position: center;
@@ -120,6 +120,14 @@ body {
 #board-container .promotion>div>img {
 	width: 50%;
 	height: 50%;
+}
+
+#board-container #svg-canvas {
+    position: absolute;
+    width: var(--board-size);
+    height: var(--board-size);
+    pointer-events: none;
+    z-index: 1;
 }
 
 .vertical, .horizontal {

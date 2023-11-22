@@ -26,6 +26,7 @@ document.addEventListener('keydown', (e) => {
     if(history !== prevHistory){
         const loc = convertNotationtoLocation(chessGame.lastMove[1])
         const lastPieceMoved = chessGame.board[loc[0]][loc[1]].name
+        chessGame.drawnArrows = []
         if(lastPieceMoved === "pawn" && (loc[0] === 0 || loc[0] === 7)) {
             undoMove(chessGame)
             document.querySelector('.promotion').remove()

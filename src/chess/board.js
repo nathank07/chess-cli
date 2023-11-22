@@ -18,7 +18,8 @@ let chessGame = {
     },
     history: [],
     lastMove: null,
-    lastMoveSound: null
+    lastMoveSound: null,
+    drawnArrows: [],
 }
 
 const sounds = {
@@ -171,18 +172,112 @@ export function playSound(game) {
     }
 }
 
-function addUserHighlighting(squareDiv) {
+function createSVGCanvas(boardDiv) {
+    const arrowSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    arrowSvg.id = "svg-canvas"
+    arrowSvg.setAttribute('height', boardDiv.offsetHeight);
+    arrowSvg.setAttribute('width', boardDiv.offsetWidth);
+    arrowSvg.setAttribute('viewBox', `0 0 ${boardDiv.offsetWidth} ${boardDiv.offsetHeight}`);
+    boardDiv.parentNode.appendChild(arrowSvg);
+    return arrowSvg;
+}
+
+// Modified version of https://github.com/frogcat/canvas-arrow
+
+function drawArrow(fromX, fromY, toX, toY, canvas = document.querySelector("#svg-canvas"), skinny = false) {
+    const size = canvas.viewBox.baseVal.width;
+    const width = (size / 80) * (skinny ? 0.75 : 1);
+    const arrowHeadWidth = (size / 32) * (skinny ? 0.75 : 1);
+    const arrowHeadHeight = (size / -21.5) * (skinny ? 0.75 : 1);
+    const controlPoints = [0, width, arrowHeadHeight, width, arrowHeadHeight, arrowHeadWidth];
+    var dx = toX - fromX;
+    var dy = toY - fromY;
+    var len = Math.sqrt(dx * dx + dy * dy);
+    var sin = dy / len;
+    var cos = dx / len;
+    var a = [];
+    a.push(0, 0);
+    for (var i = 0; i < controlPoints.length; i += 2) {
+      var x = controlPoints[i];
+      var y = controlPoints[i + 1];
+      a.push(x < 0 ? len + x : x, y);
+    }
+    a.push(len, 0);
+    for (var i = controlPoints.length; i > 0; i -= 2) {
+      var x = controlPoints[i - 2];
+      var y = controlPoints[i - 1];
+      a.push(x < 0 ? len + x : x, -y);
+    }
+    a.push(0, 0);
+    var points = '';
+    for (var i = 0; i < a.length; i += 2) {
+      var x = a[i] * cos - a[i + 1] * sin + fromX;
+      var y = a[i] * sin + a[i + 1] * cos + fromY;
+      points += `${x},${y} `;
+    }
+    var polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+    polyline.setAttribute('points', points);
+    polyline.setAttribute('fill', 'orange');
+    polyline.setAttribute('opacity', '0.8');
+    canvas.appendChild(polyline);
+}
+
+export function drawArrows(game, canvas) {
+    game.drawnArrows.forEach(arrow => {
+        drawArrow(arrow[0], arrow[1], arrow[2], arrow[3], canvas)
+    });
+}
+
+function addUserMarkings(squareDiv, game, canvas) {
+    let fromCenterX
+    let fromCenterY
+    let toCenterX
+    let toCenterY
     squareDiv.addEventListener('mousedown', (e) => {
+        const board = squareDiv.parentNode
+        const width = squareDiv.offsetWidth
         if(e.button == 2) {
-            const classes = squareDiv.classList
-            classes.contains("userHighlight") ? classes.remove("userHighlight") : classes.add("userHighlight")
+            fromCenterX = squareDiv.offsetLeft + (width / 2)
+            fromCenterY = squareDiv.offsetTop + (width / 2)
+            toCenterX = fromCenterX
+            toCenterY = fromCenterY
+            board.addEventListener('mousemove', drawPreviewArrow)
+            board.addEventListener('mouseup', finalizeInput)
         } else {
-            const board = squareDiv.parentNode
             if(board) {
                 board.querySelectorAll(".square").forEach(div => {
                     div.classList.remove("userHighlight")
                 });
+                game.drawnArrows = []
+                canvas.innerHTML = ""
             }
+        }
+        function drawPreviewArrow(event) {
+            canvas.innerHTML = ""
+            const hoveredSquare = board.querySelector('.square.select')
+            toCenterX = hoveredSquare.offsetLeft + (width / 2) || fromCenterX
+            toCenterY = hoveredSquare.offsetTop + (width / 2) || fromCenterY
+            drawArrow(fromCenterX, fromCenterY, toCenterX, toCenterY, canvas, true)
+            drawArrows(game, canvas)
+        }
+        function finalizeInput(event) {
+            if(fromCenterX === toCenterX && fromCenterY === toCenterY) {
+                const classes = squareDiv.classList
+                classes.contains("userHighlight") ? classes.remove("userHighlight") : classes.add("userHighlight")
+            } else {
+                const position = [fromCenterX, fromCenterY, toCenterX, toCenterY]
+                let index = false
+                game.drawnArrows.forEach((arrow, i) => {
+                    if(arrow.every((value, i) => value === position[i])) {
+                        index = i
+                    }
+                });
+                index || index === 0 ? game.drawnArrows.splice(index, 1) : game.drawnArrows.push(position)
+                canvas.innerHTML = ""
+                drawArrows(game, canvas)
+            }
+            board.removeEventListener('mousemove', drawPreviewArrow)
+            board.removeEventListener('mouseup', finalizeInput)
         }
     })
 }
@@ -191,6 +286,8 @@ export function renderBoard(game, history = false) {
     const whiteSide = isWhite()
     const boardDiv = document.querySelector("#board")
     boardDiv.innerHTML = ""
+    const canvas = boardDiv.parentNode.querySelector('#svg-canvas') || createSVGCanvas(boardDiv)
+    canvas.innerHTML = ""
     const board = whiteSide ? [...game.board].reverse() : game.board
     const increment = whiteSide ? -1 : 1
     const highlighted = game.lastMove !== null
@@ -204,7 +301,7 @@ export function renderBoard(game, history = false) {
             const notation = convertLocationToNotation(x, y)
             div.setAttribute("notation", notation)
             div.classList.add("square")
-            addUserHighlighting(div)
+            addUserMarkings(div, game, canvas)
             darkSquare = !darkSquare
             if(darkSquare) { div.classList.add('darkSquare') }
             const pieceSvg = square ? square.svg : false
@@ -228,6 +325,7 @@ export function renderBoard(game, history = false) {
         document.querySelector(`[notation=${game.lastMove[0]}`).classList.add("highlighted")
         document.querySelector(`[notation=${game.lastMove[1]}`).classList.add("highlighted")
     }
+    drawArrows(game, canvas)
     markHoveredPieces()
     return document.querySelector("#board img");
 }

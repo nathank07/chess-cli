@@ -1,4 +1,4 @@
-import chessGame, { convertLocationToNotation, convertNotationtoLocation, squareDivs, playSound } from "../board.js"
+import chessGame, { convertLocationToNotation, convertNotationtoLocation, squareDivs, playSound, drawArrows } from "../board.js"
 import King from "./king.js"
 import Queen from "./queen.js"
 import Rook from "./rook.js"
@@ -100,6 +100,7 @@ export function cloneGame(game) {
         whitesMove: game.whitesMove,
         lastMove: game.lastMove,
         lastMoveSound: game.lastMoveSound,
+        drawnArrows: game.drawnArrows,
         whiteState: {
             shortCastle: game.whiteState.shortCastle,
             longCastle: game.whiteState.longCastle,
@@ -132,6 +133,9 @@ export function makeDraggable(square, svg, renderBoard){
 
         
         if(e.buttons === 1) {
+            const canvas = svg.parentNode.parentNode.parentNode.querySelector("#svg-canvas")
+            square.game.drawnArrows = []
+            canvas.innerHTML = ""
             // Set size here everytime in case user resizes window
             size = svg.parentNode.parentNode.offsetWidth / 8
             // We declare the event listeners here to the document 
