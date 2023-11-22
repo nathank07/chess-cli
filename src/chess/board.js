@@ -242,9 +242,15 @@ function addUserMarkings(squareDiv, game, canvas) {
     let toCenterX
     let toCenterY
     squareDiv.addEventListener('mousedown', e => {
+        const squareDivNot = squareDiv.getAttribute('notation')
         let board
         let width
-        if(e.button == 2) {
+        if(e.buttons == 2) {
+            // This was the best way I could think of to work around board rendering and having a piece selected
+            document.querySelector('.square:not(.possible):not(.possiblepiece)').click()
+            squareDiv = document.querySelector(`[notation=${squareDivNot}]`)
+            canvas = squareDiv.parentNode.parentNode.querySelector("#svg-canvas")
+
             board = squareDiv.parentNode
             width = squareDiv.offsetWidth
             fromCenterX = squareDiv.offsetLeft + (width / 2)

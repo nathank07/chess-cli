@@ -127,11 +127,10 @@ export function makeDraggable(square, svg, renderBoard){
         const legalSquares = squareDivs(moves)
         const allSquares = document.querySelectorAll('#board .square')
         const initialSquare = svg.parentNode
-        let moving = false
+        
         
         let size;
         let outsideInitialSquare = false;
-
         
         if(e.buttons === 1) {
             const canvas = svg.parentNode.parentNode.parentNode.querySelector("#svg-canvas")
@@ -174,11 +173,11 @@ export function makeDraggable(square, svg, renderBoard){
         function mouseDown(event) {
             // This is done so users can cancel their moves with any button
             event.preventDefault()
-            if(event.buttons !== 1) {
-                document.removeEventListener('mousedown', mouseDown) 
+            if(event.buttons !== 1) { 
                 document.removeEventListener('mouseup', mouseUp)
                 document.removeEventListener('mousemove', mouseMove)
                 document.removeEventListener('click', clear)
+                document.removeEventListener('mousedown', mouseDown)
                 renderBoard(square.game)
             }
         }
@@ -190,9 +189,9 @@ export function makeDraggable(square, svg, renderBoard){
         }
         function mouseUp(event) {
             event.preventDefault()
+            document.removeEventListener('mousedown', mouseDown)
             document.removeEventListener('mouseup', mouseUp)
             document.removeEventListener('mousemove', mouseMove)
-            document.removeEventListener('mousedown', mouseDown) 
             svg.style.pointerEvents = "auto"
             const move = selectSquare()
             if(event.buttons === 0 && square.move(move[0], move[1])) {
