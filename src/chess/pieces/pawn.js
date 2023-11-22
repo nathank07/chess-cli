@@ -7,7 +7,7 @@ import whiteBishop from '../cburnett/wB.svg'
 import blackKnight from '../cburnett/bN.svg' 
 import whiteKnight from '../cburnett/wN.svg' 
 
-import createPiece, { Piece, outOfBounds } from "./piece.js"
+import createPiece, { Piece, inCheck, outOfBounds } from "./piece.js"
 import { renderBoard } from '../board.js'
 
 export default function Pawn( { isWhite, xPos, yPos, game } ) {
@@ -40,6 +40,9 @@ export default function Pawn( { isWhite, xPos, yPos, game } ) {
                             //promotion logic
                             const piece = await promoteMenu(isWhite)
                             createPiece(piece, isWhite, x, y, game)
+                            if(inCheck(game)) {
+                                game.lastMoveSound = "check"
+                            }
                             renderBoard(game)
                         }])
                         continue
@@ -59,6 +62,9 @@ export default function Pawn( { isWhite, xPos, yPos, game } ) {
                             //promotion logic
                             const piece = await promoteMenu(isWhite)
                             createPiece(piece, isWhite, x, y, game)
+                            if(inCheck(game)) {
+                                game.lastMoveSound = "check"
+                            }
                             renderBoard(game)
                         }])
                         continue

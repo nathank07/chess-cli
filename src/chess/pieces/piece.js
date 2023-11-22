@@ -246,7 +246,7 @@ function selectSquare() {
     return notation ? convertNotationtoLocation(notation.getAttribute("notation")) : false
 }
 
-function inCheck(game) {
+export function inCheck(game) {
     let check = false
     game.board.forEach((row, x) => {        
         row.forEach((square, y) => {
