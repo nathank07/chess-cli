@@ -240,53 +240,66 @@ function addUserMarkings(squareDiv, game, canvas) {
     let fromCenterY
     let toCenterX
     let toCenterY
-    squareDiv.addEventListener('mousedown', (e) => {
-        const board = squareDiv.parentNode
-        const width = squareDiv.offsetWidth
+    squareDiv.addEventListener('mousedown', e => {
+        let board
+        let width
         if(e.button == 2) {
+            board = squareDiv.parentNode
+            width = squareDiv.offsetWidth
             fromCenterX = squareDiv.offsetLeft + (width / 2)
             fromCenterY = squareDiv.offsetTop + (width / 2)
             toCenterX = fromCenterX
             toCenterY = fromCenterY
-            board.addEventListener('mousemove', drawPreviewArrow)
-            board.addEventListener('mouseup', finalizeInput)
+            document.addEventListener('mousemove', drawPreviewArrow)
+            document.addEventListener('mouseup', finalizeInput)
         } else {
-            if(board) {
-                board.querySelectorAll(".square").forEach(div => {
+            if(squareDiv.parentNode) {
+                squareDiv.parentNode.querySelectorAll(".square").forEach(div => {
                     div.classList.remove("userHighlight")
                 });
                 game.drawnArrows = []
                 canvas.innerHTML = ""
+                document.removeEventListener('mousemove', drawPreviewArrow)
+                document.removeEventListener('mouseup', finalizeInput)
             }
         }
+
         function drawPreviewArrow(event) {
             canvas.innerHTML = ""
             const hoveredSquare = board.querySelector('.square.select')
-            toCenterX = hoveredSquare.offsetLeft + (width / 2) || fromCenterX
-            toCenterY = hoveredSquare.offsetTop + (width / 2) || fromCenterY
-            drawArrow(fromCenterX, fromCenterY, toCenterX, toCenterY, canvas, true)
+            if(hoveredSquare) {
+                toCenterX = hoveredSquare.offsetLeft + (width / 2) || fromCenterX
+                toCenterY = hoveredSquare.offsetTop + (width / 2) || fromCenterY
+                drawArrow(fromCenterX, fromCenterY, toCenterX, toCenterY, canvas, true)
+            }
             drawArrows(game, canvas)
         }
         function finalizeInput(event) {
-            if(fromCenterX === toCenterX && fromCenterY === toCenterY) {
-                const classes = squareDiv.classList
-                classes.contains("userHighlight") ? classes.remove("userHighlight") : classes.add("userHighlight")
-            } else {
-                const initialSquare = squareDiv.getAttribute("notation")
-                const destinationSquare = squareDiv.parentNode.querySelector('.square.select').getAttribute("notation")
-                const position = [initialSquare, destinationSquare]
-                let index = false
-                game.drawnArrows.forEach((arrow, i) => {
-                    if(arrow.every((value, i) => value === position[i])) {
-                        index = i
+            document.removeEventListener('mousemove', drawPreviewArrow)
+            document.removeEventListener('mouseup', finalizeInput)
+            if(squareDiv.parentNode && event.button === 2) {
+                const initialSquare = squareDiv
+                const destinationSquare = squareDiv.parentNode.querySelector('.square.select')
+                if(destinationSquare && initialSquare === destinationSquare) {
+                    const classes = squareDiv.classList
+                    classes.contains("userHighlight") ? classes.remove("userHighlight") : classes.add("userHighlight")
+                } else {
+                    if(destinationSquare) {
+                        const fromDiv = initialSquare.getAttribute("notation")
+                        const toDiv = destinationSquare.getAttribute("notation")
+                        const position = [fromDiv, toDiv]
+                        let index = false
+                        game.drawnArrows.forEach((arrow, i) => {
+                            if(arrow.every((value, i) => value === position[i])) {
+                                index = i
+                            }
+                        });
+                        index || index === 0 ? game.drawnArrows.splice(index, 1) : game.drawnArrows.push(position)
+                        canvas.innerHTML = ""
+                        drawArrows(game, canvas)
                     }
-                });
-                index || index === 0 ? game.drawnArrows.splice(index, 1) : game.drawnArrows.push(position)
-                canvas.innerHTML = ""
-                drawArrows(game, canvas)
+                }
             }
-            board.removeEventListener('mousemove', drawPreviewArrow)
-            board.removeEventListener('mouseup', finalizeInput)
         }
     })
 }
