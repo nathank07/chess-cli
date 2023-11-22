@@ -127,6 +127,7 @@ export function makeDraggable(square, svg, renderBoard){
         const legalSquares = squareDivs(moves)
         const allSquares = document.querySelectorAll('#board .square')
         const initialSquare = svg.parentNode
+        let moving = false
         
         let size;
         let outsideInitialSquare = false;
@@ -172,8 +173,8 @@ export function makeDraggable(square, svg, renderBoard){
         }
         function mouseDown(event) {
             // This is done so users can cancel their moves with any button
+            event.preventDefault()
             if(event.buttons !== 1) {
-                event.preventDefault()
                 document.removeEventListener('mousedown', mouseDown) 
                 document.removeEventListener('mouseup', mouseUp)
                 document.removeEventListener('mousemove', mouseMove)
@@ -191,6 +192,7 @@ export function makeDraggable(square, svg, renderBoard){
             event.preventDefault()
             document.removeEventListener('mouseup', mouseUp)
             document.removeEventListener('mousemove', mouseMove)
+            document.removeEventListener('mousedown', mouseDown) 
             svg.style.pointerEvents = "auto"
             const move = selectSquare()
             if(event.buttons === 0 && square.move(move[0], move[1])) {

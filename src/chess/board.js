@@ -141,6 +141,7 @@ export function undoMove(game, history) {
     game.lastMove = oldGame.lastMove
     game.lastMoveSound = oldGame.lastMoveSound
     game.whitesMove = oldGame.whitesMove
+    game.drawnArrows = oldGame.drawnArrows
     if(game.history.length > 1) {
         game.history.pop()
     }
