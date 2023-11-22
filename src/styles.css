@@ -47,7 +47,7 @@ body {
 	height: 100%;
 }
 
-.darkSquare.possible, .square.possible {
+.square.darkSquare.possible, .square.possible {
 	background-image: url('./chess/cburnett/move.svg');
 	background-repeat: no-repeat;
 	background-position: center;
