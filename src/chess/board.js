@@ -119,9 +119,9 @@ function markHoveredPieces() {
     });
 }
 
-export function undoMove(game) {
+export function undoMove(game, history) {
     let animation;
-    if(game.lastMove) {
+    if(game.lastMove && history !== undefined && history === 0) {
         animation = game.lastMove
     }
     const oldBoard = cloneBoard(game.history[game.history.length - 1].board)

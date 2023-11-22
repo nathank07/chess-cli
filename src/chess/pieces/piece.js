@@ -83,7 +83,6 @@ export function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) {
                 }
 
                 if(inCheck(game)) {
-                    console.log("checl")
                     game.lastMoveSound = "check"
                 }
 
@@ -128,13 +127,13 @@ export function makeDraggable(square, svg, renderBoard){
         const allSquares = document.querySelectorAll('#board .square')
         const initialSquare = svg.parentNode
         
-        let size = svg.offsetWidth
+        let size;
         let outsideInitialSquare = false;
 
         
         if(e.buttons === 1) {
             // Set size here everytime in case user resizes window
-            size = svg.offsetWidth
+            size = svg.parentNode.parentNode.offsetWidth / 8
             // We declare the event listeners here to the document 
             // because pointer-events: none unbinds the svg event listeners
             document.addEventListener('mousedown', mouseDown) 

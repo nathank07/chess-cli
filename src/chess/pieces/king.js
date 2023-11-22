@@ -30,7 +30,6 @@ export default function King( { isWhite, xPos, yPos, game } ) {
             }
             if(canCastle) {
                 if(canCastle.short && game.board[kingRow][1] === null && game.board[kingRow][2] === null) {
-                    console.log(canCastle)
                     moves.push([kingRow, 1, () => {
                         castleState.longCastle = false
                         castleState.shortCastle = false
