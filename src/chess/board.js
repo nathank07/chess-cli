@@ -224,7 +224,14 @@ function drawArrow(fromX, fromY, toX, toY, canvas = document.querySelector("#svg
 
 export function drawArrows(game, canvas) {
     game.drawnArrows.forEach(arrow => {
-        drawArrow(arrow[0], arrow[1], arrow[2], arrow[3], canvas)
+        const initialSquare = document.querySelector(`[notation=${arrow[0]}`)
+        const destinationSquare = document.querySelector(`[notation=${arrow[1]}`)
+        const width = initialSquare.offsetWidth
+        const fromCenterX = initialSquare.offsetLeft + (width / 2)
+        const fromCenterY = initialSquare.offsetTop + (width / 2)
+        const toCenterX = destinationSquare.offsetLeft + (width / 2)
+        const toCenterY = destinationSquare.offsetTop + (width / 2)
+        drawArrow(fromCenterX, fromCenterY, toCenterX, toCenterY, canvas)
     });
 }
 
@@ -265,7 +272,9 @@ function addUserMarkings(squareDiv, game, canvas) {
                 const classes = squareDiv.classList
                 classes.contains("userHighlight") ? classes.remove("userHighlight") : classes.add("userHighlight")
             } else {
-                const position = [fromCenterX, fromCenterY, toCenterX, toCenterY]
+                const initialSquare = squareDiv.getAttribute("notation")
+                const destinationSquare = squareDiv.parentNode.querySelector('.square.select').getAttribute("notation")
+                const position = [initialSquare, destinationSquare]
                 let index = false
                 game.drawnArrows.forEach((arrow, i) => {
                     if(arrow.every((value, i) => value === position[i])) {
@@ -286,13 +295,15 @@ export function renderBoard(game, history = false) {
     const whiteSide = isWhite()
     const boardDiv = document.querySelector("#board")
     boardDiv.innerHTML = ""
-    const canvas = boardDiv.parentNode.querySelector('#svg-canvas') || createSVGCanvas(boardDiv)
-    canvas.innerHTML = ""
+    if(boardDiv.parentNode.querySelector('#svg-canvas')) {
+        boardDiv.parentNode.querySelector('#svg-canvas').remove()
+    }
     const board = whiteSide ? [...game.board].reverse() : game.board
     const increment = whiteSide ? -1 : 1
     const highlighted = game.lastMove !== null
     let darkSquare = true
     let x = whiteSide ? 7 : 0
+    const canvas = createSVGCanvas(boardDiv)
     board.forEach(row => {
         let y = whiteSide ? 7 : 0
         const newRow = whiteSide ? [...row].reverse() : row
@@ -327,7 +338,7 @@ export function renderBoard(game, history = false) {
     }
     drawArrows(game, canvas)
     markHoveredPieces()
-    return document.querySelector("#board img");
+    return boardDiv
 }
 
 function animateGame(game, moves, timeBetweenMoves) {
