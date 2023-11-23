@@ -1,4 +1,4 @@
-import createPiece, { cloneBoard, cloneGame, makeDraggable } from "./pieces/piece.js"
+import createPiece, { inCheck, cloneBoard, cloneGame, makeDraggable } from "./pieces/piece.js"
 import isWhite from "../main.js"
 import animateMove, { animatePiece } from "./animations.js"
 import place from "./sounds/Move.ogg"
@@ -365,9 +365,13 @@ export function renderBoard(game, history = false) {
         darkSquare = !darkSquare
         x += increment
     });
+    const checkLocation = inCheck(game)
+    if(checkLocation) {
+        boardDiv.querySelector(`[notation=${checkLocation}]`).classList.add("check")
+    }
     if(highlighted) {
-        document.querySelector(`[notation=${game.lastMove[0]}`).classList.add("highlighted")
-        document.querySelector(`[notation=${game.lastMove[1]}`).classList.add("highlighted")
+        boardDiv.querySelector(`[notation=${game.lastMove[0]}`).classList.add("highlighted")
+        boardDiv.querySelector(`[notation=${game.lastMove[1]}`).classList.add("highlighted")
     }
     drawArrows(game, canvas)
     markHoveredPieces()

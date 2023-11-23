@@ -256,7 +256,7 @@ export function inCheck(game) {
     game.board.forEach((row, x) => {        
         row.forEach((square, y) => {
             if(game.board[x][y] && game.board[x][y].name === "king" && game.board[x][y].inCheck()) {
-                check = true
+                check = convertLocationToNotation(x, y)
             }
         })
     });

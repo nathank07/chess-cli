@@ -20,7 +20,6 @@ body {
 
 #board-container{
     display: grid;
-    grid-template-columns: 1fr 9fr;
 	aspect-ratio: 1 / 1;
 	width: var(--board-size);
 	height: var(--board-size);
@@ -73,6 +72,10 @@ body {
 	background-size: 150%;
 	background-position: center;
 	background-repeat: no-repeat;
+}
+
+.check {    
+    box-shadow: inset 0px 0px 50px rgba(255, 0, 0, 0.8), 0px 0px 25px rgba(255, 0, 0, 0.1), 0px 0px 20px rgba(255, 0, 0, 0.5);
 }
 
 
