@@ -190,38 +190,51 @@ function drawArrow(fromX, fromY, toX, toY, canvas = document.querySelector("#svg
     const width = (size / 80) * (skinny ? 0.75 : 1);
     const arrowHeadWidth = (size / 32) * (skinny ? 0.75 : 1);
     const arrowHeadHeight = (size / -21.5) * (skinny ? 0.75 : 1);
+    const offset = size / 50;
+    let dx = toX - fromX;
+    let dy = toY - fromY;
+    let len = Math.sqrt((dx * dx + dy * dy));
+
+    const sin = dy / len;
+    const cos = dx / len;
+
+    fromX += offset * cos;
+    fromY += offset * sin;
+    toX -= cos
+    toY -= sin
+    dx = toX - fromX;
+    dy = toY - fromY;
+    len = Math.sqrt((dx * dx + dy * dy))
+
     const controlPoints = [0, width, arrowHeadHeight, width, arrowHeadHeight, arrowHeadWidth];
-    var dx = toX - fromX;
-    var dy = toY - fromY;
-    var len = Math.sqrt(dx * dx + dy * dy);
-    var sin = dy / len;
-    var cos = dx / len;
-    var a = [];
+    const a = [];
     a.push(0, 0);
-    for (var i = 0; i < controlPoints.length; i += 2) {
-      var x = controlPoints[i];
-      var y = controlPoints[i + 1];
+    for (let i = 0; i < controlPoints.length; i += 2) {
+      const x = controlPoints[i];
+      const y = controlPoints[i + 1];
       a.push(x < 0 ? len + x : x, y);
     }
     a.push(len, 0);
-    for (var i = controlPoints.length; i > 0; i -= 2) {
-      var x = controlPoints[i - 2];
-      var y = controlPoints[i - 1];
+    for (let i = controlPoints.length; i > 0; i -= 2) {
+      const x = controlPoints[i - 2];
+      const y = controlPoints[i - 1];
       a.push(x < 0 ? len + x : x, -y);
     }
     a.push(0, 0);
     var points = '';
-    for (var i = 0; i < a.length; i += 2) {
-      var x = a[i] * cos - a[i + 1] * sin + fromX;
-      var y = a[i] * sin + a[i + 1] * cos + fromY;
+    for (let i = 0; i < a.length; i += 2) {
+      const x = a[i] * cos - a[i + 1] * sin + fromX;
+      const y = a[i] * sin + a[i + 1] * cos + fromY;
       points += `${x},${y} `;
     }
-    var polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-    polyline.setAttribute('points', points);
-    polyline.setAttribute('fill', 'orange');
-    polyline.setAttribute('opacity', '0.8');
-    canvas.appendChild(polyline);
+    const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+    polygon.setAttribute('points', points);
+    polygon.setAttribute('fill', 'orange');
+    polygon.setAttribute('opacity', '0.8');
+    canvas.appendChild(polygon);
 }
+
+
 
 export function drawArrows(game, canvas) {
     game.drawnArrows.forEach(arrow => {

@@ -3,7 +3,7 @@
 	--light-square: #F0D9B5;
 	--dark-square: #B58863;
 	--highlight: rgba(255, 240, 0, 0.25);
-	--board-size: 600px;
+	--board-size: 900px;
 	--possible: rgba(0, 0, 0, 0.2);
     --user-highlight: rgba(255, 0, 0, 0.25);
 }
