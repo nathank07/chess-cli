@@ -37,7 +37,7 @@ document.addEventListener('keydown', (e) => {
     }
     if(e.code === "KeyF") {
         whiteSide = !whiteSide
-        renderBoard(chessGame)
+        history ? renderBoard(chessGame.history[chessGame.history.length - 1]) : renderBoard(chessGame)
     }
     if(e.code === "KeyZ") {
         undoMove(chessGame, history)
