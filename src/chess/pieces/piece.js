@@ -126,7 +126,7 @@ export function makeDraggable(square, svg, renderBoard){
             svg = document.querySelector(`[notation=${convertLocationToNotation(square.xPos, square.yPos)}`).lastChild
         }
 
-        const moves = filterLegal(square.xPos, square.yPos, square.isWhite, square.standardMoves(), square.game.board)
+        const moves = square.moves()
         const legalSquares = squareDivs(moves)
         const allSquares = document.querySelectorAll('#board .square')
         const initialSquare = svg.parentNode
@@ -293,7 +293,7 @@ function isLegal(fromX, fromY, toX, toY, isWhite, board) {
     return true
 }
 
-export function filterLegal(xPos, yPos, isWhite, standardMoves, board) {
+function filterLegal(xPos, yPos, isWhite, standardMoves, board) {
     return standardMoves.filter(move => 
         isLegal(xPos, yPos, move[0], move[1], isWhite, board)
     );

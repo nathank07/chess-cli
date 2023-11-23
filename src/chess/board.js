@@ -381,7 +381,6 @@ export function renderBoard(game, history = false) {
     markHoveredPieces()
     waitingForMove = game.whitesMove !== game.playerIsWhite
     if(waitingForMove) {
-        console.log("waiting")
         waitForMove(game)
     }
     return boardDiv
@@ -389,9 +388,14 @@ export function renderBoard(game, history = false) {
 
 async function waitForMove(game) {
     const move = await randomMove(game, !game.playerIsWhite)
-    const from = move[0]
-    const to = move[1]
-    animateMove(game, from[0], from[1], to[0], to[1], true)
+    if(move) {
+        const from = move[0]
+        const to = move[1]
+        animateMove(game, from[0], from[1], to[0], to[1], true)
+    }
+    else {
+        console.log("no moves left")
+    }
 }
 
 function animateGame(game, moves, timeBetweenMoves) {
