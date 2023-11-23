@@ -190,7 +190,7 @@ function drawArrow(fromX, fromY, toX, toY, canvas = document.querySelector("#svg
     const width = (size / 80) * (skinny ? 0.75 : 1);
     const arrowHeadWidth = (size / 32) * (skinny ? 0.75 : 1);
     const arrowHeadHeight = (size / -21.5) * (skinny ? 0.75 : 1);
-    const offset = size / 50;
+    const offset = size / 21;
     let dx = toX - fromX;
     let dy = toY - fromY;
     let len = Math.sqrt((dx * dx + dy * dy));
@@ -200,8 +200,8 @@ function drawArrow(fromX, fromY, toX, toY, canvas = document.querySelector("#svg
 
     fromX += offset * cos;
     fromY += offset * sin;
-    toX -= cos
-    toY -= sin
+    toX -= skinny ? cos * 11 : cos
+    toY -= skinny ? sin * 11 : cos
     dx = toX - fromX;
     dy = toY - fromY;
     len = Math.sqrt((dx * dx + dy * dy))
@@ -230,7 +230,7 @@ function drawArrow(fromX, fromY, toX, toY, canvas = document.querySelector("#svg
     const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
     polygon.setAttribute('points', points);
     polygon.setAttribute('fill', 'orange');
-    polygon.setAttribute('opacity', '0.8');
+    polygon.setAttribute('opacity', '0.65');
     canvas.appendChild(polygon);
 }
 
