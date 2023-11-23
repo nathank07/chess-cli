@@ -4,6 +4,7 @@ import animateMove, { animatePiece } from "./animations.js"
 import place from "./sounds/Move.ogg"
 import capture from "./sounds/Capture.ogg"
 import check from "./sounds/Check.wav"
+import randomMove from "../random.js"
 
 let chessGame = {
     board: [...Array(8)].map(e => Array(8).fill(null)),
@@ -20,7 +21,10 @@ let chessGame = {
     lastMove: null,
     lastMoveSound: null,
     drawnArrows: [],
+    playerIsWhite: true
 }
+
+let waitingForMove = false
 
 const sounds = {
     "place": place,
@@ -353,7 +357,7 @@ export function renderBoard(game, history = false) {
                 const svg = document.createElement('img')
                 svg.src = pieceSvg
                 if(!history) {
-                    if(square.isWhite === game.whitesMove) {
+                    if(square.isWhite === game.playerIsWhite && game.playerIsWhite === game.whitesMove) {
                         makeDraggable(square, svg, renderBoard)
                     }
                 }
@@ -375,7 +379,19 @@ export function renderBoard(game, history = false) {
     }
     drawArrows(game, canvas)
     markHoveredPieces()
+    waitingForMove = game.whitesMove !== game.playerIsWhite
+    if(waitingForMove) {
+        console.log("waiting")
+        waitForMove(game)
+    }
     return boardDiv
+}
+
+async function waitForMove(game) {
+    const move = await randomMove(game, !game.playerIsWhite)
+    const from = move[0]
+    const to = move[1]
+    animateMove(game, from[0], from[1], to[0], to[1], true)
 }
 
 function animateGame(game, moves, timeBetweenMoves) {
@@ -391,6 +407,7 @@ function animateGame(game, moves, timeBetweenMoves) {
 export function loadGame(game) {
     chessGame = FENtoBoard(game)
     renderBoard(chessGame)
+    waitingForMove = chessGame.whitesMove === chessGame.playerIsWhite
     chessGame.history.push(cloneGame(chessGame))
 }
 

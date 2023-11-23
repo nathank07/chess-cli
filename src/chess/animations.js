@@ -73,7 +73,7 @@ export function animateHistory(chessGame, current, prevHistory, customSpeed = sp
     }
 }
 
-export default function animateMove(game, fromX, fromY, toX, toY) {
+export default function animateMove(game, fromX, fromY, toX, toY, sound = false) {
     if(game.board[fromX][fromY] && game.board[fromX][fromY].move(toX, toY)) {
         // If user is behind then show the current game
         resetHistory()
@@ -82,6 +82,9 @@ export default function animateMove(game, fromX, fromY, toX, toY) {
         const end = convertLocationToNotation(toX, toY)
         promise = null 
         animating = true
+        if(sound) {
+            playSound(game)
+        }
         animatePiece(start, end, moveSpeed).then(() => {
             renderBoard(game)
         })

@@ -89,6 +89,9 @@ export function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) {
                 return true
             }
             return false
+        },
+        moves: () => {
+            return filterLegal(xPos, yPos, isWhite, standardMoves(), game.board)
         }
 
     }
@@ -290,7 +293,7 @@ function isLegal(fromX, fromY, toX, toY, isWhite, board) {
     return true
 }
 
-function filterLegal(xPos, yPos, isWhite, standardMoves, board) {
+export function filterLegal(xPos, yPos, isWhite, standardMoves, board) {
     return standardMoves.filter(move => 
         isLegal(xPos, yPos, move[0], move[1], isWhite, board)
     );
