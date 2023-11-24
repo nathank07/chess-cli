@@ -351,7 +351,7 @@ export function renderBoard(game, history = false) {
             div.classList.add("square")
             addUserMarkings(div, game, canvas)
             darkSquare = !darkSquare
-            if(darkSquare) { div.classList.add('darkSquare') }
+            if(darkSquare) { div.classList.add('dark') }
             const pieceSvg = square ? square.svg : false
             if(pieceSvg) {
                 const svg = document.createElement('img')
@@ -378,6 +378,7 @@ export function renderBoard(game, history = false) {
         boardDiv.querySelector(`[notation=${game.lastMove[1]}`).classList.add("highlighted")
     }
     drawArrows(game, canvas)
+    annotateBoard(boardDiv, whiteSide)
     markHoveredPieces()
     waitingForMove = game.whitesMove !== game.playerIsWhite
     if(waitingForMove) {
@@ -396,6 +397,32 @@ async function waitForMove(game) {
     else {
         console.log("no moves left")
     }
+}
+
+function annotateBoard(boardDiv, whiteSide) {
+    const alphabet = ["a", "b", "c", "d", "e", "f", "g", "h"]
+    const leftNotation = whiteSide ? "a" : "h"
+    const bottomNotation = whiteSide ? 1 : 8
+    let darkSquare = !whiteSide
+    for(let i = 1; i <= 8; i++) {
+        const leftDiv = boardDiv.querySelector(`[notation=${leftNotation + i}]`)
+        const notation = document.createElement('span')
+        notation.classList.add('left-notation')
+        notation.classList.add(darkSquare ? 'dark' : 'light')
+        notation.innerHTML = i
+        leftDiv.prepend(notation)
+        darkSquare = !darkSquare
+    }
+    for(const letter in alphabet) {
+        const bottomDiv = boardDiv.querySelector(`[notation=${alphabet[letter] + bottomNotation}]`)
+        const notation = document.createElement('span')
+        notation.classList.add('bottom-notation')
+        notation.classList.add(darkSquare ? 'dark' : 'light')
+        notation.innerHTML = alphabet[letter]
+        bottomDiv.prepend(notation)
+        darkSquare = !darkSquare
+    }
+    
 }
 
 function animateGame(game, moves, timeBetweenMoves) {

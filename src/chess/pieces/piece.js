@@ -148,7 +148,7 @@ export function makeDraggable(square, svg, renderBoard){
             document.addEventListener('mouseup', mouseUp)
             allSquares.forEach(div => {
                 if(legalSquares.includes(div)) {
-                    if(div.hasChildNodes()) {
+                    if(div.querySelector('img')) {
                         div.classList.add("possiblepiece")
                     } else {
                         div.classList.add("possible")
@@ -203,6 +203,7 @@ export function makeDraggable(square, svg, renderBoard){
             }
             if(!outsideInitialSquare) {
                 svg.style.position = null
+                svg.style.zIndex = "1"
                 if(alreadyHighlighted) {
                     clear(e)
                 }
@@ -239,6 +240,7 @@ function moveToCursor(event, svg, size) {
     // Using fixed style here instead of transform because 
     // transform did not work for some users
     svg.style.pointerEvents = "none"
+    svg.style.zIndex = "2"
     svg.style.position = "fixed"
     svg.style.width = `${size}px`
     svg.style.height = `${size}px`

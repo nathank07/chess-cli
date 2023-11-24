@@ -34,19 +34,22 @@ body {
 	width: var(--board-size);
 }
 
-#board .darkSquare{
-    background-color: var(--dark-square);
-}
-
 .square {
+    position: relative;
 	aspect-ratio: 1/1;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 }
+
+#board .square.dark {
+    background-color: var(--dark-square);
+}
+
 .square > img {
 	width: 100%;
 	height: 100%;
+    z-index: 1;
 }
 
 .square.darkSquare.possible, .square.possible {
@@ -131,6 +134,29 @@ body {
     height: var(--board-size);
     pointer-events: none;
     z-index: 1;
+}
+
+#board .square>span.left-notation, #board .square>span.bottom-notation {
+    position: absolute;
+    color: var(--light-square);
+    user-select: none;
+    pointer-events: none;
+    padding: 0.2rem;
+    font-size: 1.1rem;
+}
+
+#board .square>span.left-notation {
+    top: 0;
+    left: 0;
+}
+
+#board .square>span.bottom-notation {
+    bottom: 0;
+    right: 0;
+}
+
+#board .square>span.dark {
+    color: var(--dark-square);
 }
 
 .vertical, .horizontal {
