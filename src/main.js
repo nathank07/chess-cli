@@ -1,12 +1,14 @@
 import "./styles.css"
 import "./chess/cburnett/move.svg"
-import chessGame, { convertNotationtoLocation, loadGame, renderBoard, undoMove } from "./chess/board.js"
+import chessGame, { convertNotationtoLocation, createBoard, renderBoard, undoMove } from "./chess/board.js"
 import { setPromisetoNull, animateHistory } from "./chess/animations.js"
 
 let whiteSide = true
 let history = 0
 
-loadGame("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", whiteSide)
+const board = createBoard()
+
+document.querySelector("#root").appendChild(board)
 
 document.addEventListener('keydown', (e) => {
     const current = chessGame.history.length

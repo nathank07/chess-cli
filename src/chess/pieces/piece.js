@@ -100,6 +100,7 @@ export function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) {
 export function cloneGame(game) {
     return {
         board: cloneBoard(game.board),
+        boardDiv: game.boardDiv,
         whitesMove: game.whitesMove,
         lastMove: game.lastMove,
         lastMoveSound: game.lastMoveSound,

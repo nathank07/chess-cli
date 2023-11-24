@@ -8,6 +8,7 @@ import randomMove from "../random.js"
 
 let chessGame = {
     board: [...Array(8)].map(e => Array(8).fill(null)),
+    boardDiv: null,
     whitesMove: true,
     whiteState: {
         shortCastle: false,
@@ -21,7 +22,7 @@ let chessGame = {
     lastMove: null,
     lastMoveSound: null,
     drawnArrows: [],
-    playerIsWhite: true
+    playerIsWhite: true,
 }
 
 let waitingForMove = false
@@ -112,8 +113,8 @@ function FENtoBoard(FENstring) {
     return chessGame
 }
 
-function markHoveredPieces() {
-    const boardSquares = document.querySelectorAll("#board .square")
+function markHoveredPieces(boardDiv) {
+    const boardSquares = boardDiv.querySelectorAll("#board .square")
     boardSquares.forEach(square => {
         square.addEventListener("mouseover", () => {
             square.classList.add("select")
@@ -253,7 +254,7 @@ export function drawArrows(game, canvas) {
     });
 }
 
-function addUserMarkings(squareDiv, game, canvas) {
+function addUserMarkings(boardContainer, squareDiv, game, canvas) {
     let fromCenterX
     let fromCenterY
     let toCenterX
@@ -264,12 +265,17 @@ function addUserMarkings(squareDiv, game, canvas) {
         let width
         if(e.buttons == 2) {
             // This was the best way I could think of to work around board rendering and having a piece selected
-            document.querySelector('.square:not(.possible):not(.possiblepiece)').click()
-            squareDiv = document.querySelector(`[notation=${squareDivNot}]`)
-            canvas = squareDiv.parentNode.parentNode.querySelector("#svg-canvas")
+            boardContainer.querySelector('.square:not(.possible):not(.possiblepiece)').click()
+            squareDiv = boardContainer.querySelector(`[notation=${squareDivNot}]`)
+            canvas = boardContainer.querySelector("#svg-canvas")
 
             board = squareDiv.parentNode
             width = squareDiv.offsetWidth
+
+            if(canvas.viewBox.baseVal.width !== board.offsetWidth) {
+                canvas.setAttribute('viewBox', `0 0 ${board.offsetWidth} ${board.offsetWidth}`);
+            }
+
             fromCenterX = squareDiv.offsetLeft + (width / 2)
             fromCenterY = squareDiv.offsetTop + (width / 2)
             toCenterX = fromCenterX
@@ -328,9 +334,9 @@ function addUserMarkings(squareDiv, game, canvas) {
     })
 }
 
-export function renderBoard(game, history = false) {
+export function renderBoard(game,  history = false) {
     const whiteSide = isWhite()
-    const boardDiv = document.querySelector("#board")
+    const boardDiv = game.boardDiv;
     boardDiv.innerHTML = ""
     if(boardDiv.parentNode.querySelector('#svg-canvas')) {
         boardDiv.parentNode.querySelector('#svg-canvas').remove()
@@ -349,7 +355,7 @@ export function renderBoard(game, history = false) {
             const notation = convertLocationToNotation(x, y)
             div.setAttribute("notation", notation)
             div.classList.add("square")
-            addUserMarkings(div, game, canvas)
+            addUserMarkings(canvas.parentNode, div, game, canvas)
             darkSquare = !darkSquare
             if(darkSquare) { div.classList.add('dark') }
             const pieceSvg = square ? square.svg : false
@@ -379,7 +385,7 @@ export function renderBoard(game, history = false) {
     }
     drawArrows(game, canvas)
     annotateBoard(boardDiv, whiteSide)
-    markHoveredPieces()
+    markHoveredPieces(boardDiv)
     waitingForMove = game.whitesMove !== game.playerIsWhite
     if(waitingForMove) {
         waitForMove(game)
@@ -435,11 +441,22 @@ function animateGame(game, moves, timeBetweenMoves) {
     })
 }
 
-export function loadGame(game) {
-    chessGame = FENtoBoard(game)
+export function createBoard(fen) {
+    const boardContainer = document.createElement('div');
+    const boardDiv = document.createElement('div');
+    boardContainer.id = "board-container"
+    boardDiv.id = "board";
+    boardContainer.appendChild(boardDiv)
+    boardContainer.oncontextmenu = () => {return false}
+    if(!fen) {
+        fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+    }
+    chessGame = FENtoBoard(fen)
+    chessGame.boardDiv = boardDiv
     renderBoard(chessGame)
     waitingForMove = chessGame.whitesMove === chessGame.playerIsWhite
     chessGame.history.push(cloneGame(chessGame))
+    return boardContainer
 }
 
 export default chessGame
