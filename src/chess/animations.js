@@ -116,7 +116,7 @@ export function animatePiece(fromNotation, toNotation, speedMultiplier = speed) 
     // Caps duration set minSpeed
     duration = duration <= ((minSpeed * 100) / speedMultiplier) ? duration : (minSpeed * 100) / speedMultiplier
 
-    const child = initialDiv.firstChild
+    const child = initialDiv.lastChild
     let error;
     
     if(child) {
