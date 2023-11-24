@@ -6,25 +6,6 @@ import capture from "./sounds/Capture.ogg"
 import check from "./sounds/Check.wav"
 import randomMove from "../random.js"
 
-let chessGame = {
-    board: [...Array(8)].map(e => Array(8).fill(null)),
-    boardDiv: null,
-    whitesMove: true,
-    whiteState: {
-        shortCastle: false,
-        longCastle: false,
-    },
-    blackState: {
-        shortCastle: false,
-        longCastle: false,
-    },
-    history: [],
-    lastMove: null,
-    lastMoveSound: null,
-    drawnArrows: [],
-    playerIsWhite: true,
-}
-
 let waitingForMove = false
 
 const sounds = {
@@ -62,6 +43,24 @@ export function convertNotationtoLocation(notation) {
 }
 
 function FENtoBoard(FENstring) {
+    const chessGame = {
+        board: [...Array(8)].map(e => Array(8).fill(null)),
+        div: null,
+        whitesMove: true,
+        whiteState: {
+            shortCastle: false,
+            longCastle: false,
+        },
+        blackState: {
+            shortCastle: false,
+            longCastle: false,
+        },
+        history: [],
+        lastMove: null,
+        lastMoveSound: null,
+        drawnArrows: [],
+        playerIsWhite: true,
+    }
     
     const pieces = {
         "p": "pawn",
@@ -131,7 +130,7 @@ export function undoMove(game, history) {
         animation = game.lastMove
     }
     const oldBoard = cloneBoard(game.history[game.history.length - 1].board)
-    chessGame.board = [...Array(8)].map(e => Array(8).fill(null));
+    game.board = [...Array(8)].map(e => Array(8).fill(null));
     // We clone the board and create pieces because squares are binded to specific boards
     oldBoard.forEach((row, x) => {
         row.forEach((square, y) => {
@@ -151,7 +150,7 @@ export function undoMove(game, history) {
         game.history.pop()
     }
     if(animation) {
-        animatePiece(animation[1], animation[0])
+        animatePiece(animation[1], animation[0], game.div.firstChild)
             .then(() => {
                 renderBoard(game)
             })
@@ -161,11 +160,11 @@ export function undoMove(game, history) {
     return game
 }
 
-export function squareDivs(moves) {
+export function squareDivs(moves, board) {
     let divs = []
     moves.forEach(move => {
         const square = convertLocationToNotation(move[0], move[1])
-        const squareDiv = document.querySelector(`[notation=${square}`)
+        const squareDiv = board.querySelector(`[notation=${square}`)
         divs.push(squareDiv)
     });
     return divs
@@ -254,7 +253,7 @@ export function drawArrows(game, canvas) {
     });
 }
 
-function addUserMarkings(boardContainer, squareDiv, game, canvas) {
+function addUserMarkings(squareDiv, game, canvas) {
     let fromCenterX
     let fromCenterY
     let toCenterX
@@ -264,6 +263,7 @@ function addUserMarkings(boardContainer, squareDiv, game, canvas) {
         let board
         let width
         if(e.buttons == 2) {
+            const boardContainer = game.div
             // This was the best way I could think of to work around board rendering and having a piece selected
             boardContainer.querySelector('.square:not(.possible):not(.possiblepiece)').click()
             squareDiv = boardContainer.querySelector(`[notation=${squareDivNot}]`)
@@ -336,7 +336,7 @@ function addUserMarkings(boardContainer, squareDiv, game, canvas) {
 
 export function renderBoard(game,  history = false) {
     const whiteSide = isWhite()
-    const boardDiv = game.boardDiv;
+    const boardDiv = game.div.firstChild;
     boardDiv.innerHTML = ""
     if(boardDiv.parentNode.querySelector('#svg-canvas')) {
         boardDiv.parentNode.querySelector('#svg-canvas').remove()
@@ -355,7 +355,7 @@ export function renderBoard(game,  history = false) {
             const notation = convertLocationToNotation(x, y)
             div.setAttribute("notation", notation)
             div.classList.add("square")
-            addUserMarkings(canvas.parentNode, div, game, canvas)
+            addUserMarkings(div, game, canvas)
             darkSquare = !darkSquare
             if(darkSquare) { div.classList.add('dark') }
             const pieceSvg = square ? square.svg : false
@@ -441,7 +441,7 @@ function animateGame(game, moves, timeBetweenMoves) {
     })
 }
 
-export function createBoard(fen) {
+export function createGame(fen) {
     const boardContainer = document.createElement('div');
     const boardDiv = document.createElement('div');
     boardContainer.id = "board-container"
@@ -451,12 +451,10 @@ export function createBoard(fen) {
     if(!fen) {
         fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
     }
-    chessGame = FENtoBoard(fen)
-    chessGame.boardDiv = boardDiv
+    const chessGame = FENtoBoard(fen)
+    chessGame.div = boardContainer
     renderBoard(chessGame)
     waitingForMove = chessGame.whitesMove === chessGame.playerIsWhite
     chessGame.history.push(cloneGame(chessGame))
-    return boardContainer
+    return chessGame
 }
-
-export default chessGame

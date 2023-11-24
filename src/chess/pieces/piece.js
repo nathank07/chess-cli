@@ -1,4 +1,4 @@
-import chessGame, { convertLocationToNotation, convertNotationtoLocation, squareDivs, playSound, drawArrows } from "../board.js"
+import { convertLocationToNotation, convertNotationtoLocation, squareDivs, playSound, drawArrows } from "../board.js"
 import King from "./king.js"
 import Queen from "./queen.js"
 import Rook from "./rook.js"
@@ -100,7 +100,7 @@ export function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) {
 export function cloneGame(game) {
     return {
         board: cloneBoard(game.board),
-        boardDiv: game.boardDiv,
+        div: game.div,
         whitesMove: game.whitesMove,
         lastMove: game.lastMove,
         lastMoveSound: game.lastMoveSound,
@@ -121,15 +121,16 @@ export function makeDraggable(square, svg, renderBoard){
         e.preventDefault()
 
         const alreadyHighlighted = svg.parentNode.classList.contains("highlighted")
+        let board = square.game.div.firstChild
         if(e.buttons === 1) {
             // render board and set svg (since svg changes when you render board) so it resets users selection if there is one
-            renderBoard(square.game)
-            svg = document.querySelector(`[notation=${convertLocationToNotation(square.xPos, square.yPos)}`).lastChild
+            board = renderBoard(square.game)
+            svg = board.querySelector(`[notation=${convertLocationToNotation(square.xPos, square.yPos)}`).lastChild
         }
 
         const moves = square.moves()
-        const legalSquares = squareDivs(moves)
-        const allSquares = document.querySelectorAll('#board .square')
+        const legalSquares = squareDivs(moves, board)
+        const allSquares = board.querySelectorAll('.square')
         const initialSquare = svg.parentNode
         
         
@@ -186,7 +187,7 @@ export function makeDraggable(square, svg, renderBoard){
             }
         }
         function mouseMove(event) {
-            if(document.querySelector("#board .square.select") !== initialSquare) {
+            if(board.querySelector("#board .square.select") !== initialSquare) {
                 outsideInitialSquare = true
             }
             moveToCursor(event, svg, size)
@@ -197,7 +198,7 @@ export function makeDraggable(square, svg, renderBoard){
             document.removeEventListener('mouseup', mouseUp)
             document.removeEventListener('mousemove', mouseMove)
             svg.style.pointerEvents = "auto"
-            const move = selectSquare()
+            const move = selectSquare(board)
             if(event.buttons === 0 && square.move(move[0], move[1])) {
                 playSound(square.game)
                 renderBoard(square.game)
@@ -214,13 +215,13 @@ export function makeDraggable(square, svg, renderBoard){
         }
         function click(event) {
             event.preventDefault()
-            const move = selectSquare()
+            const move = selectSquare(board)
             const originalPos = [square.xPos, square.yPos]
             // Remove indicators as they're no longer relevant
-            document.querySelectorAll('.possible').forEach(square => {
+            board.querySelectorAll('.possible').forEach(square => {
                 square.classList.remove('possible')
             });
-            document.querySelectorAll('.possiblepiece').forEach(square => {
+            board.querySelectorAll('.possiblepiece').forEach(square => {
                 square.classList.remove('possiblepiece')
             });
             animateMove(square.game, originalPos[0], originalPos[1], move[0], move[1])
@@ -252,8 +253,8 @@ function moveToCursor(event, svg, size) {
     svg.parentNode.classList.add('highlighted')
 }
 
-function selectSquare() {
-    const notation = document.querySelector("#board .square.select")
+function selectSquare(board) {
+    const notation = board.querySelector(".square.select")
     return notation ? convertNotationtoLocation(notation.getAttribute("notation")) : false
 }
 
@@ -320,7 +321,7 @@ export function outOfBounds(x, y){
 }
 
 
-export default function createPiece(piece, isWhite, xPos, yPos, game = chessGame) {
+export default function createPiece(piece, isWhite, xPos, yPos, game) {
     let createdPiece = {};
     const pieceInfo = { isWhite: isWhite, xPos: xPos, yPos: yPos, game: game }
     switch(piece){

@@ -1,14 +1,18 @@
 import "./styles.css"
 import "./chess/cburnett/move.svg"
-import chessGame, { convertNotationtoLocation, createBoard, renderBoard, undoMove } from "./chess/board.js"
+import { convertNotationtoLocation, createGame, renderBoard, undoMove } from "./chess/board.js"
 import { setPromisetoNull, animateHistory } from "./chess/animations.js"
 
 let whiteSide = true
 let history = 0
 
-const board = createBoard()
-
+const chessGame = createGame()
+const board = chessGame.div
 document.querySelector("#root").appendChild(board)
+
+const chessGame2 = createGame("r1bqkb1r/ppnppppp/8/1BpnP3/8/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 1 6")
+const board2 = chessGame2.div
+document.querySelector("#root").appendChild(board2)
 
 document.addEventListener('keydown', (e) => {
     const current = chessGame.history.length
@@ -31,7 +35,7 @@ document.addEventListener('keydown', (e) => {
         chessGame.drawnArrows = []
         if(lastPieceMoved === "pawn" && (loc[0] === 0 || loc[0] === 7)) {
             undoMove(chessGame)
-            document.querySelector('.promotion').remove()
+            chessGame.div.querySelector('.promotion').remove()
         } 
         else {
             animateHistory(chessGame, current, prevHistory)

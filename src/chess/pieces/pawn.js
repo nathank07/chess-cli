@@ -38,7 +38,7 @@ export default function Pawn( { isWhite, xPos, yPos, game } ) {
                     if(x === 0 || x === 7) {
                         moves.push([x, y, async () => {
                             //promotion logic
-                            const piece = await promoteMenu(isWhite)
+                            const piece = await promoteMenu(game, isWhite)
                             createPiece(piece, isWhite, x, y, game)
                             if(inCheck(game)) {
                                 game.lastMoveSound = "check"
@@ -60,7 +60,7 @@ export default function Pawn( { isWhite, xPos, yPos, game } ) {
                     if(x === 0 || x === 7) {
                         moves.push([x, y, async () => {
                             //promotion logic
-                            const piece = await promoteMenu(isWhite)
+                            const piece = await promoteMenu(game, isWhite)
                             createPiece(piece, isWhite, x, y, game)
                             if(inCheck(game)) {
                                 game.lastMoveSound = "check"
@@ -79,9 +79,10 @@ export default function Pawn( { isWhite, xPos, yPos, game } ) {
     return piece;
 }
 
-async function promoteMenu(isWhite) {
+async function promoteMenu(game, isWhite) {
     return new Promise(resolve => {
-        const board = document.querySelector("#board-container")
+        console.log(game)
+        const boardContainer = game.div
         const backdrop = document.createElement("div")
         const pieces = [
             [isWhite ? whiteQueen : blackQueen, "queen"],
@@ -100,10 +101,10 @@ async function promoteMenu(isWhite) {
             divParent.addEventListener("click", () => {
                 const choice = divParent.getAttribute("value")
                 resolve(choice)
-                board.removeChild(backdrop)
+                boardContainer.removeChild(backdrop)
             })
             backdrop.appendChild(divParent)
         });
-        board.appendChild(backdrop)
+        boardContainer.appendChild(backdrop)
     })
 }

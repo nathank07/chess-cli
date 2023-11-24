@@ -51,7 +51,7 @@ export function animateHistory(chessGame, current, prevHistory, customSpeed = sp
         if(history < prevHistory) {
             playSound(game)
         }
-        animatePiece(promise[0], promise[1], promise[2], promise[3])
+        animatePiece(promise[0], promise[1], game.div.firstChild, promise[2])
             .then(() => {
                 if(promise !== null && runningPromise.every((value, index) => value === promise[index])) {
                     renderBoard(game, history !== 0)
@@ -85,7 +85,7 @@ export default function animateMove(game, fromX, fromY, toX, toY, sound = false)
         if(sound) {
             playSound(game)
         }
-        animatePiece(start, end, moveSpeed).then(() => {
+        animatePiece(start, end, game.div.firstChild, moveSpeed).then(() => {
             renderBoard(game)
         })
         .finally(() => {
@@ -98,9 +98,9 @@ export default function animateMove(game, fromX, fromY, toX, toY, sound = false)
     }
 }
 
-export function animatePiece(fromNotation, toNotation, speedMultiplier = speed) {
-    const initialDiv = document.querySelector(`[notation=${fromNotation}]`)
-    const destination = document.querySelector(`[notation=${toNotation}]`)
+export function animatePiece(fromNotation, toNotation, boardDiv, speedMultiplier = speed) {
+    const initialDiv = boardDiv.querySelector(`[notation=${fromNotation}]`)
+    const destination = boardDiv.querySelector(`[notation=${toNotation}]`)
     const size = initialDiv.offsetWidth / 2
     const fromXloc = initialDiv.getBoundingClientRect().left + size
     const fromYloc = initialDiv.getBoundingClientRect().top + size
@@ -120,11 +120,11 @@ export function animatePiece(fromNotation, toNotation, speedMultiplier = speed) 
     let error;
     
     if(child) {
-        document.querySelectorAll(".highlighted").forEach(square => {
+        boardDiv.querySelectorAll(".highlighted").forEach(square => {
             square.classList.remove("highlighted")
         });
-        document.querySelector(`[notation=${fromNotation}`).classList.add("highlighted")
-        document.querySelector(`[notation=${toNotation}`).classList.add("highlighted")
+        boardDiv.querySelector(`[notation=${fromNotation}`).classList.add("highlighted")
+        boardDiv.querySelector(`[notation=${toNotation}`).classList.add("highlighted")
         child.animate([
             { transform: 'translate(0px, 0px)' },
             { transform: `translate(${toXloc - fromXloc}px, ${toYloc - fromYloc}px)` }
