@@ -1,5 +1,4 @@
 import createPiece, { inCheck, cloneBoard, cloneGame, makeDraggable } from "./pieces/piece.js"
-import isWhite from "../main.js"
 import animateMove, { animatePiece } from "./animations.js"
 import place from "./sounds/Move.ogg"
 import capture from "./sounds/Capture.ogg"
@@ -150,7 +149,7 @@ export function undoMove(game) {
     game.lastMoveSound = oldGame.lastMoveSound
     game.whitesMove = oldGame.whitesMove
     game.drawnArrows = oldGame.drawnArrows
-    game.showingWhiteSide = oldBoard.showingWhiteSide
+    game.showingWhiteSide = oldGame.showingWhiteSide
     if(game.history.length > 1) {
         game.history.pop()
     }
