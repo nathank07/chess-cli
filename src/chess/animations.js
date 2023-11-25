@@ -1,96 +1,87 @@
-import { history, resetHistory } from "../main.js"
+import { resetTimeline } from "../main.js"
 import { renderBoard, playSound, convertLocationToNotation } from "./board.js"
 
 
 // Default speed (going through history)
 const speed = 1
 // Speed when a new move is made
-const moveSpeed = 0.85
-let animating = false
-let promise = null
+const moveSpeed = 0.8
 
-export function setPromisetoNull() {
-    promise = null
-}
-
-export function animateHistory(chessGame, current, prevHistory, customSpeed = speed) {
-    let game
-    let begin
-    let end
-
+export function animateHistory(chessGame, prevHistory) {
+    const current = chessGame.history.length
+    const history = chessGame.timeline
+    if(history === prevHistory) {
+        return
+    }
+    const game = history !== 0 ? chessGame.history[current - history] : chessGame
     // If the move isn't one move ahead/behind
     if(Math.abs(prevHistory - history) !== 1) {
         if(history === 0) {
-            renderBoard(chessGame, false)
-            promise = null
+            renderBoard(chessGame)
         }
-        if(history === current - 1) {
-            renderBoard(chessGame.history[0], true)
-            promise = null
+        if(history === current) {
+            renderBoard(chessGame.history[0])
         }
         return
     }
+
+    let begin
+    let end
+
     // Left Arrow
     if(history > prevHistory) {
-        game = chessGame.history[current - history]
         begin = history === 1 ? chessGame.lastMove[0] : chessGame.history[current - history + 1].lastMove[0]
         end = history === 1 ? chessGame.lastMove[1] : chessGame.history[current - history + 1].lastMove[1]
     }
     // Right Arrow
     if(history < prevHistory) {
-        game = history === 0 ? chessGame : chessGame.history[current - history]
         end = game.lastMove[0]
         begin = game.lastMove[1]
     }
-
+    const animating = chessGame.div.querySelector('.animating')
     // Don't render animation if another board was already rendered
-    if(promise === null && !animating) {
-        animating = true
-        promise = [end, begin, customSpeed, history]
-        const runningPromise = [end, begin, speed, history]
+    if(!animating) {
         if(history < prevHistory) {
             playSound(game)
         }
-        animatePiece(promise[0], promise[1], game.div.firstChild, promise[2])
+        animatePiece(end, begin, game.div.firstChild)
             .then(() => {
-                if(promise !== null && runningPromise.every((value, index) => value === promise[index])) {
-                    renderBoard(game, history !== 0)
+                if(chessGame.timeline) {
+                    renderBoard(chessGame.history[chessGame.history.length - chessGame.timeline])
+                } else {
+                    renderBoard(chessGame)
                 }
             })
             .catch((e) => {
                 console.log("caught error", e)
             })
-            .finally(() => {
-                animating = false
-                promise = null
-            })
     } else {
-        renderBoard(game, history !== 0)
-        if(history < prevHistory) {
-            playSound(game)
+        const sound = history < prevHistory
+        if(chessGame.timeline) {
+            renderBoard(chessGame.history[chessGame.history.length - chessGame.timeline])
+            if(sound) {
+                playSound(chessGame.history[chessGame.history.length - chessGame.timeline])
+            }
+        } else {
+            renderBoard(chessGame)
+            if(sound) {
+                playSound(chessGame)
+            }
         }
-        promise = null
     }
 }
 
 export default function animateMove(game, fromX, fromY, toX, toY, sound = false) {
     if(game.board[fromX][fromY] && game.board[fromX][fromY].move(toX, toY)) {
         // If user is behind then show the current game
-        resetHistory()
-
+        resetTimeline(game)
         const start = convertLocationToNotation(fromX, fromY)
         const end = convertLocationToNotation(toX, toY)
-        promise = null 
-        animating = true
         if(sound) {
             playSound(game)
         }
         animatePiece(start, end, game.div.firstChild, moveSpeed).then(() => {
             renderBoard(game)
-        })
-        .finally(() => {
-            promise = null
-            animating = false
         })
         return
     } else {
@@ -132,6 +123,7 @@ export function animatePiece(fromNotation, toNotation, boardDiv, speedMultiplier
             duration: duration,
             iterations: 1
         })
+        child.classList.add('animating')
     } else {
         error = new Error(`Nothing to animate from ${fromNotation}`)
     }

@@ -81,7 +81,6 @@ export default function Pawn( { isWhite, xPos, yPos, game } ) {
 
 async function promoteMenu(game, isWhite) {
     return new Promise(resolve => {
-        console.log(game)
         const boardContainer = game.div
         const backdrop = document.createElement("div")
         const pieces = [

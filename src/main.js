@@ -1,10 +1,10 @@
 import "./styles.css"
 import "./chess/cburnett/move.svg"
-import { convertNotationtoLocation, createGame, renderBoard, undoMove } from "./chess/board.js"
-import { setPromisetoNull, animateHistory } from "./chess/animations.js"
+import { convertNotationtoLocation, createGame, renderBoard, undoMove, changePlayerSide, flipBoard } from "./chess/board.js"
+import { animateHistory } from "./chess/animations.js"
 
 let whiteSide = true
-let history = 0
+//let history = 0
 
 const chessGame = createGame()
 const board = chessGame.div
@@ -14,52 +14,85 @@ const chessGame2 = createGame("r1bqkb1r/ppnppppp/8/1BpnP3/8/2N2N2/PPPP1PPP/R1BQK
 const board2 = chessGame2.div
 document.querySelector("#root").appendChild(board2)
 
+changePlayerSide(chessGame2)
+flipBoard(chessGame2)
+
 document.addEventListener('keydown', (e) => {
-    const current = chessGame.history.length
-    const prevHistory = history
     if(e.code === "ArrowLeft") {
-        history < current - 1 ? history++ : history = current - 1
+        viewBackHistory(chessGame)
+        viewBackHistory(chessGame2)
     }
     if(e.code === "ArrowRight") {
-        history > 0 ? history-- : history = 0
+        viewForwardHistory(chessGame)
+        viewForwardHistory(chessGame2)
     }
     if(e.code === "ArrowUp") {
-        history = current - 1
+        viewStartHistory(chessGame)
+        viewStartHistory(chessGame2)
     }
     if(e.code === "ArrowDown") {
-        history = 0
+        viewCurrentGame(chessGame)
+        viewCurrentGame(chessGame2)
     } 
-    if(history !== prevHistory){
-        const loc = convertNotationtoLocation(chessGame.lastMove[1])
-        const lastPieceMoved = chessGame.board[loc[0]][loc[1]].name
-        chessGame.drawnArrows = []
-        if(lastPieceMoved === "pawn" && (loc[0] === 0 || loc[0] === 7)) {
-            undoMove(chessGame)
-            chessGame.div.querySelector('.promotion').remove()
-        } 
-        else {
-            animateHistory(chessGame, current, prevHistory)
-        }
-    }
     if(e.code === "KeyF") {
-        whiteSide = !whiteSide
-        history ? renderBoard(chessGame.history[chessGame.history.length - 1], true) : renderBoard(chessGame)
+        flipBoard(chessGame)
+        flipBoard(chessGame2)
     }
     if(e.code === "KeyZ") {
-        undoMove(chessGame, history)
-        history = 0
+        undoMove(chessGame)
+        undoMove(chessGame2)
     }
 })
+
+function viewBackHistory(game) {
+    const length = game.history.length
+    const prevHistory = game.timeline
+    if(game.timeline < length) {
+        game.timeline++
+    }
+    if(game.timeline === 1) {
+        const loc = convertNotationtoLocation(game.lastMove[1])
+        const lastPieceMoved = game.board[loc[0]][loc[1]].name
+        if(lastPieceMoved === "pawn" && (loc[0] === 0 || loc[0] === 7)) {
+            undoMove(game)
+            game.div.querySelector('.promotion').remove()
+        } else {
+            animateHistory(game, prevHistory)
+        }
+        return
+    }
+    animateHistory(game, prevHistory)
+}
+
+function viewForwardHistory(game) {
+    const prevHistory = game.timeline
+    if(game.timeline > 0) {
+        game.timeline--
+    }
+    animateHistory(game, prevHistory)
+}
+
+function viewStartHistory(game) {
+    const prevHistory = game.timeline
+    const length = game.history.length
+    game.timeline = length
+    animateHistory(game, prevHistory)
+}
+
+function viewCurrentGame(game) {
+    const prevHistory = game.timeline
+    game.timeline = 0
+    animateHistory(game, prevHistory)
+}
 
 export default function isWhite() {
     return whiteSide
 }
 
-export function resetHistory() {
-    if(history !== 0) {
-        renderBoard(chessGame.history[chessGame.history.length - 1])
-        setPromisetoNull()
-        history = 0
+export function resetTimeline(game) {
+    if(game.timeline !== 0) {
+        renderBoard(game.history[game.history.length - 1])
+        game.timeline = 0
     }
 }
-export { history }
+//export { history }

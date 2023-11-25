@@ -102,6 +102,7 @@ export function cloneGame(game) {
         board: cloneBoard(game.board),
         div: game.div,
         whitesMove: game.whitesMove,
+        showingWhiteSide: game.showingWhiteSide,
         lastMove: game.lastMove,
         lastMoveSound: game.lastMoveSound,
         drawnArrows: game.drawnArrows,

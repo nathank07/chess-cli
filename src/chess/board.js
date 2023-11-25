@@ -56,10 +56,12 @@ function FENtoBoard(FENstring) {
             longCastle: false,
         },
         history: [],
+        timeline: 0,
         lastMove: null,
         lastMoveSound: null,
         drawnArrows: [],
         playerIsWhite: true,
+        showingWhiteSide: true,
     }
     
     const pieces = {
@@ -124,11 +126,13 @@ function markHoveredPieces(boardDiv) {
     });
 }
 
-export function undoMove(game, history) {
+export function undoMove(game) {
     let animation;
-    if(game.lastMove && history !== undefined && history === 0) {
+    if(game.lastMove) {
+        renderBoard(game)
         animation = game.lastMove
     }
+    game.timeline = 0
     const oldBoard = cloneBoard(game.history[game.history.length - 1].board)
     game.board = [...Array(8)].map(e => Array(8).fill(null));
     // We clone the board and create pieces because squares are binded to specific boards
@@ -146,6 +150,7 @@ export function undoMove(game, history) {
     game.lastMoveSound = oldGame.lastMoveSound
     game.whitesMove = oldGame.whitesMove
     game.drawnArrows = oldGame.drawnArrows
+    game.showingWhiteSide = oldBoard.showingWhiteSide
     if(game.history.length > 1) {
         game.history.pop()
     }
@@ -189,7 +194,7 @@ function createSVGCanvas(boardDiv) {
 
 // Modified version of https://github.com/frogcat/canvas-arrow
 
-function drawArrow(fromX, fromY, toX, toY, canvas = document.querySelector("#svg-canvas"), skinny = false) {
+function drawArrow(fromX, fromY, toX, toY, canvas, skinny = false) {
     const size = canvas.viewBox.baseVal.width;
     const width = (size / 80) * (skinny ? 0.75 : 1);
     const arrowHeadWidth = (size / 32) * (skinny ? 0.75 : 1);
@@ -242,8 +247,8 @@ function drawArrow(fromX, fromY, toX, toY, canvas = document.querySelector("#svg
 
 export function drawArrows(game, canvas) {
     game.drawnArrows.forEach(arrow => {
-        const initialSquare = document.querySelector(`[notation=${arrow[0]}`)
-        const destinationSquare = document.querySelector(`[notation=${arrow[1]}`)
+        const initialSquare = game.div.querySelector(`[notation=${arrow[0]}`)
+        const destinationSquare = game.div.querySelector(`[notation=${arrow[1]}`)
         const width = initialSquare.offsetWidth
         const fromCenterX = initialSquare.offsetLeft + (width / 2)
         const fromCenterY = initialSquare.offsetTop + (width / 2)
@@ -334,9 +339,10 @@ function addUserMarkings(squareDiv, game, canvas) {
     })
 }
 
-export function renderBoard(game,  history = false) {
-    const whiteSide = isWhite()
+export function renderBoard(game) {
+    const whiteSide = game.showingWhiteSide
     const boardDiv = game.div.firstChild;
+    const history = game.timeline
     boardDiv.innerHTML = ""
     if(boardDiv.parentNode.querySelector('#svg-canvas')) {
         boardDiv.parentNode.querySelector('#svg-canvas').remove()
@@ -363,7 +369,7 @@ export function renderBoard(game,  history = false) {
                 const svg = document.createElement('img')
                 svg.src = pieceSvg
                 if(!history) {
-                    if(square.isWhite === game.playerIsWhite && game.playerIsWhite === game.whitesMove) {
+                    if(game.playerIsWhite !== null && square.isWhite === game.playerIsWhite && game.playerIsWhite === game.whitesMove) {
                         makeDraggable(square, svg, renderBoard)
                     }
                 }
@@ -441,6 +447,19 @@ function animateGame(game, moves, timeBetweenMoves) {
     })
 }
 
+export function changePlayerSide(game, spectator) {
+    game.playerIsWhite = !game.playerIsWhite
+    if(spectator) {
+        game.playerIsWhite = null
+    }
+    renderBoard(game)
+}
+
+export function flipBoard(game) {
+    game.showingWhiteSide = !game.showingWhiteSide
+    game.timeline ? renderBoard(game.history[game.history.length - 1]) : renderBoard(game)
+}
+
 export function createGame(fen) {
     const boardContainer = document.createElement('div');
     const boardDiv = document.createElement('div');
@@ -455,6 +474,5 @@ export function createGame(fen) {
     chessGame.div = boardContainer
     renderBoard(chessGame)
     waitingForMove = chessGame.whitesMove === chessGame.playerIsWhite
-    chessGame.history.push(cloneGame(chessGame))
     return chessGame
 }
