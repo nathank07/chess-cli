@@ -179,8 +179,9 @@ export function cloneGame(game) {
         showingWhiteSide: game.showingWhiteSide,
         lastMove: game.lastMove,
         lastMoveSound: game.lastMoveSound,
+        drawnArrows: [],
+        userHighlights: [],
         fiftyMoveRule: game.fiftyMoveRule,
-        drawnArrows: game.drawnArrows,
         whiteState: {
             shortCastle: game.whiteState.shortCastle,
             longCastle: game.whiteState.longCastle,

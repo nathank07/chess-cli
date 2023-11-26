@@ -70,7 +70,17 @@ export function drawArrow(fromX, fromY, toX, toY, canvas, skinny = false) {
     canvas.appendChild(polygon);
 }
 
-export function drawArrows(game, canvas) {
+function drawUserHighlights(game) {
+    game.div.querySelectorAll('.userHighlight').forEach(div => {
+        div.classList.remove("userHighlight")
+    });
+    game.userHighlights.forEach(div => {
+        const square = game.div.querySelector(`[notation=${div}`)
+        square.classList.add("userHighlight")
+    });
+}
+
+function drawArrows(game, canvas) {
     game.drawnArrows.forEach(arrow => {
         const initialSquare = game.div.querySelector(`[notation=${arrow[0]}`)
         const destinationSquare = game.div.querySelector(`[notation=${arrow[1]}`)
@@ -81,6 +91,11 @@ export function drawArrows(game, canvas) {
         const toCenterY = destinationSquare.offsetTop + (width / 2)
         drawArrow(fromCenterX, fromCenterY, toCenterX, toCenterY, canvas)
     });
+}
+
+export function drawUserMarkings(game, canvas) {
+    drawUserHighlights(game)
+    drawArrows(game, canvas)
 }
 
 export function addUserMarkings(squareDiv, game, canvas) {
@@ -141,8 +156,10 @@ export function addUserMarkings(squareDiv, game, canvas) {
                 const initialSquare = squareDiv
                 const destinationSquare = squareDiv.parentNode.querySelector('.square.select')
                 if(destinationSquare && initialSquare === destinationSquare) {
-                    const classes = squareDiv.classList
-                    classes.contains("userHighlight") ? classes.remove("userHighlight") : classes.add("userHighlight")
+                    const position = initialSquare.getAttribute("notation")
+                    const index = game.userHighlights.indexOf(position)
+                    index === -1 ? game.userHighlights.push(position) : game.userHighlights.splice(index, 1)
+                    drawUserHighlights(game)
                 } else {
                     if(destinationSquare) {
                         const fromDiv = initialSquare.getAttribute("notation")

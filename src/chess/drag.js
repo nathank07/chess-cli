@@ -25,7 +25,6 @@ export default function makeDraggable(square, svg, renderBoard){
         
         if(e.buttons === 1) {
             const canvas = svg.parentNode.parentNode.parentNode.querySelector("#svg-canvas")
-            square.game.drawnArrows = []
             canvas.innerHTML = ""
             // Set size here everytime in case user resizes window
             size = svg.parentNode.parentNode.offsetWidth / 8

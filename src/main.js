@@ -11,7 +11,7 @@ const board = chessGame.div
 document.querySelector("#root").appendChild(board)
 
 let len = 0
-let timebetween = 100
+let timebetween = 10
 
 game.splice(1).forEach((move) => {
     len++

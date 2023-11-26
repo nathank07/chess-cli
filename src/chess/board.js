@@ -1,7 +1,7 @@
 import createPiece, { inCheck } from "./pieces/piece.js"
 import { convertLocationToNotation, convertNotationtoLocation } from "./notation.js"
 import makeDraggable from "./drag.js"
-import { createSVGCanvas, addUserMarkings, drawArrows, annotateBoard, markHoveredPieces } from "./marking.js"
+import { createSVGCanvas, addUserMarkings, drawUserMarkings, annotateBoard, markHoveredPieces } from "./marking.js"
 import animateMove from "./animations.js"
 import place from "./sounds/Move.ogg"
 import capture from "./sounds/Capture.ogg"
@@ -33,6 +33,7 @@ function FENtoBoard(FENstring) {
         lastMove: null,
         lastMoveSound: null,
         drawnArrows: [],
+        userHighlights: [],
         playerIsWhite: true,
         showingWhiteSide: true,
         fiftyMoveRule: 0,
@@ -149,7 +150,7 @@ export function renderBoard(game) {
         boardDiv.querySelector(`[notation=${game.lastMove[0]}`).classList.add("highlighted")
         boardDiv.querySelector(`[notation=${game.lastMove[1]}`).classList.add("highlighted")
     }
-    drawArrows(game, canvas)
+    drawUserMarkings(game, canvas)
     annotateBoard(boardDiv, whiteSide)
     markHoveredPieces(boardDiv)
     return boardDiv
