@@ -1,4 +1,3 @@
-import { resetTimeline } from "../main.js"
 import { renderBoard, playSound, convertLocationToNotation } from "./board.js"
 
 

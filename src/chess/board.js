@@ -397,9 +397,9 @@ export function renderBoard(game) {
 async function waitForMove(game) {
     const move = await randomMove(game, !game.playerIsWhite)
     if(move) {
-        const from = move[0]
-        const to = move[1]
-        animateMove(game, from[0], from[1], to[0], to[1], true)
+        const start = convertLocationToNotation(move[0][0], move[0][1])
+        const end = convertLocationToNotation(move[1][0], move[1][1])
+        fetchMove(game, start + end)
     }
     else {
         console.log("no moves left")

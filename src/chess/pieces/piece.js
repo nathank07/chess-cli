@@ -234,7 +234,7 @@ export function makeDraggable(square, svg, renderBoard){
         }
         function click(event) {
             event.preventDefault()
-            const move = selectSquare(board)
+            const move = convertNotationtoLocation(event.target.getAttribute("notation") || event.target.parentNode.getAttribute("notation"))
             const originalPos = [square.xPos, square.yPos]
             // Remove indicators as they're no longer relevant
             board.querySelectorAll('.possible').forEach(square => {

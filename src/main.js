@@ -1,6 +1,6 @@
 import "./styles.css"
 import "./chess/cburnett/move.svg"
-import { convertNotationtoLocation, createGame, renderBoard, undoMove, changePlayerSide, flipBoard, fetchMove } from "./chess/board.js"
+import { convertNotationtoLocation, createGame, undoMove, changePlayerSide, flipBoard, fetchMove } from "./chess/board.js"
 import { animateHistory } from "./chess/animations.js"
 
 let whiteSide = true
@@ -15,7 +15,7 @@ const moves = ['d2d4', 'h7h6', 'd4d5', 'h6h5', 'd5d6', 'h5h4', 'd6c7', 'h4h3', '
 moves.forEach((move, i) => {
     setTimeout(() => {
         fetchMove(chessGame, move)
-    }, 100 * i)
+    }, 125 * i)
 });
 
 const chessGame2 = createGame("r1bqkb1r/ppnppppp/8/1BpnP3/8/2N2N2/PPPP1PPP/R1BQK2R b KQkq - 1 6")
@@ -92,8 +92,3 @@ function viewCurrentGame(game) {
     game.timeline = 0
     animateHistory(game, prevHistory)
 }
-
-export default function isWhite() {
-    return whiteSide
-}
-//export { history }
