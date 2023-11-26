@@ -2,6 +2,7 @@ import { renderBoard } from "./board"
 import createPiece, { cloneBoard } from "./pieces/piece"
 import { animatePiece } from "./animations"
 import { convertNotationtoLocation } from "./notation"
+import { animateHistory } from "./animations"
 
 export function viewBackHistory(game) {
     const length = game.history.length
@@ -53,7 +54,7 @@ export function undoMove(game, render = true) {
     if(game.history.length < 1) {
         return false;
     }
-    
+
     const animation = game.lastMove 
     renderBoard(game)
        
