@@ -7,6 +7,7 @@ import place from "./sounds/Move.ogg"
 import capture from "./sounds/Capture.ogg"
 import check from "./sounds/Check.wav"
 import randomMove from "../random.js"
+import { undoMove } from "./modify.js"
 
 const sounds = {
     "place": place,
@@ -34,6 +35,7 @@ function FENtoBoard(FENstring) {
         drawnArrows: [],
         playerIsWhite: true,
         showingWhiteSide: true,
+        fiftyMoveRule: 0
     }
     
     const pieces = {
@@ -82,6 +84,9 @@ function FENtoBoard(FENstring) {
         const loc = convertNotationtoLocation(FENstring[3])
         createPiece("passant", !chessGame.whitesMove, loc[0], loc[1], chessGame)
     }
+
+    chessGame.fiftyMoveRule = Number(FENstring[4])
+
     return chessGame
 }
 
@@ -157,8 +162,8 @@ async function waitForMove(game) {
         try {
             fetchMove(game, start + end)
         }
-        catch {
-            console.log("Bot did not make move due to error")
+        catch (e) {
+            console.log("Bot did not make move due to error:", e)
         }
     }
     else {
@@ -177,6 +182,10 @@ export function fetchMove(game, UCI) {
         "b": "bishop"
     }
     if(animateMove(game, startSquare[0], startSquare[1], endSquare[0], endSquare[1], true, promotion ? pieces[promotion.toLowerCase()] : false)) {
+        if(game.fiftyMoveRule > 100) {
+            undoMove(game)
+            throw new Error("fifty move rule")
+        }
         return game
     }
     throw new Error("Could not complete move.")
@@ -184,7 +193,12 @@ export function fetchMove(game, UCI) {
 
 export function postMove(game, promotion) {
     const UCI = game.lastMove.join('').concat(promotion ? promotion[0] : "")
+    if(game.fiftyMoveRule > 100) {
+        undoMove(game)
+        throw new Error("fifty move rule")
+    }
     waitForMove(game)
+    console.log(game.fiftyMoveRule)
     return UCI
 }
 

@@ -7,15 +7,15 @@ const chessGame = createGame()
 const board = chessGame.div
 document.querySelector("#root").appendChild(board)
 
-const moves = ['d2d4', 'h7h6', 'd4d5', 'h6h5', 'd5d6', 'h5h4', 'd6c7', 'h4h3', 'c7b8q', 'h3g2', 'g1f3', 'g2f1n']
+//const moves = ['e5g6']//, 'f4f3']
+//
+//moves.forEach((move, i) => {
+//   setTimeout(() => {
+//       fetchMove(chessGame2, move)
+//   }, 500 * i)
+//});
 
-moves.forEach((move, i) => {
-    setTimeout(() => {
-        fetchMove(chessGame, move)
-    }, 500 * i)
-});
-
-const chessGame2 = createGame("r1bqkb1r/ppnppppp/8/1BpnP3/8/2N2N2/PPPP1PPP/R1BQK2R b KQkq - 1 6")
+const chessGame2 = createGame("rnbqkb1r/pppppppp/8/4n3/5N2/8/PPPPPPPP/RNBQKB1R b KQkq - 99 50")
 const board2 = chessGame2.div
 document.querySelector("#root").appendChild(board2)
 

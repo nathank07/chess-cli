@@ -61,9 +61,17 @@ export function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) {
                 game.history.push(cloneGame(game))
                 game.lastMove = [convertLocationToNotation(xPos, yPos), convertLocationToNotation(toX, toY)]
                 game.lastMoveSound = game.board[toX][toY] === null ? "place" : "capture"
+
                 if(game.board[toX][toY] && name !== "pawn" && game.board[toX][toY].name === "passant") {
                     game.lastMoveSound = "place"
                 }
+
+                if(name === "pawn" || game.lastMoveSound === "capture") {
+                    game.fiftyMoveRule = 0
+                } else {
+                    game.fiftyMoveRule += 1
+                }
+
                 // Remove any en passant remnants
                 for(let i = 0; i < 8; i++) {
                     if(game.board[2][i] && game.board[2][i].name === "passant") {
@@ -171,6 +179,7 @@ export function cloneGame(game) {
         showingWhiteSide: game.showingWhiteSide,
         lastMove: game.lastMove,
         lastMoveSound: game.lastMoveSound,
+        fiftyMoveRule: game.fiftyMoveRule,
         drawnArrows: game.drawnArrows,
         whiteState: {
             shortCastle: game.whiteState.shortCastle,

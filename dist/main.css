@@ -175,4 +175,8 @@ body {
     height: 100px;
 }
 
+#board .animating {
+    z-index: 2;
+}
+
 
