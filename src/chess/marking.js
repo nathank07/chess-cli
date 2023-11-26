@@ -133,6 +133,7 @@ export function addUserMarkings(squareDiv, game, canvas) {
                     div.classList.remove("userHighlight")
                 });
                 game.drawnArrows = []
+                game.userHighlights = []
                 canvas.innerHTML = ""
                 document.removeEventListener('mousemove', drawPreviewArrow)
                 document.removeEventListener('mouseup', finalizeInput)
