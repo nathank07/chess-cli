@@ -7,8 +7,7 @@ import whiteBishop from '../cburnett/wB.svg'
 import blackKnight from '../cburnett/bN.svg' 
 import whiteKnight from '../cburnett/wN.svg' 
 
-import createPiece, { Piece, inCheck, outOfBounds } from "./piece.js"
-import { renderBoard, undoMove } from '../board.js'
+import createPiece, { Piece, outOfBounds } from "./piece.js"
 
 export default function Pawn( { isWhite, xPos, yPos, game } ) {
     const piece = Piece({

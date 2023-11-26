@@ -1,5 +1,5 @@
-import { renderBoard, playSound, convertLocationToNotation } from "./board.js"
-
+import { renderBoard, playSound } from "./board.js"
+import { convertLocationToNotation } from "./notation.js"
 
 // Default speed (going through history)
 const speed = 1

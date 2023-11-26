@@ -1,10 +1,7 @@
 import "./styles.css"
 import "./chess/cburnett/move.svg"
-import { convertNotationtoLocation, createGame, undoMove, changePlayerSide, flipBoard, fetchMove } from "./chess/board.js"
-import { animateHistory } from "./chess/animations.js"
-
-let whiteSide = true
-//let history = 0
+import { createGame, fetchMove } from "./chess/board.js"
+import { viewStartHistory, viewBackHistory, viewForwardHistory, viewCurrentGame, undoMove, changePlayerSide, flipBoard } from './chess/modify.js'
 
 const chessGame = createGame()
 const board = chessGame.div
@@ -15,7 +12,7 @@ const moves = ['d2d4', 'h7h6', 'd4d5', 'h6h5', 'd5d6', 'h5h4', 'd6c7', 'h4h3', '
 moves.forEach((move, i) => {
     setTimeout(() => {
         fetchMove(chessGame, move)
-    }, 125 * i)
+    }, 500 * i)
 });
 
 const chessGame2 = createGame("r1bqkb1r/ppnppppp/8/1BpnP3/8/2N2N2/PPPP1PPP/R1BQK2R b KQkq - 1 6")
@@ -48,47 +45,10 @@ document.addEventListener('keydown', (e) => {
     }
     if(e.code === "KeyZ") {
         undoMove(chessGame)
+    }
+    if(e.code === "KeyX") {
         undoMove(chessGame2)
     }
 })
 
-function viewBackHistory(game) {
-    const length = game.history.length
-    const prevHistory = game.timeline
-    if(game.timeline < length) {
-        game.timeline++
-    }
-    if(game.timeline === 1) {
-        const loc = convertNotationtoLocation(game.lastMove[1])
-        const lastPieceMoved = game.board[loc[0]][loc[1]].name
-        if(lastPieceMoved === "pawn" && (loc[0] === 0 || loc[0] === 7)) {
-            undoMove(game)
-            game.div.querySelector('.promotion').remove()
-        } else {
-            animateHistory(game, prevHistory)
-        }
-        return
-    }
-    animateHistory(game, prevHistory)
-}
 
-function viewForwardHistory(game) {
-    const prevHistory = game.timeline
-    if(game.timeline > 0) {
-        game.timeline--
-    }
-    animateHistory(game, prevHistory)
-}
-
-function viewStartHistory(game) {
-    const prevHistory = game.timeline
-    const length = game.history.length
-    game.timeline = length
-    animateHistory(game, prevHistory)
-}
-
-function viewCurrentGame(game) {
-    const prevHistory = game.timeline
-    game.timeline = 0
-    animateHistory(game, prevHistory)
-}
