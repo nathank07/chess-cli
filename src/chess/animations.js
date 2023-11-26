@@ -71,22 +71,22 @@ export function animateHistory(chessGame, prevHistory) {
     }
 }
 
-export default function animateMove(game, fromX, fromY, toX, toY, sound = false) {
-    if(game.board[fromX][fromY] && game.board[fromX][fromY].move(toX, toY)) {
-        // If user is behind then show the current game
-        resetTimeline(game)
+export default function animateMove(game, fromX, fromY, toX, toY, sound = false, promotion = false, clicked = false) {
+    if(game.board[fromX][fromY] && game.board[fromX][fromY].move(toX, toY, promotion ? promotion : undefined, clicked)) {
+        game.timeline = 0
+        renderBoard(game.history[game.history.length - 1])
         const start = convertLocationToNotation(fromX, fromY)
         const end = convertLocationToNotation(toX, toY)
         if(sound) {
             playSound(game)
         }
-        animatePiece(start, end, game.div.firstChild, moveSpeed).then(() => {
-            renderBoard(game)
-        })
-        return
-    } else {
-        return false
+        animatePiece(start, end, game.div.firstChild, moveSpeed)
+            .then(() => {
+                renderBoard(game)
+            })
+        return true
     }
+    return false
 }
 
 export function animatePiece(fromNotation, toNotation, boardDiv, speedMultiplier = speed) {

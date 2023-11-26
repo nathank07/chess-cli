@@ -1,4 +1,4 @@
-import { convertLocationToNotation, convertNotationtoLocation, squareDivs, playSound, drawArrows } from "../board.js"
+import { convertLocationToNotation, convertNotationtoLocation, squareDivs, playSound, drawArrows, postMove, renderBoard, undoMove } from "../board.js"
 import King from "./king.js"
 import Queen from "./queen.js"
 import Rook from "./rook.js"
@@ -50,7 +50,7 @@ export function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) {
             return capturedPiece ? isWhite !== capturedPiece.isWhite : false
         },
 
-        move: (toX, toY) => {
+        move: (toX, toY, promotion, post = false) => {
             const moves = filterLegal(xPos, yPos, isWhite, standardMoves(), game.board)
             if(game.whitesMove === isWhite && moves.some(pos => pos[0] === toX && pos[1] === toY)) {
                 const index = moves.findIndex(pos => pos[0] === toX && pos[1] === toY);
@@ -73,17 +73,35 @@ export function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) {
                 }
 
                 // Move piece and change side's move
+                if(promotion) {
+                    name = promotion
+                }
                 createPiece(name, isWhite, toX, toY, game)
                 game.board[xPos][yPos] = null
                 game.whitesMove = !game.whitesMove
 
                 // Any additional things you may want a piece to do
-                if(moves[index].length > 2) {
-                    moves[index][2]()
+                if(moves[index].length > 2 && !promotion) {
+                    const func = moves[index][2]()
+                    if(func && func[Symbol.toStringTag] === 'Promise') {
+                        return (async () => {
+                            const piece = await func
+                            undoMove(game)
+                            renderBoard(game)
+                            game.board[xPos][yPos].move(toX, toY, piece, true)
+                            return true
+                        })()
+                    }
                 }
 
                 if(inCheck(game)) {
                     game.lastMoveSound = "check"
+                }
+                if(promotion) {
+                    renderBoard(game)
+                }
+                if(post) {
+                    postMove(game, promotion)
                 }
 
                 return true
@@ -200,7 +218,7 @@ export function makeDraggable(square, svg, renderBoard){
             document.removeEventListener('mousemove', mouseMove)
             svg.style.pointerEvents = "auto"
             const move = selectSquare(board)
-            if(event.buttons === 0 && square.move(move[0], move[1])) {
+            if(event.buttons === 0 && square.move(move[0], move[1], false, true)) {
                 playSound(square.game)
                 renderBoard(square.game)
             }
@@ -225,7 +243,7 @@ export function makeDraggable(square, svg, renderBoard){
             board.querySelectorAll('.possiblepiece').forEach(square => {
                 square.classList.remove('possiblepiece')
             });
-            animateMove(square.game, originalPos[0], originalPos[1], move[0], move[1])
+            animateMove(square.game, originalPos[0], originalPos[1], move[0], move[1], false, false, true)
             playSound(square.game)
             document.removeEventListener('mousedown', mouseDown) 
             document.removeEventListener('mouseup', mouseUp)

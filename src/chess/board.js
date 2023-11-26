@@ -38,7 +38,7 @@ export function convertNotationtoLocation(notation) {
         "b": 6,
         "a": 7
     }
-    return [Number(notation[1]) - 1, file[notation[0]]]
+    return [Number(notation[1].toLowerCase()) - 1, file[notation[0]]]
 }
 
 function FENtoBoard(FENstring) {
@@ -391,10 +391,6 @@ export function renderBoard(game) {
     drawArrows(game, canvas)
     annotateBoard(boardDiv, whiteSide)
     markHoveredPieces(boardDiv)
-    waitingForMove = game.whitesMove !== game.playerIsWhite
-    if(waitingForMove) {
-        waitForMove(game)
-    }
     return boardDiv
 }
 
@@ -436,16 +432,6 @@ function annotateBoard(boardDiv, whiteSide) {
     
 }
 
-function animateGame(game, moves, timeBetweenMoves) {
-    let totalMoves = 0
-    moves.map(move => {
-        totalMoves++
-        setTimeout(() => {
-            animateMove(game, move[0], move[1], move[2], move[3])
-        }, timeBetweenMoves * totalMoves)
-    })
-}
-
 export function changePlayerSide(game, spectator) {
     game.playerIsWhite = !game.playerIsWhite
     if(spectator) {
@@ -457,6 +443,28 @@ export function changePlayerSide(game, spectator) {
 export function flipBoard(game) {
     game.showingWhiteSide = !game.showingWhiteSide
     game.timeline ? renderBoard(game.history[game.history.length - 1]) : renderBoard(game)
+}
+
+export function fetchMove(game, UCI) {
+    const startSquare = convertNotationtoLocation(UCI.substring(0, 2).toLowerCase())
+    const endSquare = convertNotationtoLocation(UCI.substring(2, 4).toLowerCase())
+    const promotion = UCI.substring(4, 5)
+    const pieces = {
+        "q": "queen",
+        "r": "rook",
+        "n": "knight",
+        "b": "bishop"
+    }
+    if(animateMove(game, startSquare[0], startSquare[1], endSquare[0], endSquare[1], true, promotion ? pieces[promotion.toLowerCase()] : false)) {
+        return game
+    }
+    throw new Error("Could not complete move.")
+}
+
+export function postMove(game, promotion) {
+    const UCI = game.lastMove.join('').concat(promotion ? promotion[0] : "")
+    waitForMove(game)
+    return UCI
 }
 
 export function createGame(fen) {

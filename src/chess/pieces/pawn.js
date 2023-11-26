@@ -8,7 +8,7 @@ import blackKnight from '../cburnett/bN.svg'
 import whiteKnight from '../cburnett/wN.svg' 
 
 import createPiece, { Piece, inCheck, outOfBounds } from "./piece.js"
-import { renderBoard } from '../board.js'
+import { renderBoard, undoMove } from '../board.js'
 
 export default function Pawn( { isWhite, xPos, yPos, game } ) {
     const piece = Piece({
@@ -39,11 +39,9 @@ export default function Pawn( { isWhite, xPos, yPos, game } ) {
                         moves.push([x, y, async () => {
                             //promotion logic
                             const piece = await promoteMenu(game, isWhite)
-                            createPiece(piece, isWhite, x, y, game)
-                            if(inCheck(game)) {
-                                game.lastMoveSound = "check"
-                            }
-                            renderBoard(game)
+                            return new Promise(resolve => {
+                                resolve(piece)
+                            })
                         }])
                         continue
                     }
@@ -61,11 +59,9 @@ export default function Pawn( { isWhite, xPos, yPos, game } ) {
                         moves.push([x, y, async () => {
                             //promotion logic
                             const piece = await promoteMenu(game, isWhite)
-                            createPiece(piece, isWhite, x, y, game)
-                            if(inCheck(game)) {
-                                game.lastMoveSound = "check"
-                            }
-                            renderBoard(game)
+                            return new Promise(resolve => {
+                                resolve(piece)
+                            })
                         }])
                         continue
                     }

@@ -1,6 +1,6 @@
 import "./styles.css"
 import "./chess/cburnett/move.svg"
-import { convertNotationtoLocation, createGame, renderBoard, undoMove, changePlayerSide, flipBoard } from "./chess/board.js"
+import { convertNotationtoLocation, createGame, renderBoard, undoMove, changePlayerSide, flipBoard, fetchMove } from "./chess/board.js"
 import { animateHistory } from "./chess/animations.js"
 
 let whiteSide = true
@@ -10,7 +10,15 @@ const chessGame = createGame()
 const board = chessGame.div
 document.querySelector("#root").appendChild(board)
 
-const chessGame2 = createGame("r1bqkb1r/ppnppppp/8/1BpnP3/8/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 1 6")
+const moves = ['d2d4', 'h7h6', 'd4d5', 'h6h5', 'd5d6', 'h5h4', 'd6c7', 'h4h3', 'c7b8q', 'h3g2', 'g1f3', 'g2f1n']
+
+moves.forEach((move, i) => {
+    setTimeout(() => {
+        fetchMove(chessGame, move)
+    }, 100 * i)
+});
+
+const chessGame2 = createGame("r1bqkb1r/ppnppppp/8/1BpnP3/8/2N2N2/PPPP1PPP/R1BQK2R b KQkq - 1 6")
 const board2 = chessGame2.div
 document.querySelector("#root").appendChild(board2)
 
@@ -87,12 +95,5 @@ function viewCurrentGame(game) {
 
 export default function isWhite() {
     return whiteSide
-}
-
-export function resetTimeline(game) {
-    if(game.timeline !== 0) {
-        renderBoard(game.history[game.history.length - 1])
-        game.timeline = 0
-    }
 }
 //export { history }
