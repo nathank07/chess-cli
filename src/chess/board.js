@@ -35,7 +35,8 @@ function FENtoBoard(FENstring) {
         drawnArrows: [],
         playerIsWhite: true,
         showingWhiteSide: true,
-        fiftyMoveRule: 0
+        fiftyMoveRule: 0,
+        export: [FENstring]
     }
     
     const pieces = {
@@ -171,7 +172,7 @@ async function waitForMove(game) {
     }
 }
 
-export function fetchMove(game, UCI) {
+export function fetchMove(game, UCI, sound = true) {
     const startSquare = convertNotationtoLocation(UCI.substring(0, 2).toLowerCase())
     const endSquare = convertNotationtoLocation(UCI.substring(2, 4).toLowerCase())
     const promotion = UCI.substring(4, 5)
@@ -181,11 +182,12 @@ export function fetchMove(game, UCI) {
         "n": "knight",
         "b": "bishop"
     }
-    if(animateMove(game, startSquare[0], startSquare[1], endSquare[0], endSquare[1], true, promotion ? pieces[promotion.toLowerCase()] : false)) {
+    if(animateMove(game, startSquare[0], startSquare[1], endSquare[0], endSquare[1], sound, promotion ? pieces[promotion.toLowerCase()] : false)) {
         if(game.fiftyMoveRule > 100) {
             undoMove(game)
             throw new Error("fifty move rule")
         }
+        game.export.push(UCI)
         return game
     }
     throw new Error("Could not complete move.")
@@ -198,7 +200,8 @@ export function postMove(game, promotion) {
         throw new Error("fifty move rule")
     }
     waitForMove(game)
-    console.log(game.fiftyMoveRule)
+    game.export.push(UCI)
+    console.log(game.export)
     return UCI
 }
 
@@ -214,6 +217,16 @@ export function createGame(fen) {
     }
     const chessGame = FENtoBoard(fen)
     chessGame.div = boardContainer
+    renderBoard(chessGame)
+    return chessGame
+}
+
+export function importGame(fenUCIexport) {
+    const chessGame = createGame(fenUCIexport[0])
+    
+    fenUCIexport.slice(1).forEach(move => {
+        fetchMove(chessGame, move, false)
+    });
     renderBoard(chessGame)
     return chessGame
 }
