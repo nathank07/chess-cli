@@ -4,25 +4,17 @@ import { createGame, importGame, fetchMove } from "./chess/board.js"
 import { createWSGame, createWebSocket, requestGame, getGame, handleMoves } from "./websockets.js"
 import { viewStartHistory, viewBackHistory, viewForwardHistory, viewCurrentGame, undoMove, changePlayerSide, flipBoard } from './chess/modify.js'
 
-
-
 let chessGame
-createWSGame(false)
-    .then(res => {
-        return createWebSocket(res)
+createWebSocket(275)
         .then((res) => {
             chessGame = res
             document.querySelector("#root").appendChild(res.div)
         })
-    })
 
-setTimeout(()=> {
-    return createWebSocket(chessGame.id)
-    .then((res2) => {
-        document.querySelector("#root").appendChild(res2.div)
-    })
-}, 500)
-
+createWebSocket(275)
+.then((res) => {
+    document.querySelector("#root").appendChild(res.div)
+})
 
 
 

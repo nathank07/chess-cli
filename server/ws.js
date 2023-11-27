@@ -13,7 +13,6 @@ const server = http.createServer((req, res) => {
 const wss = new WebSocket.Server({ server });
 
 
-const games = {};
 
 wss.on('connection', ws => {
     ws.on('message', data => {
@@ -24,35 +23,32 @@ wss.on('connection', ws => {
                 createNewGame(query.fen)
                     .then(id => {
                         ws.send(id);
-                        ws.gameId = id;
-                        if (!games[id]) {
-                            games[id] = [];
-                        }
-                        games[id].push(ws);
-                        console.log(`Game ${id} created. Total clients in game: ${games[id].length}`); // Log the game creation and client addition
                     })
                     .catch(err => {
                         ws.send("Could not create game: ", err)
                     })
             }
             if(query.id && query.uci) {
+                console.log(`Recieved ${query.uci} request to ${query.id}`)
                 verify(query.uci, query.id)
                     .then(res => {
-                        updateDB(query.uci, query.id)
+                        if(res) {
+                            updateDB(query.uci, query.id)
                             .then(() => {
-                                // Send the move to all clients subscribed to this game
-                                if (games[query.id]) {
-                                    games[query.id].forEach(client => {
-                                        if (client.readyState === WebSocket.OPEN) {
-                                            ws.send(query.uci);
-                                        }
-                                    });
-                                }
+                                console.log(`Gathering Clients... ${wss.clients}`)
+                                wss.clients.forEach((client) => {
+                                    //console.log(client)
+                                    if(client.gameId === query.id) {
+                                        console.log(`Sent ${query.uci} to`, client.gameId)
+                                        client.send(query.uci)
+                                    }
+                                })
                             })
                             .catch((rej) => {
                                 console.log("Database could not be updated", rej)
                                 ws.send(rej)
                             })
+                        }
                     })
                     .catch(rej => {
                         console.log(rej)
@@ -61,6 +57,9 @@ wss.on('connection', ws => {
             if(query.id && !query.uci) {
                 exportGame(query.id)
                     .then(res => {
+                        console.log(`Exported ${query.id}`)
+                        ws.gameId = query.id
+                        console.log(`Set websocket game id: ${ws.gameId}`)
                         ws.send(JSON.stringify({exportedGame: res, id: query.id}))
                     })
                     .catch(rej => {
@@ -75,10 +74,7 @@ wss.on('connection', ws => {
     });
 
     ws.on('close', () => {
-        if (ws.gameId && games[ws.gameId]) {
-            games[ws.gameId] = games[ws.gameId].filter(client => client !== ws);
-            console.log(`Client disconnected. Total clients in game ${ws.gameId}: ${games[ws.gameId].length}`); // Log the client disconnection
-        }
+        console.log(`One watcher of ${ws.gameId} has disconnected`)
     });
 });
 

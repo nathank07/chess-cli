@@ -1,6 +1,6 @@
 import { convertNotationtoLocation, convertLocationToNotation } from "./notation"
 import animateMove from "./animations"
-import { playSound } from "./board"
+import { playSound, waitForMove } from "./board"
 
 export default function makeDraggable(square, svg, renderBoard){
     svg.addEventListener('mousedown', (e) => {
@@ -88,6 +88,9 @@ export default function makeDraggable(square, svg, renderBoard){
             if(event.buttons === 0 && square.move(move[0], move[1], false, true)) {
                 playSound(square.game)
                 renderBoard(square.game)
+                setTimeout(() => {
+                    waitForMove(square.game)
+                }, 100);
             }
             if(!outsideInitialSquare) {
                 svg.style.position = null
@@ -112,6 +115,9 @@ export default function makeDraggable(square, svg, renderBoard){
             });
             animateMove(square.game, originalPos[0], originalPos[1], move[0], move[1], false, false, true)
             playSound(square.game)
+            setTimeout(() => {
+                waitForMove(square.game)
+            }, 100);
             document.removeEventListener('mousedown', mouseDown) 
             document.removeEventListener('mouseup', mouseUp)
             document.removeEventListener('mousemove', mouseMove)

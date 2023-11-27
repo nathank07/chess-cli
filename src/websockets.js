@@ -39,8 +39,9 @@ export async function createWebSocket(id) {
                 if(importedGame && importedGame.div) {
                     socket.addEventListener('message', (e) => {
                         if(e.data.length <= 5) {
-                            console.log(e.data)
-                            fetchMove(importedGame, e.data, true);
+                            if(!importedGame.lastMove || e.data !== importedGame.lastMove[0] + importedGame.lastMove[1]) {
+                                fetchMove(importedGame, e.data, true);
+                            }
                         }
                     })
                     socket.removeEventListener('message', fetchGame)
