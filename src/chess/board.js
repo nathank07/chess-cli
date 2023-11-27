@@ -15,7 +15,7 @@ const sounds = {
     "check": check
 }
 
-function FENtoBoard(FENstring) {
+export function FENtoBoard(FENstring, startWebSocket) {
     const chessGame = {
         board: [...Array(8)].map(e => Array(8).fill(null)),
         div: null,
@@ -37,7 +37,7 @@ function FENtoBoard(FENstring) {
         playerIsWhite: true,
         showingWhiteSide: true,
         fiftyMoveRule: 0,
-        export: [FENstring]
+        export: [FENstring],
     }
     
     const pieces = {
@@ -89,6 +89,9 @@ function FENtoBoard(FENstring) {
 
     chessGame.fiftyMoveRule = Number(FENstring[4])
 
+    if(startWebSocket) {
+        setWebSocket(chessGame)
+    }
     return chessGame
 }
 
@@ -161,12 +164,7 @@ async function waitForMove(game) {
     if(move) {
         const start = convertLocationToNotation(move[0][0], move[0][1])
         const end = convertLocationToNotation(move[1][0], move[1][1])
-        try {
-            fetchMove(game, start + end)
-        }
-        catch (e) {
-            console.log("Bot did not make move due to error:", e)
-        }
+        fetchMove(game, start+end, true)
     }
     else {
         console.log("no moves left")
@@ -188,23 +186,30 @@ export function fetchMove(game, UCI, sound = true) {
             undoMove(game)
             throw new Error("fifty move rule")
         }
+        postMove(game, promotion ? pieces[promotion.toLowerCase()] : false, game.socket)
         game.export.push(UCI)
         return game
     }
-    throw new Error("Could not complete move.")
+    //throw new Error("Could not complete move.")
 }
 
-export function postMove(game, promotion) {
+export function postMove(game, promotion, socket) {
     const UCI = game.lastMove.join('').concat(promotion ? promotion[0] : "")
     if(game.fiftyMoveRule > 100) {
         undoMove(game)
         throw new Error("fifty move rule")
     }
-    waitForMove(game)
+    if(socket) {
+        socket.send(JSON.stringify({
+            uci: UCI,
+            id: game.id, 
+        }))
+    }
     game.export.push(UCI)
-    console.log(game.export)
+    waitForMove(game)
     return UCI
 }
+
 
 export function createGame(fen) {
     const boardContainer = document.createElement('div');
@@ -224,10 +229,14 @@ export function createGame(fen) {
 
 export function importGame(fenUCIexport) {
     const chessGame = createGame(fenUCIexport[0])
-    
-    fenUCIexport.slice(1).forEach(move => {
-        fetchMove(chessGame, move, false)
-    });
+    if(fenUCIexport.length > 1) {
+        fenUCIexport.slice(1).forEach(arr => {
+            arr.forEach(move => {
+                fetchMove(chessGame, move, false)
+            });
+        });
+    }
     renderBoard(chessGame)
-    return chessGame
+    return chessGame   
 }
+

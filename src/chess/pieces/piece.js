@@ -111,8 +111,8 @@ export function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) {
                 if(promotion) {
                     renderBoard(game)
                 }
-                if(post) {
-                    postMove(game, promotion)
+                if(post && game.socket) {
+                    postMove(game, promotion, game.socket)
                 }
 
                 return true
