@@ -1,4 +1,4 @@
-import createPiece, { inCheck } from "./pieces/piece.js"
+import createPiece, { inCheck, threeFoldRepetition } from "./pieces/piece.js"
 import { convertLocationToNotation, convertNotationtoLocation } from "./notation.js"
 import makeDraggable from "./drag.js"
 import { createSVGCanvas, addUserMarkings, drawUserMarkings, annotateBoard, markHoveredPieces } from "./marking.js"
@@ -15,7 +15,7 @@ const sounds = {
     "check": check
 }
 
-export function FENtoBoard(FENstring, startWebSocket) {
+export function FENtoBoard(FENstring) {
     const chessGame = {
         board: [...Array(8)].map(e => Array(8).fill(null)),
         div: null,
@@ -92,6 +92,41 @@ export function FENtoBoard(FENstring, startWebSocket) {
     return chessGame
 }
 
+export function gametoFEN(game) {
+    const pieces = {
+        "pawn": "p",
+        "queen": "q", 
+        "bishop": "b",
+        "knight": "n",
+        "rook": "r",
+        "king": "k",
+    }
+
+    let number = 0
+    let FEN = ""
+    game.board.forEach((row) => {
+        row.forEach(square => {
+            if(square === null) {
+                number += 1
+            }
+            if(square && square.name === "passant") {
+                number += 1
+            }
+            if(square && square.name !== "passant") {
+                const piece = pieces[square.name]
+                FEN += number ? number : ""
+                FEN += square.isWhite ? piece.toUpperCase() : piece
+                number = 0
+            }
+        })
+        FEN += number ? number : ""
+        number = 0
+        FEN += "/"
+    })
+    FEN = FEN.substring(0, FEN.length - 1)
+    return FEN
+}
+
 
 export function playSound(game) {
     if(game.lastMoveSound) {
@@ -130,9 +165,9 @@ export function renderBoard(game) {
                 const svg = document.createElement('img')
                 svg.src = pieceSvg
                 if(!history) {
-                    if(game.playerIsWhite !== null && square.isWhite === game.playerIsWhite && game.playerIsWhite === game.whitesMove) {
+                    //if(game.playerIsWhite !== null && square.isWhite === game.playerIsWhite && game.playerIsWhite === game.whitesMove) {
                         makeDraggable(square, svg, renderBoard)
-                    }
+                    //}
                 }
                 div.appendChild(svg)
             }
@@ -179,10 +214,6 @@ export function fetchMove(game, UCI, sound = true) {
         "b": "bishop"
     }
     if(animateMove(game, startSquare[0], startSquare[1], endSquare[0], endSquare[1], sound, promotion ? pieces[promotion.toLowerCase()] : false)) {
-        if(game.fiftyMoveRule > 100) {
-            undoMove(game)
-            throw new Error("fifty move rule")
-        }
         game.export.push(UCI)
         return game
     } else {
@@ -192,16 +223,13 @@ export function fetchMove(game, UCI, sound = true) {
 
 export function postMove(game, promotion, socket) {
     const UCI = game.lastMove.join('').concat(promotion ? promotion[0] : "")
-    if(game.fiftyMoveRule > 100) {
-        undoMove(game)
-        throw new Error("fifty move rule")
-    }
     if(socket) {
         socket.send(JSON.stringify({
             uci: UCI,
             id: game.id, 
         }))
     }
+    threeFoldRepetition(game)
     game.export.push(UCI)
     return UCI
 }

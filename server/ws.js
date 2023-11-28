@@ -19,6 +19,7 @@ wss.on('connection', ws => {
         const str = data.toString();
         try {
             const query = JSON.parse(str);
+            console.log(query)
             if(query.fen) {
                 createNewGame(query.fen)
                     .then(id => {
@@ -40,13 +41,21 @@ wss.on('connection', ws => {
                                     //console.log(client)
                                     if(client.gameId === query.id) {
                                         console.log(`Sent ${query.uci} to`, client.gameId)
-                                        client.send(query.uci)
+                                        client.send(JSON.stringify({uci: query.uci}))
                                     }
                                 })
                             })
                             .catch((rej) => {
                                 console.log("Database could not be updated", rej)
                                 ws.send(rej)
+                            })
+                        } else {
+                            console.log(`${query.uci} to ${query.id} was invalid, sending response`)
+                            wss.clients.forEach((client) => {
+                                if(client.gameId === query.id) {
+                                    console.log(`Sent ${query.uci} to`, client.gameId)
+                                    client.send(JSON.stringify({invalid: true, uci: query.uci}))
+                                }
                             })
                         }
                     })

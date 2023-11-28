@@ -1,4 +1,5 @@
 import { createGame, fetchMove, importGame } from "./chess/board";
+import { undoMove } from "./chess/modify";
 
 export function createWSGame(fen) {
     return new Promise((resolve, reject) => {
@@ -38,9 +39,16 @@ export async function createWebSocket(id) {
                 importedGame.socket = socket
                 if(importedGame && importedGame.div) {
                     socket.addEventListener('message', (e) => {
-                        if(e.data.length <= 5) {
-                            if(!importedGame.lastMove || e.data !== importedGame.lastMove[0] + importedGame.lastMove[1]) {
-                                fetchMove(importedGame, e.data, true);
+                        const response = JSON.parse(e.data)
+                        if(response.uci) {
+                            const lastMove = importedGame.lastMove ? importedGame.lastMove[0] + importedGame.lastMove[1] : ""
+                            if(response.invalid && response.uci.slice(0, 4) === lastMove) {
+                                console.log("Server rejected move")
+                                undoMove(importedGame)
+                                return
+                            }
+                            if(response.uci.slice(0, 4) !== lastMove) {
+                                fetchMove(importedGame, response.uci, true);
                             }
                         }
                     })

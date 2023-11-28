@@ -1,7 +1,7 @@
-import { postMove } from "../board.js"
+import { createGame, gametoFEN, postMove } from "../board.js"
 import { undoMove } from "../modify.js"
 import { renderBoard } from "../board.js"
-import { convertLocationToNotation } from "../notation.js"
+import { convertLocationToNotation, convertNotationtoLocation } from "../notation.js"
 import King from "./king.js"
 import Queen from "./queen.js"
 import Rook from "./rook.js"
@@ -120,9 +120,12 @@ export function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) {
             return false
         },
         moves: () => {
+            if(game.fiftyMoveRule > 100 || threeFoldRepetition(game) || game.whitesMove !== isWhite) {
+                return []
+            }
             return standardMoves().filter(move => 
                 isLegal(xPos, yPos, move[0], move[1], isWhite, game.board)
-            );
+            )
         }
 
     }
@@ -203,6 +206,46 @@ export function inCheck(game) {
         })
     });
     return check
+}
+
+function gameEnd(game) {
+    const moves = []
+    game.board.forEach(row => {
+        row.forEach(piece => {
+            if(piece && piece.isWhite === game.whitesMove) {
+                piece.moves().forEach(move => {
+                    moves.push(move)
+                });
+            }
+        });
+    });
+    return game.fiftyMoveRule >= 101 || moves.length === 0
+}
+
+export function threeFoldRepetition(game) {
+    const newChessGame = createGame(game.export[0])
+    const positions = []
+    game.export.slice(1).forEach((UCI) => {
+        const startSquare = convertNotationtoLocation(UCI.substring(0, 2).toLowerCase())
+        const endSquare = convertNotationtoLocation(UCI.substring(2, 4).toLowerCase())
+        const promotion = UCI.substring(4, 5)
+        const pieces = {
+            "q": "queen",
+            "r": "rook",
+            "n": "knight",
+            "b": "bishop"
+        }
+        newChessGame.board[startSquare[0]][startSquare[1]].move(endSquare[0], endSquare[1], promotion ? pieces[promotion.toLowerCase()] : false)
+        positions.push(gametoFEN(newChessGame).split(" ")[0])
+    })
+    let numberOfPositions = 0
+    positions.forEach(position => {
+        const totalCurrentPos = positions.filter(pos => pos === position).length
+        if(totalCurrentPos >= numberOfPositions) {
+            numberOfPositions = totalCurrentPos
+        }
+    });
+    return numberOfPositions >= 3
 }
 
 export default function createPiece(piece, isWhite, xPos, yPos, game) {

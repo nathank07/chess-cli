@@ -77,6 +77,7 @@ export function undoMove(game, render = true) {
     game.timeline = 0
     if(game.history.length > 1) {
         game.history.pop()
+        game.export.pop()
     }    
     if(animation) {
         animatePiece(animation[1], animation[0], game.div.firstChild)

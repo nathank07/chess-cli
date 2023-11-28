@@ -1,6 +1,5 @@
 const { createPiece } = require("./piece.js")
 
-
 function moveUCI(game, UCI) {
     const startSquare = convertNotationtoLocation(UCI.substring(0, 2).toLowerCase())
     const endSquare = convertNotationtoLocation(UCI.substring(2, 4).toLowerCase())
@@ -11,7 +10,8 @@ function moveUCI(game, UCI) {
         "n": "knight",
         "b": "bishop"
     }
-    if(game.board[startSquare[0]][startSquare[1]].move(endSquare[0], endSquare[1], promotion ? pieces[promotion.toLowerCase()] : false)) {
+    if( game.board[startSquare[0]][startSquare[1]] &&
+        game.board[startSquare[0]][startSquare[1]].move(endSquare[0], endSquare[1], promotion ? pieces[promotion.toLowerCase()] : false, UCI)) {
         return true
     } else {
         return false
@@ -32,6 +32,8 @@ function FENtoBoard(FENstring) {
         },
         lastMove: null,
         fiftyMoveRule: 0,
+        fen: FENstring,
+        uci: [],
     }
     
     const pieces = {
