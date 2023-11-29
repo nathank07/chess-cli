@@ -4,6 +4,9 @@ import { playSound, waitForMove } from "./board"
 
 export default function makeDraggable(square, svg, renderBoard){
     svg.addEventListener('mousedown', (e) => {
+        if(svg.parentNode.classList.contains('possiblepiece')) {
+            return
+        }
         e.preventDefault()
 
         const alreadyHighlighted = svg.parentNode.classList.contains("highlighted")
