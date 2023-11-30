@@ -1,3 +1,5 @@
+const { Chess } = require('chess.js')
+
 function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) { 
     return {
         name: name,
@@ -65,7 +67,10 @@ function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) {
                         })()
                     }
                 }
-
+                if(uci !== undefined) {
+                    const gameResult = gameOver(game)
+                    return gameResult ? gameResult : true
+                }
                 return true
             }
             return false
@@ -208,13 +213,15 @@ function gametoFEN(game) {
 
     let number = 0
     let FEN = ""
-    game.board.forEach((row) => {
-        row.forEach(square => {
+    let passantSquare
+    game.board.forEach((row, i) => {
+        row.forEach((square, j) => {
             if(square === null) {
                 number += 1
             }
             if(square && square.name === "passant") {
                 number += 1
+                passantSquare = [i, j]
             }
             if(square && square.name !== "passant") {
                 const piece = pieces[square.name]
@@ -227,7 +234,32 @@ function gametoFEN(game) {
         number = 0
         FEN += "/"
     })
-    FEN = FEN.substring(0, FEN.length - 1)
+    FEN = FEN.substring(0, FEN.length - 1) + " "
+
+    FEN += game.whitesMove ? "w " : "b "
+
+    if(game.whiteState.shortCastle) {
+        FEN += "K"
+    }
+    if(game.whiteState.longCastle) {
+        FEN += "Q"
+    }
+    if(game.blackState.shortCastle) {
+        FEN += "k"
+    }
+    if(game.blackState.longCastle) {
+        FEN += "q"
+    }
+    if(!game.whiteState.shortCastle && !game.whiteState.longCastle && !game.blackState.shortCastle && !game.blackState.longCastle) {
+        FEN += "-"
+    }
+
+    FEN += " "
+
+    FEN += passantSquare ? convertLocationToNotation(passantSquare[0], passantSquare[1]) : "-"
+
+    FEN += ` ${game.fiftyMoveRule} 1`
+
     return FEN
 }
 
@@ -647,6 +679,50 @@ function createPiece(piece, isWhite, xPos, yPos, game) {
     }
 
     return game.board[xPos][yPos]
+}
+
+function gameOver(game) {
+    if(game.fiftyMoveRule > 100) {
+        return { result: "Stalemate", reason: "Fifty move rule" }
+    }
+    if(threeFoldRepetition(game)) {
+        return { result: "Stalemate", reason: "Threefold Repetition" }
+    }
+    try {
+        const chess = new Chess(gametoFEN(game))
+        if(chess.isCheckmate()) {
+            return { result: !game.whitesMove ? "White" : "Black", reason: "Checkmate" }
+        }
+        if(chess.isStalemate()) {
+            return { result: "Stalemate", reason: "No more moves" }
+        }
+        if(chess.isInsufficientMaterial()) {
+            return { result: "Stalemate", reason: "Insufficient material"}
+        }
+    } catch (e) {
+        console.log(gametoFEN(game))
+        console.log(e)
+        const gameOverObject = fallbackGameOver(game)
+        if(gameOverObject) {
+            return gameOverObject
+        }
+    }
+    return false
+}
+
+function fallbackGameOver(game) {
+    // This solution is too slow so I use chess.js for this
+    for(let x = 0; x < 8; x++) {
+        for(let y = 0; y < 8; y++) {
+            if(game.board[x][y] && game.board[x][y].isWhite === game.whitesMove && game.board[x][y].moves().length > 0) {
+                return false
+            }
+        }
+    }
+    if(inCheck(game)) {
+        return { result: !game.whitesMove ? "White" : "Black", reason: "Checkmate" }
+    }
+    return { result: "Stalemate", reason: "No more moves" }
 }
 
 module.exports.createPiece = createPiece

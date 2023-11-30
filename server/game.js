@@ -10,9 +10,8 @@ function moveUCI(game, UCI) {
         "n": "knight",
         "b": "bishop"
     }
-    if( game.board[startSquare[0]][startSquare[1]] &&
-        game.board[startSquare[0]][startSquare[1]].move(endSquare[0], endSquare[1], promotion ? pieces[promotion.toLowerCase()] : false, UCI)) {
-        return true
+    if(game.board[startSquare[0]][startSquare[1]]) {
+        return game.board[startSquare[0]][startSquare[1]].move(endSquare[0], endSquare[1], promotion ? pieces[promotion.toLowerCase()] : false, UCI)
     } else {
         return false
     }

@@ -13,12 +13,14 @@ export function animateHistory(chessGame, prevHistory) {
         return
     }
     const game = history !== 0 ? chessGame.history[current - history] : chessGame
+    game.showingWhiteSide = chessGame.showingWhiteSide
     // If the move isn't one move ahead/behind
     if(Math.abs(prevHistory - history) !== 1) {
         if(history === 0) {
             renderBoard(chessGame)
         }
         if(history === current) {
+            chessGame.history[0].showingWhiteSide = chessGame.showingWhiteSide 
             renderBoard(chessGame.history[0])
         }
         return
@@ -46,6 +48,7 @@ export function animateHistory(chessGame, prevHistory) {
         animatePiece(end, begin, game.div.firstChild)
             .then(() => {
                 if(chessGame.timeline) {
+                    chessGame.history[chessGame.history.length - chessGame.timeline].showingWhiteSide = chessGame.showingWhiteSide
                     renderBoard(chessGame.history[chessGame.history.length - chessGame.timeline])
                 } else {
                     renderBoard(chessGame)
@@ -57,6 +60,7 @@ export function animateHistory(chessGame, prevHistory) {
     } else {
         const sound = history < prevHistory
         if(chessGame.timeline) {
+            chessGame.history[chessGame.history.length - chessGame.timeline].showingWhiteSide = chessGame.showingWhiteSide
             renderBoard(chessGame.history[chessGame.history.length - chessGame.timeline])
             if(sound) {
                 playSound(chessGame.history[chessGame.history.length - chessGame.timeline])

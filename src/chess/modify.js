@@ -47,7 +47,12 @@ export function viewCurrentGame(game) {
 
 export function flipBoard(game) {
     game.showingWhiteSide = !game.showingWhiteSide
-    game.timeline ? renderBoard(game.history[game.history.length - 1]) : renderBoard(game)
+    if(game.timeline !== 0) {
+        game.history[game.history.length - game.timeline].showingWhiteSide = game.showingWhiteSide
+        renderBoard(game.history[game.history.length - game.timeline])
+    } else {
+        renderBoard(game)
+    }
 }
 
 export function undoMove(game, render = true) {

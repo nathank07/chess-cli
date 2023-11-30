@@ -235,7 +235,6 @@ export function gameOver(game) {
             return gameOverObject
         }
     }
-
     return false
 }
 

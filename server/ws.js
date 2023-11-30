@@ -19,7 +19,6 @@ wss.on('connection', ws => {
         const str = data.toString();
         try {
             const query = JSON.parse(str);
-            console.log(query)
             if(query.fen) {
                 createNewGame(query.fen)
                     .then(id => {
@@ -34,14 +33,17 @@ wss.on('connection', ws => {
                 verify(query.uci, query.id)
                     .then(res => {
                         if(res) {
+                            console.log(res)
                             updateDB(query.uci, query.id)
                             .then(() => {
-                                console.log(`Gathering Clients... ${wss.clients}`)
                                 wss.clients.forEach((client) => {
-                                    //console.log(client)
                                     if(client.gameId === query.id) {
                                         console.log(`Sent ${query.uci} to`, client.gameId)
                                         client.send(JSON.stringify({uci: query.uci}))
+                                        if(res.result) {
+                                            console.log(`Sent ${res.result} ${res.reason} to`, client.gameId)
+                                            client.send(JSON.stringify({ result: res.result, reason: res.reason }))
+                                        }
                                     }
                                 })
                             })
