@@ -2,7 +2,7 @@ import { createGame, fetchMove, importGame } from "./chess/board";
 import { undoMove } from "./chess/modify";
 import { updateToast } from "./main";
 
-export function createWSGame(fen) {
+export async function createWSGame(fen) {
     return new Promise((resolve, reject) => {
         const chessGame = createGame(fen)
         try {
@@ -44,7 +44,7 @@ export async function createWebSocket(id) {
                         if(response.uci) {
                             const lastMove = importedGame.lastMove ? importedGame.lastMove[0] + importedGame.lastMove[1] : ""
                             if(response.invalid && response.uci.slice(0, 4) === lastMove) {
-                                console.log("Server rejected move")
+                                updateToast("Server rejected move. Try refreshing?")
                                 undoMove(importedGame)
                                 return
                             }
@@ -64,3 +64,39 @@ export async function createWebSocket(id) {
         }
     });
 }
+
+export async function existingGame(id, divToAppend) {
+    return new Promise((resolve, reject) => {
+        createWebSocket(id)
+            .then(game => {
+                if(divToAppend) {
+                    divToAppend.appendChild(game.div)
+                }
+                resolve(game)
+            })
+            .catch(error => {
+                reject(error)
+            })
+    })
+}
+
+export default async function newGame(fen, divToAppend) {
+    return new Promise((resolve, reject) => {
+        createWSGame(fen)
+        .then(id => {
+            createWebSocket(id)
+                .then(game => {
+                    if(divToAppend) {
+                        divToAppend.appendChild(game.div)
+                    }
+                    resolve(game)
+                })
+                .catch(error => {
+                    reject(error)
+                })
+        })
+        .catch(error => {
+            reject(error)
+        })
+    })
+} 

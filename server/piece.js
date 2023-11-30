@@ -214,8 +214,8 @@ function gametoFEN(game) {
     let number = 0
     let FEN = ""
     let passantSquare
-    game.board.forEach((row, i) => {
-        row.forEach((square, j) => {
+    [...game.board].reverse().forEach((row, i) => {
+        [...row].reverse().forEach((square, j) => {
             if(square === null) {
                 number += 1
             }
@@ -262,6 +262,7 @@ function gametoFEN(game) {
 
     return FEN
 }
+
 
 function isLegal(fromX, fromY, toX, toY, isWhite, board) {
     const boardClone = cloneBoard(board)

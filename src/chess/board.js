@@ -106,8 +106,8 @@ export function gametoFEN(game) {
     let number = 0
     let FEN = ""
     let passantSquare
-    game.board.forEach((row, i) => {
-        row.forEach((square, j) => {
+    [...game.board].reverse().forEach((row, i) => {
+        [...row].reverse().forEach((square, j) => {
             if(square === null) {
                 number += 1
             }
@@ -265,6 +265,10 @@ export function postMove(game, promotion, socket) {
             uci: UCI,
             id: game.id, 
         }))
+    }
+    const end = gameOver(game)
+    if(end) {
+        chessGame.result = { result: end.result, reason: end.reason }
     }
     game.export.push(UCI)
     return UCI

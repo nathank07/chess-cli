@@ -1,23 +1,13 @@
 import "./styles.css"
 import "./chess/cburnett/move.svg"
 import { createGame, importGame, fetchMove } from "./chess/board.js"
-import { createWSGame, createWebSocket, requestGame, getGame, handleMoves } from "./websockets.js"
+import newGame, { existingGame } from "./websockets.js"
 import { viewStartHistory, viewBackHistory, viewForwardHistory, viewCurrentGame, undoMove, changePlayerSide, flipBoard } from './chess/modify.js'
 
-let chessGame
-createWebSocket(187)
-        .then((res) => {
-            chessGame = res
-            document.querySelector("#root").appendChild(res.div)
-            addControls(chessGame)
-        })
 
-//createWebSocket(274)
-//.then((res) => {
-//    document.querySelector("#root").appendChild(res.div)
-//})
-
-
+const game = await existingGame(313, document.querySelector('#root'))
+addControls(game)
+console.log(game.id)
 
 function addControls(chessGame){
     document.addEventListener('keydown', (e) => {
@@ -48,13 +38,17 @@ function addControls(chessGame){
     document.querySelector('#takeback').addEventListener('click', () => undoMove(chessGame))
 }
 
-export function updateToast(response) {
+export function updateToast(text) {
     const toast = document.querySelector('#toast')
-    if(response.result === "Stalemate") {
-        toast.innerHTML = `Game ended in Stalemate due to ${response.reason}.`
+    if(text.result) {
+        if(text.result === "Stalemate") {
+            toast.innerHTML = `Game ended in Stalemate due to ${text.reason}.`
+        } else {
+            toast.innerHTML = `${text.result} has won due to ${text.reason}`
+        }
     } else {
-        toast.innerHTML = `${response.result} has won due to ${response.reason}`
-    }
+        toast.innerHTML = text
+    }   
 }
 
 
