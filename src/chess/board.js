@@ -1,4 +1,4 @@
-import createPiece, { inCheck, threeFoldRepetition } from "./pieces/piece.js"
+import createPiece, { inCheck, gameOver } from "./pieces/piece.js"
 import { convertLocationToNotation, convertNotationtoLocation } from "./notation.js"
 import makeDraggable from "./drag.js"
 import { createSVGCanvas, addUserMarkings, drawUserMarkings, annotateBoard, markHoveredPieces } from "./marking.js"
@@ -104,13 +104,15 @@ export function gametoFEN(game) {
 
     let number = 0
     let FEN = ""
-    game.board.forEach((row) => {
-        row.forEach(square => {
+    let passantSquare
+    game.board.forEach((row, i) => {
+        row.forEach((square, j) => {
             if(square === null) {
                 number += 1
             }
             if(square && square.name === "passant") {
                 number += 1
+                passantSquare = [i, j]
             }
             if(square && square.name !== "passant") {
                 const piece = pieces[square.name]
@@ -123,7 +125,32 @@ export function gametoFEN(game) {
         number = 0
         FEN += "/"
     })
-    FEN = FEN.substring(0, FEN.length - 1)
+    FEN = FEN.substring(0, FEN.length - 1) + " "
+
+    FEN += game.whitesMove ? "w " : "b "
+
+    if(game.whiteState.shortCastle) {
+        FEN += "K"
+    }
+    if(game.whiteState.longCastle) {
+        FEN += "Q"
+    }
+    if(game.blackState.shortCastle) {
+        FEN += "k"
+    }
+    if(game.blackState.longCastle) {
+        FEN += "q"
+    }
+    if(!game.whiteState.shortCastle && !game.whiteState.longCastle && !game.blackState.shortCastle && !game.blackState.longCastle) {
+        FEN += "-"
+    }
+
+    FEN += " "
+
+    FEN += passantSquare ? convertLocationToNotation(passantSquare[0], passantSquare[1]) : "-"
+
+    FEN += ` ${game.fiftyMoveRule} 1`
+
     return FEN
 }
 
@@ -164,7 +191,7 @@ export function renderBoard(game) {
             if(pieceSvg) {
                 const svg = document.createElement('img')
                 svg.src = pieceSvg
-                if(!history) {
+                if(history === 0) {
                     //if(game.playerIsWhite !== null && square.isWhite === game.playerIsWhite && game.playerIsWhite === game.whitesMove) {
                         makeDraggable(square, svg, renderBoard)
                     //}
@@ -203,7 +230,7 @@ export async function waitForMove(game) {
     }
 }
 
-export function fetchMove(game, UCI, sound = true) {
+export function fetchMove(game, UCI, sound = true, ignoreGameOver = false) {
     const startSquare = convertNotationtoLocation(UCI.substring(0, 2).toLowerCase())
     const endSquare = convertNotationtoLocation(UCI.substring(2, 4).toLowerCase())
     const promotion = UCI.substring(4, 5)
@@ -215,6 +242,9 @@ export function fetchMove(game, UCI, sound = true) {
     }
     if(animateMove(game, startSquare[0], startSquare[1], endSquare[0], endSquare[1], sound, promotion ? pieces[promotion.toLowerCase()] : false)) {
         game.export.push(UCI)
+        if(!ignoreGameOver) {
+            console.log(gameOver(game))
+        }
         return game
     } else {
         throw new Error("Could not complete move.")
@@ -229,7 +259,7 @@ export function postMove(game, promotion, socket) {
             id: game.id, 
         }))
     }
-    threeFoldRepetition(game)
+    console.log(gameOver(game))
     game.export.push(UCI)
     return UCI
 }
@@ -256,10 +286,12 @@ export function importGame(fenUCIexport) {
     if(fenUCIexport.length > 1) {
         fenUCIexport.slice(1).forEach(arr => {
             arr.forEach(move => {
-                fetchMove(chessGame, move, false)
+                fetchMove(chessGame, move, false, true)
             });
         });
     }
+    console.log(gametoFEN(chessGame))
+    console.log(gameOver(chessGame))
     renderBoard(chessGame)
     return chessGame   
 }

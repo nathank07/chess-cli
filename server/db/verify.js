@@ -22,6 +22,8 @@ function verify(uci, id) {
             moves.forEach(move => {
                 if(move) {
                     moveUCI(game, move)
+                } else {
+                    reject("Game is invalid.")
                 }
             });
             resolve(moveUCI(game, uci)) 

@@ -1,3 +1,4 @@
+import { Chess } from 'chess.js'
 import { createGame, gametoFEN, postMove } from "../board.js"
 import { undoMove } from "../modify.js"
 import { renderBoard } from "../board.js"
@@ -145,12 +146,12 @@ function isLegal(fromX, fromY, toX, toY, isWhite, board) {
     for(let i = 0; i < 8; i++) {
         for(let j = 0; j < 8; j++) {
             if(boardClone[i][j]) {
-                const pieceMoves = boardClone[i][j].standardMoves()
                 const color = boardClone[i][j].isWhite
                 if(boardClone[i][j].name == "king" && color == isWhite){
                     kingSquare = [i, j]
                 }
-                if(color != isWhite) {
+                if(color !== isWhite) {
+                    const pieceMoves = boardClone[i][j].standardMoves()
                     pieceMoves.map(move => moves.push(move))
                 }
             }            
@@ -208,21 +209,52 @@ export function inCheck(game) {
     return check
 }
 
-function gameEnd(game) {
-    const moves = []
-    game.board.forEach(row => {
-        row.forEach(piece => {
-            if(piece && piece.isWhite === game.whitesMove) {
-                piece.moves().forEach(move => {
-                    moves.push(move)
-                });
-            }
-        });
-    });
-    return game.fiftyMoveRule >= 101 || moves.length === 0
+export function gameOver(game) {
+    if(game.fiftyMoveRule > 100) {
+        return { result: "Stalemate", reason: "Fifty move rule" }
+    }
+    if(threeFoldRepetition(game)) {
+        return { result: "Stalemate", reason: "Threefold Repetition" }
+    }
+    try {
+        const chess = new Chess(gametoFEN(game))
+        if(chess.isCheckmate()) {
+            return { result: !game.whitesMove ? "White" : "Black", reason: "Checkmate" }
+        }
+        if(chess.isStalemate()) {
+            return { result: "Stalemate", reason: "No more moves" }
+        }
+        if(chess.isInsufficientMaterial()) {
+            return { result: "Stalemate", reason: "Insufficient material"}
+        }
+    } catch (e) {
+        console.log(gametoFEN(game))
+        console.log(e)
+        const gameOverObject = fallbackGameOver(game)
+        if(gameOverObject) {
+            return gameOverObject
+        }
+    }
+
+    return false
 }
 
-export function threeFoldRepetition(game) {
+function fallbackGameOver(game) {
+    // This solution is too slow so I use chess.js for this
+    for(let x = 0; x < 8; x++) {
+        for(let y = 0; y < 8; y++) {
+            if(game.board[x][y] && game.board[x][y].isWhite === game.whitesMove && game.board[x][y].moves().length > 0) {
+                return false
+            }
+        }
+    }
+    if(inCheck(game)) {
+        return { result: !game.whitesMove ? "White" : "Black", reason: "Checkmate" }
+    }
+    return { result: "Stalemate", reason: "No more moves" }
+}
+
+function threeFoldRepetition(game) {
     const newChessGame = createGame(game.export[0])
     const positions = []
     game.export.slice(1).forEach((UCI) => {

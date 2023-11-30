@@ -5,7 +5,7 @@ import { createWSGame, createWebSocket, requestGame, getGame, handleMoves } from
 import { viewStartHistory, viewBackHistory, viewForwardHistory, viewCurrentGame, undoMove, changePlayerSide, flipBoard } from './chess/modify.js'
 
 let chessGame
-createWebSocket(198)
+createWebSocket(195)
         .then((res) => {
             chessGame = res
             document.querySelector("#root").appendChild(res.div)

@@ -15,7 +15,7 @@ function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) {
             if(uci !== undefined && threeFoldRepetition(game)) {
                 return false
             }
-            if(game.fiftyMoveRule > 100 || game.whitesMove !== isWhite) {
+            if(game.fiftyMoveRule > 100) {
                 return false
             }
             const moves = standardMoves().filter(move => 
