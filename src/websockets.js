@@ -65,12 +65,12 @@ export async function createWebSocket(id) {
     });
 }
 
-export async function existingGame(id, divToAppend) {
+export async function existingGame(id, parentDiv) {
     return new Promise((resolve, reject) => {
         createWebSocket(id)
             .then(game => {
-                if(divToAppend) {
-                    divToAppend.appendChild(game.div)
+                if(parentDiv) {
+                    parentDiv.appendChild(game.div)
                 }
                 resolve(game)
             })
@@ -80,14 +80,14 @@ export async function existingGame(id, divToAppend) {
     })
 }
 
-export default async function newGame(fen, divToAppend) {
+export default async function newGame(fen, parentDiv) {
     return new Promise((resolve, reject) => {
         createWSGame(fen)
         .then(id => {
             createWebSocket(id)
                 .then(game => {
-                    if(divToAppend) {
-                        divToAppend.appendChild(game.div)
+                    if(parentDiv) {
+                        parentDiv.appendChild(game.div)
                     }
                     resolve(game)
                 })
