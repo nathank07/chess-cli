@@ -53,11 +53,8 @@ export async function createWebSocket(id) {
                             }
                         }
                         if(response.result) {
-                            if(response.result === "Stalemate") {
-                                updateToast(`Game ended in stalemate due to ${response.reason}.`)
-                            } else {
-                                updateToast(`${response.result} has won due to ${response.reason}`)
-                            }
+                            importedGame.result = { result: response.result, reason: response.reason }
+                            updateToast(importedGame.result)
                         }
                     })
                     socket.removeEventListener('message', fetchGame)

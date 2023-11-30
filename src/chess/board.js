@@ -8,6 +8,7 @@ import capture from "./sounds/Capture.ogg"
 import check from "./sounds/Check.wav"
 import randomMove from "../random.js"
 import { undoMove } from "./modify.js"
+import { updateToast } from "../main.js"
 
 const sounds = {
     "place": place,
@@ -191,7 +192,7 @@ export function renderBoard(game) {
             if(pieceSvg) {
                 const svg = document.createElement('img')
                 svg.src = pieceSvg
-                if(history === 0) {
+                if(history === 0 && !game.result) {
                     //if(game.playerIsWhite !== null && square.isWhite === game.playerIsWhite && game.playerIsWhite === game.whitesMove) {
                         makeDraggable(square, svg, renderBoard)
                     //}
@@ -211,6 +212,9 @@ export function renderBoard(game) {
     if(highlighted) {
         boardDiv.querySelector(`[notation=${game.lastMove[0]}`).classList.add("highlighted")
         boardDiv.querySelector(`[notation=${game.lastMove[1]}`).classList.add("highlighted")
+    }
+    if(game.result) {
+        updateToast(game.result)
     }
     drawUserMarkings(game, canvas)
     annotateBoard(boardDiv, whiteSide)
@@ -242,6 +246,12 @@ export function fetchMove(game, UCI, sound = true, ignoreGameOver = false) {
     }
     if(animateMove(game, startSquare[0], startSquare[1], endSquare[0], endSquare[1], sound, promotion ? pieces[promotion.toLowerCase()] : false)) {
         game.export.push(UCI)
+        if(!ignoreGameOver) {
+            const end = gameOver(game)
+            if(end) {
+                chessGame.result = { result: end.result, reason: end.reason }
+            }
+        }
         return game
     } else {
         throw new Error("Could not complete move.")
@@ -286,6 +296,7 @@ export function importGame(fenUCIexport) {
             });
         });
     }
+    chessGame.result = gameOver(chessGame)
     renderBoard(chessGame)
     return chessGame   
 }

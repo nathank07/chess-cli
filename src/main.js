@@ -5,7 +5,7 @@ import { createWSGame, createWebSocket, requestGame, getGame, handleMoves } from
 import { viewStartHistory, viewBackHistory, viewForwardHistory, viewCurrentGame, undoMove, changePlayerSide, flipBoard } from './chess/modify.js'
 
 let chessGame
-createWebSocket(188)
+createWebSocket(187)
         .then((res) => {
             chessGame = res
             document.querySelector("#root").appendChild(res.div)
@@ -48,8 +48,13 @@ function addControls(chessGame){
     document.querySelector('#takeback').addEventListener('click', () => undoMove(chessGame))
 }
 
-export function updateToast(text) {
-    document.querySelector('#toast').innerHTML = text
+export function updateToast(response) {
+    const toast = document.querySelector('#toast')
+    if(response.result === "Stalemate") {
+        toast.innerHTML = `Game ended in Stalemate due to ${response.reason}.`
+    } else {
+        toast.innerHTML = `${response.result} has won due to ${response.reason}`
+    }
 }
 
 
