@@ -1,5 +1,6 @@
 import { createGame, fetchMove, importGame } from "./chess/board";
 import { undoMove } from "./chess/modify";
+import { updateToast } from "./main";
 
 export function createWSGame(fen) {
     return new Promise((resolve, reject) => {
@@ -49,6 +50,13 @@ export async function createWebSocket(id) {
                             }
                             if(response.uci.slice(0, 4) !== lastMove) {
                                 fetchMove(importedGame, response.uci, true);
+                            }
+                        }
+                        if(response.result) {
+                            if(response.result === "Stalemate") {
+                                updateToast(`Game ended in stalemate due to ${response.reason}.`)
+                            } else {
+                                updateToast(`${response.result} has won due to ${response.reason}`)
                             }
                         }
                     })

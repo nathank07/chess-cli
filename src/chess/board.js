@@ -242,9 +242,6 @@ export function fetchMove(game, UCI, sound = true, ignoreGameOver = false) {
     }
     if(animateMove(game, startSquare[0], startSquare[1], endSquare[0], endSquare[1], sound, promotion ? pieces[promotion.toLowerCase()] : false)) {
         game.export.push(UCI)
-        if(!ignoreGameOver) {
-            console.log(gameOver(game))
-        }
         return game
     } else {
         throw new Error("Could not complete move.")
@@ -259,7 +256,6 @@ export function postMove(game, promotion, socket) {
             id: game.id, 
         }))
     }
-    console.log(gameOver(game))
     game.export.push(UCI)
     return UCI
 }
@@ -290,8 +286,6 @@ export function importGame(fenUCIexport) {
             });
         });
     }
-    console.log(gametoFEN(chessGame))
-    console.log(gameOver(chessGame))
     renderBoard(chessGame)
     return chessGame   
 }
