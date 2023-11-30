@@ -221,7 +221,7 @@ function gametoFEN(game) {
             }
             if(square && square.name === "passant") {
                 number += 1
-                passantSquare = [i, j]
+                passantSquare = [7 - i, 7 - j]
             }
             if(square && square.name !== "passant") {
                 const piece = pieces[square.name]
