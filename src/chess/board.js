@@ -249,7 +249,7 @@ export function fetchMove(game, UCI, sound = true, ignoreGameOver = false) {
         if(!ignoreGameOver) {
             const end = gameOver(game)
             if(end) {
-                chessGame.result = { result: end.result, reason: end.reason }
+                game.result = { result: end.result, reason: end.reason }
             }
         }
         return game
@@ -268,7 +268,7 @@ export function postMove(game, promotion, socket) {
     }
     const end = gameOver(game)
     if(end) {
-        chessGame.result = { result: end.result, reason: end.reason }
+        game.result = { result: end.result, reason: end.reason }
     }
     game.export.push(UCI)
     return UCI
