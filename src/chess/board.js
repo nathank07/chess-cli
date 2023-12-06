@@ -6,9 +6,9 @@ import animateMove from "./animations.js"
 import place from "./sounds/Move.ogg"
 import capture from "./sounds/Capture.ogg"
 import check from "./sounds/Check.wav"
-import randomMove from "../random.js"
+import randomMove from "../game/random.js"
 import { undoMove } from "./modify.js"
-import { updateToast } from "../main.js"
+import { updateToast } from "../game/main.js"
 
 const sounds = {
     "place": place,
@@ -149,8 +149,7 @@ export function gametoFEN(game) {
     FEN += " "
 
     FEN += passantSquare ? convertLocationToNotation(passantSquare[0], passantSquare[1]) : "-"
-
-    FEN += ` ${game.fiftyMoveRule} 1`
+    FEN += ` ${game.fiftyMoveRule} ${Math.floor((game.export.length - 1) / 2) + 1}`
 
     return FEN
 }

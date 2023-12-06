@@ -1,6 +1,6 @@
-const { createNewGame } = require("./db/newGame.js")
-const { verify, updateDB } = require('./db/verify');
-const { exportGame } = require('./db/exportGame.js')
+const { createNewGame } = require("./updatedb/newGame.js")
+const { verify, updateDB } = require('./updatedb/verify');
+const { exportGame } = require('./updatedb/exportGame.js')
 
 const http = require('http');
 const WebSocket = require('ws');

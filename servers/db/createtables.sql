@@ -1,0 +1,18 @@
+CREATE TABLE game (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    fen TEXT NOT NULL,
+    uci TEXT,
+    player1id INTEGER,
+    player2id INTEGER,
+    FOREIGN KEY(player1id) REFERENCES user(id),
+    FOREIGN KEY(player2id) REFERENCES user(id)
+);
+
+CREATE TABLE user (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL,
+    salt TEXT NOT NULL UNIQUE,
+    email TEXT UNIQUE,
+    user_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

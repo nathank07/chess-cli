@@ -71,7 +71,7 @@ body {
 }
 
 .square.darkSquare.possible, .square.possible {
-	background-image: url('./chess/cburnett/move.svg');
+	background-image: url('../chess/cburnett/move.svg');
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: 30%;
@@ -82,14 +82,14 @@ body {
 }
 
 .square.darkSquare.possiblepiece, .square.possiblepiece {
-	background-image: url('./chess/cburnett/movepiece.svg');
+	background-image: url('../chess/cburnett/movepiece.svg');
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: 100%;
 }
 
 .darkSquare.possiblepiece:hover, .square.possiblepiece:hover {
-	background-image: url('./chess/cburnett/move.svg');
+	background-image: url('../chess/cburnett/move.svg');
 	background-size: 150%;
 	background-position: center;
 	background-repeat: no-repeat;

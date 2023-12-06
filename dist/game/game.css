@@ -1,6 +1,6 @@
-/*!******************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js!./src/styles.css ***!
-  \******************************************************************/
+/*!*********************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./src/game/game.css ***!
+  \*********************************************************************/
 
 :root {
 	--light-square: #F0D9B5;
@@ -74,7 +74,7 @@ body {
 }
 
 .square.darkSquare.possible, .square.possible {
-	background-image: url(442b87d656904e4eba23.svg);
+	background-image: url(../442b87d656904e4eba23.svg);
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: 30%;
@@ -85,14 +85,14 @@ body {
 }
 
 .square.darkSquare.possiblepiece, .square.possiblepiece {
-	background-image: url(5c095d0b4a5558e548b4.svg);
+	background-image: url(../5c095d0b4a5558e548b4.svg);
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: 100%;
 }
 
 .darkSquare.possiblepiece:hover, .square.possiblepiece:hover {
-	background-image: url(442b87d656904e4eba23.svg);
+	background-image: url(../442b87d656904e4eba23.svg);
 	background-size: 150%;
 	background-position: center;
 	background-repeat: no-repeat;

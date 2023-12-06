@@ -1,9 +1,8 @@
-import "./styles.css"
-import "./chess/cburnett/move.svg"
-import { createGame, importGame, fetchMove } from "./chess/board.js"
+import "./game.css"
+import "../chess/cburnett/move.svg"
+import { createGame, importGame, fetchMove } from "../chess/board.js"
 import newGame, { existingGame } from "./websockets.js"
-import { viewStartHistory, viewBackHistory, viewForwardHistory, viewCurrentGame, undoMove, changePlayerSide, flipBoard } from './chess/modify.js'
-
+import { viewStartHistory, viewBackHistory, viewForwardHistory, viewCurrentGame, undoMove, flipBoard } from '../chess/modify.js'
 
 const game = await newGame(false, document.querySelector('#root'))
 addControls(game)

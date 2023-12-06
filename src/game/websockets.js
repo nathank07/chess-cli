@@ -1,6 +1,6 @@
-import { createGame, fetchMove, importGame } from "./chess/board";
-import { undoMove } from "./chess/modify";
-import { updateToast } from "./main";
+import { createGame, fetchMove, importGame } from "../chess/board";
+import { undoMove } from "../chess/modify";
+import { updateToast } from "./main.js";
 
 export async function createWSGame(fen) {
     return new Promise((resolve, reject) => {

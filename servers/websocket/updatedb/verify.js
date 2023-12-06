@@ -1,12 +1,12 @@
 const sqlite3 = require('sqlite3').verbose()
 const path = require('path');
-const dbPath = path.resolve(__dirname, 'games.db');
+const dbPath = path.resolve(__dirname, '../../db/data.db');
 const db = new sqlite3.Database(dbPath)
 const { moveUCI, FENtoBoard } = require('../game.js')
 
 function verify(uci, id) {
     return new Promise((resolve, reject) => {
-        db.get('SELECT fen, uci FROM Games WHERE id = ?', id, function(err, row) {
+        db.get('SELECT fen, uci FROM game WHERE id = ?', id, function(err, row) {
             if(err) {
                 reject(err)
             }
@@ -34,7 +34,7 @@ function verify(uci, id) {
 
 function updateDB(uci, id) {
     return new Promise((resolve, reject) => {
-        db.run('UPDATE Games SET uci = CASE WHEN uci IS NULL THEN ? ELSE uci || ? END WHERE id = ?', uci, ` ${uci}`, id, function(err) {
+        db.run('UPDATE game SET uci = CASE WHEN uci IS NULL THEN ? ELSE uci || ? END WHERE id = ?', uci, ` ${uci}`, id, function(err) {
             if(err) {
                 reject(err)
             }
