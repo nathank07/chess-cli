@@ -260,6 +260,10 @@ export function fetchMove(game, UCI, sound = true, ignoreGameOver = false) {
 export function postMove(game, promotion, socket) {
     const UCI = game.lastMove.join('').concat(promotion ? promotion[0] : "")
     if(socket) {
+        if(socket.readyState === 3) {
+            undoMove(game, false)
+            updateToast("Not connected to the game. Try refreshing?")
+        }
         socket.send(JSON.stringify({
             uci: UCI,
             id: game.id, 
@@ -274,7 +278,7 @@ export function postMove(game, promotion, socket) {
 }
 
 
-export function createGame(fen) {
+export function createGame(fen, render = false) {
     const boardContainer = document.createElement('div');
     const boardDiv = document.createElement('div');
     boardContainer.id = "board-container"
@@ -286,12 +290,14 @@ export function createGame(fen) {
     }
     const chessGame = FENtoBoard(fen)
     chessGame.div = boardContainer
-    renderBoard(chessGame)
+    if(render) {
+        renderBoard(chessGame)
+    }
     return chessGame
 }
 
 export function importGame(fenUCIexport) {
-    const chessGame = createGame(fenUCIexport[0])
+    const chessGame = createGame(fenUCIexport[0], true)
     if(fenUCIexport.length > 1) {
         fenUCIexport.slice(1).forEach(arr => {
             arr.forEach(move => {

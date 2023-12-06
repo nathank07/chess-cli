@@ -60,9 +60,10 @@ export function undoMove(game, render = true) {
         return false;
     }
 
-    const animation = game.lastMove 
-    renderBoard(game)
-       
+    const animation = game.lastMove
+    if(render) {
+        renderBoard(game)
+    }
     const oldBoard = cloneBoard(game.history[game.history.length - 1].board)
     game.board = [...Array(8)].map(e => Array(8).fill(null));
     // We clone the board and create pieces because squares are binded to specific boards
@@ -84,7 +85,7 @@ export function undoMove(game, render = true) {
         game.history.pop()
         game.export.pop()
     }    
-    if(animation) {
+    if(animation && render) {
         animatePiece(animation[1], animation[0], game.div.firstChild)
             .then(() => {
                 renderBoard(game)

@@ -31,7 +31,6 @@ export async function createWebSocket(id) {
         socket.onerror = (error) => {
             reject(error);
         };
-
         function fetchGame(e) {
             const data = JSON.parse(e.data)
             if(data.exportedGame) {
