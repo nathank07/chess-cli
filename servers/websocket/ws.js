@@ -29,23 +29,26 @@ wss.on('connection', ws => {
                     })
             }
             if(query.id && query.uci) {
-                console.log(`Recieved ${query.uci} request to ${query.id}`)
+                console.log(`Recieved ${query.uci} request to game ${query.id}`)
                 verify(query.uci, query.id)
                     .then(res => {
+                        const messages = []
+                        let clientCount = 0
                         if(res) {
-                            console.log(res)
                             updateDB(query.uci, query.id)
                             .then(() => {
+                                messages.push(query.uci)
                                 wss.clients.forEach((client) => {
                                     if(client.gameId === query.id) {
-                                        console.log(`Sent ${query.uci} to`, client.gameId)
+                                        clientCount++
                                         client.send(JSON.stringify({uci: query.uci}))
                                         if(res.result) {
-                                            console.log(`Sent ${res.result} ${res.reason} to`, client.gameId)
+                                            if(messages.length === 1) { messages.push(res.result, res.reason) }
                                             client.send(JSON.stringify({ result: res.result, reason: res.reason }))
                                         }
                                     }
                                 })
+                                console.log(`Sent ${messages} to game ${query.id} (${clientCount} clients)`)
                             })
                             .catch((rej) => {
                                 console.log("Database could not be updated", rej)
@@ -55,7 +58,6 @@ wss.on('connection', ws => {
                             console.log(`${query.uci} to ${query.id} was invalid, sending response`)
                             wss.clients.forEach((client) => {
                                 if(client.gameId === query.id) {
-                                    console.log(`Sent ${query.uci} to`, client.gameId)
                                     client.send(JSON.stringify({invalid: true, uci: query.uci}))
                                 }
                             })
@@ -68,9 +70,8 @@ wss.on('connection', ws => {
             if(query.id && !query.uci) {
                 exportGame(query.id)
                     .then(res => {
-                        console.log(`Exported ${query.id}`)
                         ws.gameId = query.id
-                        console.log(`Set websocket game id: ${ws.gameId}`)
+                        console.log(`Client of ${ws.gameId} has connected`)
                         ws.send(JSON.stringify({exportedGame: res, id: query.id}))
                     })
                     .catch(rej => {
@@ -85,7 +86,7 @@ wss.on('connection', ws => {
     });
 
     ws.on('close', () => {
-        console.log(`One watcher of ${ws.gameId} has disconnected`)
+        console.log(`One client of ${ws.gameId} has disconnected`)
     });
 });
 
