@@ -156,7 +156,7 @@ eval("__webpack_require__.a(module, async (__webpack_handle_async_dependencies__
   \**************************/
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {\n__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   updateToast: () => (/* binding */ updateToast)\n/* harmony export */ });\n/* harmony import */ var _game_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./game.css */ \"./src/game/game.css\");\n/* harmony import */ var _chess_cburnett_move_svg__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../chess/cburnett/move.svg */ \"./src/chess/cburnett/move.svg\");\n/* harmony import */ var _chess_board_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../chess/board.js */ \"./src/chess/board.js\");\n/* harmony import */ var _websockets_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./websockets.js */ \"./src/game/websockets.js\");\n/* harmony import */ var _chess_modify_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../chess/modify.js */ \"./src/chess/modify.js\");\nvar __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([_chess_board_js__WEBPACK_IMPORTED_MODULE_2__, _websockets_js__WEBPACK_IMPORTED_MODULE_3__, _chess_modify_js__WEBPACK_IMPORTED_MODULE_4__]);\n([_chess_board_js__WEBPACK_IMPORTED_MODULE_2__, _websockets_js__WEBPACK_IMPORTED_MODULE_3__, _chess_modify_js__WEBPACK_IMPORTED_MODULE_4__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);\n\n\n\n\n\nvar game = await (0,_websockets_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"])(false, document.querySelector('#root'));\naddControls(game);\nconsole.log(game.id);\nfunction addControls(chessGame) {\n  document.addEventListener('keydown', function (e) {\n    if (e.code === \"ArrowLeft\") {\n      (0,_chess_modify_js__WEBPACK_IMPORTED_MODULE_4__.viewBackHistory)(chessGame);\n    }\n    if (e.code === \"ArrowRight\") {\n      (0,_chess_modify_js__WEBPACK_IMPORTED_MODULE_4__.viewForwardHistory)(chessGame);\n    }\n    if (e.code === \"ArrowUp\") {\n      (0,_chess_modify_js__WEBPACK_IMPORTED_MODULE_4__.viewStartHistory)(chessGame);\n    }\n    if (e.code === \"ArrowDown\") {\n      (0,_chess_modify_js__WEBPACK_IMPORTED_MODULE_4__.viewCurrentGame)(chessGame);\n    }\n    if (e.code === \"KeyF\") {\n      (0,_chess_modify_js__WEBPACK_IMPORTED_MODULE_4__.flipBoard)(chessGame);\n    }\n    if (e.code === \"KeyZ\") {\n      (0,_chess_modify_js__WEBPACK_IMPORTED_MODULE_4__.undoMove)(chessGame);\n    }\n  });\n  document.querySelector('#current').addEventListener('click', function () {\n    return (0,_chess_modify_js__WEBPACK_IMPORTED_MODULE_4__.viewCurrentGame)(chessGame);\n  });\n  document.querySelector('#start').addEventListener('click', function () {\n    return (0,_chess_modify_js__WEBPACK_IMPORTED_MODULE_4__.viewStartHistory)(chessGame);\n  });\n  document.querySelector('#back').addEventListener('click', function () {\n    return (0,_chess_modify_js__WEBPACK_IMPORTED_MODULE_4__.viewBackHistory)(chessGame);\n  });\n  document.querySelector('#forwards').addEventListener('click', function () {\n    return (0,_chess_modify_js__WEBPACK_IMPORTED_MODULE_4__.viewForwardHistory)(chessGame);\n  });\n  document.querySelector('#flip').addEventListener('click', function () {\n    return (0,_chess_modify_js__WEBPACK_IMPORTED_MODULE_4__.flipBoard)(chessGame);\n  });\n  document.querySelector('#takeback').addEventListener('click', function () {\n    return (0,_chess_modify_js__WEBPACK_IMPORTED_MODULE_4__.undoMove)(chessGame);\n  });\n}\nfunction updateToast(text) {\n  var toast = document.querySelector('#toast');\n  if (text.result) {\n    if (text.result === \"Stalemate\") {\n      toast.innerHTML = \"Game ended in Stalemate due to \".concat(text.reason, \".\");\n    } else {\n      toast.innerHTML = \"\".concat(text.result, \" has won due to \").concat(text.reason);\n    }\n  } else {\n    toast.innerHTML = text;\n  }\n}\n__webpack_async_result__();\n} catch(e) { __webpack_async_result__(e); } }, 1);\n\n//# sourceURL=webpack://my-webpack-project/./src/game/main.js?");
+eval("__webpack_require__.a(module, async (__webpack_handle_async_dependencies__, __webpack_async_result__) => { try {\n__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   updateToast: () => (/* binding */ updateToast)\n/* harmony export */ });\n/* harmony import */ var _game_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./game.css */ \"./src/game/game.css\");\n/* harmony import */ var _chess_cburnett_move_svg__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../chess/cburnett/move.svg */ \"./src/chess/cburnett/move.svg\");\n/* harmony import */ var _chess_board_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../chess/board.js */ \"./src/chess/board.js\");\n/* harmony import */ var _websockets_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./websockets.js */ \"./src/game/websockets.js\");\n/* harmony import */ var _chess_modify_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../chess/modify.js */ \"./src/chess/modify.js\");\nvar __webpack_async_dependencies__ = __webpack_handle_async_dependencies__([_chess_board_js__WEBPACK_IMPORTED_MODULE_2__, _websockets_js__WEBPACK_IMPORTED_MODULE_3__, _chess_modify_js__WEBPACK_IMPORTED_MODULE_4__]);\n([_chess_board_js__WEBPACK_IMPORTED_MODULE_2__, _websockets_js__WEBPACK_IMPORTED_MODULE_3__, _chess_modify_js__WEBPACK_IMPORTED_MODULE_4__] = __webpack_async_dependencies__.then ? (await __webpack_async_dependencies__)() : __webpack_async_dependencies__);\n\n\n\n\n\nvar game = await (0,_websockets_js__WEBPACK_IMPORTED_MODULE_3__.existingGame)(document.body.dataset.id, document.querySelector('#root'));\naddControls(game);\nconsole.log(game.id);\nfunction addControls(chessGame) {\n  document.addEventListener('keydown', function (e) {\n    if (e.code === \"ArrowLeft\") {\n      (0,_chess_modify_js__WEBPACK_IMPORTED_MODULE_4__.viewBackHistory)(chessGame);\n    }\n    if (e.code === \"ArrowRight\") {\n      (0,_chess_modify_js__WEBPACK_IMPORTED_MODULE_4__.viewForwardHistory)(chessGame);\n    }\n    if (e.code === \"ArrowUp\") {\n      (0,_chess_modify_js__WEBPACK_IMPORTED_MODULE_4__.viewStartHistory)(chessGame);\n    }\n    if (e.code === \"ArrowDown\") {\n      (0,_chess_modify_js__WEBPACK_IMPORTED_MODULE_4__.viewCurrentGame)(chessGame);\n    }\n    if (e.code === \"KeyF\") {\n      (0,_chess_modify_js__WEBPACK_IMPORTED_MODULE_4__.flipBoard)(chessGame);\n    }\n    if (e.code === \"KeyZ\") {\n      (0,_chess_modify_js__WEBPACK_IMPORTED_MODULE_4__.undoMove)(chessGame);\n    }\n  });\n  document.querySelector('#current').addEventListener('click', function () {\n    return (0,_chess_modify_js__WEBPACK_IMPORTED_MODULE_4__.viewCurrentGame)(chessGame);\n  });\n  document.querySelector('#start').addEventListener('click', function () {\n    return (0,_chess_modify_js__WEBPACK_IMPORTED_MODULE_4__.viewStartHistory)(chessGame);\n  });\n  document.querySelector('#back').addEventListener('click', function () {\n    return (0,_chess_modify_js__WEBPACK_IMPORTED_MODULE_4__.viewBackHistory)(chessGame);\n  });\n  document.querySelector('#forwards').addEventListener('click', function () {\n    return (0,_chess_modify_js__WEBPACK_IMPORTED_MODULE_4__.viewForwardHistory)(chessGame);\n  });\n  document.querySelector('#flip').addEventListener('click', function () {\n    return (0,_chess_modify_js__WEBPACK_IMPORTED_MODULE_4__.flipBoard)(chessGame);\n  });\n  document.querySelector('#takeback').addEventListener('click', function () {\n    return (0,_chess_modify_js__WEBPACK_IMPORTED_MODULE_4__.undoMove)(chessGame);\n  });\n}\nfunction updateToast(text) {\n  var toast = document.querySelector('#toast');\n  if (text.result) {\n    if (text.result === \"Stalemate\") {\n      toast.innerHTML = \"Game ended in Stalemate due to \".concat(text.reason, \".\");\n    } else {\n      toast.innerHTML = \"\".concat(text.result, \" has won due to \").concat(text.reason);\n    }\n  } else {\n    toast.innerHTML = text;\n  }\n}\n__webpack_async_result__();\n} catch(e) { __webpack_async_result__(e); } }, 1);\n\n//# sourceURL=webpack://my-webpack-project/./src/game/main.js?");
 
 /***/ }),
 
@@ -196,7 +196,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n// extracted by mini-css-extr
   \***********************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-eval("module.exports = __webpack_require__.p + \"e196dd569ecbcb92d569.svg\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/cburnett/bB.svg?");
+eval("module.exports = __webpack_require__.p + \"assets/images/e196dd569ecbcb92d569.svg\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/cburnett/bB.svg?");
 
 /***/ }),
 
@@ -206,7 +206,7 @@ eval("module.exports = __webpack_require__.p + \"e196dd569ecbcb92d569.svg\";\n\n
   \***********************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-eval("module.exports = __webpack_require__.p + \"c83f5581968cfa1416d4.svg\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/cburnett/bK.svg?");
+eval("module.exports = __webpack_require__.p + \"assets/images/c83f5581968cfa1416d4.svg\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/cburnett/bK.svg?");
 
 /***/ }),
 
@@ -216,7 +216,7 @@ eval("module.exports = __webpack_require__.p + \"c83f5581968cfa1416d4.svg\";\n\n
   \***********************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-eval("module.exports = __webpack_require__.p + \"2806967ff884b67af8fc.svg\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/cburnett/bN.svg?");
+eval("module.exports = __webpack_require__.p + \"assets/images/2806967ff884b67af8fc.svg\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/cburnett/bN.svg?");
 
 /***/ }),
 
@@ -226,7 +226,7 @@ eval("module.exports = __webpack_require__.p + \"2806967ff884b67af8fc.svg\";\n\n
   \***********************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-eval("module.exports = __webpack_require__.p + \"0bac57fcee185c845528.svg\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/cburnett/bP.svg?");
+eval("module.exports = __webpack_require__.p + \"assets/images/0bac57fcee185c845528.svg\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/cburnett/bP.svg?");
 
 /***/ }),
 
@@ -236,7 +236,7 @@ eval("module.exports = __webpack_require__.p + \"0bac57fcee185c845528.svg\";\n\n
   \***********************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-eval("module.exports = __webpack_require__.p + \"e475a365a63ab9c3b484.svg\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/cburnett/bQ.svg?");
+eval("module.exports = __webpack_require__.p + \"assets/images/e475a365a63ab9c3b484.svg\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/cburnett/bQ.svg?");
 
 /***/ }),
 
@@ -246,7 +246,7 @@ eval("module.exports = __webpack_require__.p + \"e475a365a63ab9c3b484.svg\";\n\n
   \***********************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-eval("module.exports = __webpack_require__.p + \"48665a8ce082e5f12710.svg\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/cburnett/bR.svg?");
+eval("module.exports = __webpack_require__.p + \"assets/images/48665a8ce082e5f12710.svg\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/cburnett/bR.svg?");
 
 /***/ }),
 
@@ -256,7 +256,7 @@ eval("module.exports = __webpack_require__.p + \"48665a8ce082e5f12710.svg\";\n\n
   \*************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-eval("module.exports = __webpack_require__.p + \"442b87d656904e4eba23.svg\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/cburnett/move.svg?");
+eval("module.exports = __webpack_require__.p + \"assets/images/442b87d656904e4eba23.svg\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/cburnett/move.svg?");
 
 /***/ }),
 
@@ -266,7 +266,7 @@ eval("module.exports = __webpack_require__.p + \"442b87d656904e4eba23.svg\";\n\n
   \***********************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-eval("module.exports = __webpack_require__.p + \"b2002308f81e96903120.svg\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/cburnett/wB.svg?");
+eval("module.exports = __webpack_require__.p + \"assets/images/b2002308f81e96903120.svg\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/cburnett/wB.svg?");
 
 /***/ }),
 
@@ -276,7 +276,7 @@ eval("module.exports = __webpack_require__.p + \"b2002308f81e96903120.svg\";\n\n
   \***********************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-eval("module.exports = __webpack_require__.p + \"ae4879833ee0111ba3b2.svg\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/cburnett/wK.svg?");
+eval("module.exports = __webpack_require__.p + \"assets/images/ae4879833ee0111ba3b2.svg\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/cburnett/wK.svg?");
 
 /***/ }),
 
@@ -286,7 +286,7 @@ eval("module.exports = __webpack_require__.p + \"ae4879833ee0111ba3b2.svg\";\n\n
   \***********************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-eval("module.exports = __webpack_require__.p + \"dc9544a72b2cf7a92579.svg\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/cburnett/wN.svg?");
+eval("module.exports = __webpack_require__.p + \"assets/images/dc9544a72b2cf7a92579.svg\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/cburnett/wN.svg?");
 
 /***/ }),
 
@@ -296,7 +296,7 @@ eval("module.exports = __webpack_require__.p + \"dc9544a72b2cf7a92579.svg\";\n\n
   \***********************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-eval("module.exports = __webpack_require__.p + \"2062ce2d4d0e8d018369.svg\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/cburnett/wP.svg?");
+eval("module.exports = __webpack_require__.p + \"assets/images/2062ce2d4d0e8d018369.svg\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/cburnett/wP.svg?");
 
 /***/ }),
 
@@ -306,7 +306,7 @@ eval("module.exports = __webpack_require__.p + \"2062ce2d4d0e8d018369.svg\";\n\n
   \***********************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-eval("module.exports = __webpack_require__.p + \"30871ebbc0ad7f46a1c7.svg\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/cburnett/wQ.svg?");
+eval("module.exports = __webpack_require__.p + \"assets/images/30871ebbc0ad7f46a1c7.svg\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/cburnett/wQ.svg?");
 
 /***/ }),
 
@@ -316,7 +316,7 @@ eval("module.exports = __webpack_require__.p + \"30871ebbc0ad7f46a1c7.svg\";\n\n
   \***********************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-eval("module.exports = __webpack_require__.p + \"c051a30b157b9deadd0d.svg\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/cburnett/wR.svg?");
+eval("module.exports = __webpack_require__.p + \"assets/images/c051a30b157b9deadd0d.svg\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/cburnett/wR.svg?");
 
 /***/ }),
 
@@ -326,7 +326,7 @@ eval("module.exports = __webpack_require__.p + \"c051a30b157b9deadd0d.svg\";\n\n
   \**************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-eval("module.exports = __webpack_require__.p + \"4c0d6b27175ec63ec634.ogg\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/sounds/Capture.ogg?");
+eval("module.exports = __webpack_require__.p + \"assets/sounds/4c0d6b27175ec63ec634.ogg\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/sounds/Capture.ogg?");
 
 /***/ }),
 
@@ -336,7 +336,7 @@ eval("module.exports = __webpack_require__.p + \"4c0d6b27175ec63ec634.ogg\";\n\n
   \************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-eval("module.exports = __webpack_require__.p + \"08e1bc366728c6a042c1.wav\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/sounds/Check.wav?");
+eval("module.exports = __webpack_require__.p + \"assets/sounds/08e1bc366728c6a042c1.wav\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/sounds/Check.wav?");
 
 /***/ }),
 
@@ -346,7 +346,7 @@ eval("module.exports = __webpack_require__.p + \"08e1bc366728c6a042c1.wav\";\n\n
   \***********************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-eval("module.exports = __webpack_require__.p + \"5a58dd80a641cfdf5fb0.ogg\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/sounds/Move.ogg?");
+eval("module.exports = __webpack_require__.p + \"assets/sounds/5a58dd80a641cfdf5fb0.ogg\";\n\n//# sourceURL=webpack://my-webpack-project/./src/chess/sounds/Move.ogg?");
 
 /***/ })
 
@@ -506,7 +506,7 @@ eval("module.exports = __webpack_require__.p + \"5a58dd80a641cfdf5fb0.ogg\";\n\n
 /******/ 		// or pass an empty string ("") and set the __webpack_public_path__ variable from your code to use your own logic.
 /******/ 		if (!scriptUrl) throw new Error("Automatic publicPath is not supported in this browser");
 /******/ 		scriptUrl = scriptUrl.replace(/#.*$/, "").replace(/\?.*$/, "").replace(/\/[^\/]+$/, "/");
-/******/ 		__webpack_require__.p = scriptUrl + "../";
+/******/ 		__webpack_require__.p = scriptUrl + "../../";
 /******/ 	})();
 /******/ 	
 /************************************************************************/

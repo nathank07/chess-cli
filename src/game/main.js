@@ -4,7 +4,7 @@ import { createGame, importGame, fetchMove } from "../chess/board.js"
 import newGame, { existingGame } from "./websockets.js"
 import { viewStartHistory, viewBackHistory, viewForwardHistory, viewCurrentGame, undoMove, flipBoard } from '../chess/modify.js'
 
-const game = await newGame(false, document.querySelector('#root'))
+const game = await existingGame(document.body.dataset.id, document.querySelector('#root'))
 addControls(game)
 console.log(game.id)
 
