@@ -29,13 +29,35 @@ func main() {
 			}
 		}
 	})
+	router.POST("/login", handleLogin)
+	router.POST("/register", handleLogin)
 	router.Run(":8081")
 }
 
-func handleRegistry(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Handling Registry")
+// TODO: Put users in database
+
+func handleRegistry(ctx *gin.Context) {
+	username := ctx.PostForm("username")
+	password := ctx.PostForm("password")
+	confirm := ctx.PostForm("confirm")
+	email := ctx.PostForm("email")
+
+	if username == "in database" {
+		ctx.JSON(400, gin.H{"status": "Username was taken."})
+	}
+	if email == "in database" {
+		ctx.JSON(400, gin.H{"status": "Email already registered."})
+	}
+	if password != confirm {
+		ctx.JSON(400, gin.H{"status": "Passwords do not match."})
+		return
+	}
+	ctx.JSON(200, gin.H{"status": "Registered!"})
 }
 
-func handleLogin(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Handling Login")
+func handleLogin(ctx *gin.Context) {
+	username := ctx.PostForm("username")
+	password := ctx.PostForm("password")
+	fmt.Println(username)
+	fmt.Println(password)
 }
