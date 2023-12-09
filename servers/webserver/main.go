@@ -21,8 +21,8 @@ func main() {
 		if matched, _ := regexp.MatchString("^[0-9]+$", path); matched {
 			ctx.HTML(http.StatusOK, "game.html", gin.H{"id": path})
 		} else {
-			_, err := os.Stat(path + ".html")
-			if err == nil {
+			_, err := os.Stat("dist/" + path + ".html")
+			if err == nil && path != "game" {
 				ctx.HTML(http.StatusOK, path+".html", gin.H{})
 			} else {
 				ctx.AbortWithStatus(http.StatusNotFound)
