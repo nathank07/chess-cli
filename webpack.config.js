@@ -4,7 +4,6 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
 const isProduction = process.env.NODE_ENV == 'production';
-
 const stylesHandler = MiniCssExtractPlugin.loader;
 
 const pages = ['game', 'login', 'register']

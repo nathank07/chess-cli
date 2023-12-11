@@ -9,8 +9,12 @@
     <form action="/register" method="POST">
         <label for="username">Username</label>
         <input name="username" required>
+        <label for="email">Email (Optional)</label>
+        <input type="email" name="email">
         <label for="password">Password</label>
-        <input type="password" name="password" required>
+        <input type="password" name="password" id="password" required>
+        <label for="confirm">Confirm Password</label>
+        <input type="password" name="confirm" id="confirm" required>
         <button type="submit">Submit</button>
     </form>
 </body>
