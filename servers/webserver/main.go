@@ -50,15 +50,19 @@ func handleRegistry(ctx *gin.Context) {
 
 	if dbHasUser(username) {
 		ctx.JSON(400, gin.H{"status": "Username was taken."})
+		return
 	}
 	if email != "" && dbHasEmail(email) {
 		ctx.JSON(400, gin.H{"status": "Email already registered."})
+		return
 	}
 	if password != confirm {
 		ctx.JSON(400, gin.H{"status": "Passwords do not match."})
+		return
 	}
 	registerUser(username, password, email)
 	ctx.JSON(200, gin.H{"status": "Registered!"})
+	return
 }
 
 func dbHasUser(username string) bool {
