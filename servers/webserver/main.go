@@ -2,18 +2,21 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
+	_ "encoding/gob"
 	"net/http"
 	"os"
 	"regexp"
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/sessions"
 	_ "github.com/mattn/go-sqlite3"
 	"golang.org/x/crypto/bcrypt"
 )
 
 const dbLoc = "./servers/db/data.db"
+
+var store = sessions.NewCookieStore([]byte("secret"))
 
 func main() {
 	router := gin.Default()
@@ -28,10 +31,23 @@ func main() {
 			ctx.HTML(http.StatusOK, "game.html", gin.H{"id": path})
 		} else {
 			_, err := os.Stat("dist/" + path + ".html")
-			if err == nil && path != "game" {
+			session, _ := store.Get(ctx.Request, "login-session")
+			if err == nil {
+				if path == "login" {
+					if session.Values["username"] == nil {
+						ctx.HTML(http.StatusOK, path+".html", gin.H{})
+					} else {
+						ctx.Redirect(http.StatusFound, "/")
+					}
+					return
+				}
+				if path == "" || path == "game" {
+					ctx.Redirect(http.StatusFound, "/")
+					return
+				}
 				ctx.HTML(http.StatusOK, path+".html", gin.H{})
 			} else {
-				ctx.AbortWithStatus(http.StatusNotFound)
+				ctx.Redirect(http.StatusNotFound, "/")
 			}
 		}
 	})
@@ -61,6 +77,7 @@ func handleRegistry(ctx *gin.Context) {
 		return
 	}
 	registerUser(username, password, email)
+	createSession(ctx, username)
 	ctx.JSON(200, gin.H{"status": "Registered!"})
 	return
 }
@@ -153,5 +170,28 @@ func checkPassword(username string, password string) bool {
 func handleLogin(ctx *gin.Context) {
 	username := ctx.PostForm("username")
 	password := ctx.PostForm("password")
-	fmt.Println(checkPassword(username, password))
+	if checkPassword(username, password) {
+		createSession(ctx, username)
+		ctx.JSON(200, gin.H{"status": "Logged in!"})
+		return
+	}
+}
+
+func createSession(ctx *gin.Context, username string) {
+	session, _ := store.Get(ctx.Request, "login-session")
+	db, err := sql.Open("sqlite3", dbLoc)
+	var id int
+	if err != nil {
+		panic(err)
+	}
+	err = db.QueryRow("SELECT id FROM user WHERE username = ?", username).Scan(&id)
+	if err != nil {
+		panic(err)
+	}
+	session.Values["username"] = username
+	session.Values["id"] = id
+	err = session.Save(ctx.Request, ctx.Writer)
+	if err != nil {
+		panic(err)
+	}
 }
