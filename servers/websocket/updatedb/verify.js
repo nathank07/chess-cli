@@ -4,9 +4,14 @@ const dbPath = path.resolve(__dirname, '../../db/data.db');
 const db = new sqlite3.Database(dbPath)
 const { moveUCI, FENtoBoard } = require('../game.js')
 
-function verify(uci, id) {
+function verify(uci, id, playerID) {
     return new Promise((resolve, reject) => {
-        db.get('SELECT fen, uci FROM game WHERE id = ?', id, function(err, row) {
+        db.get('SELECT fen, uci, whitePlayerID, blackPlayerID FROM game WHERE id = ?', id, function(err, row) {
+            whitePlayerID = Number(row.whitePlayerID)
+            blackPlayerID = Number(row.blackPlayerID)
+            if(whitePlayerID !== playerID && blackPlayerID !== playerID) {
+                reject("You are not a player in this game.")
+            }
             if(err) {
                 reject(err)
             }
@@ -15,6 +20,9 @@ function verify(uci, id) {
             }
             const game = FENtoBoard(row.fen)
             if(row.uci === null) {
+                if(game.whitesMove && whitePlayerID !== playerID) {
+                    reject("It is not your turn.")
+                }
                 resolve(moveUCI(game, uci))
                 return 
             }
@@ -26,6 +34,9 @@ function verify(uci, id) {
                     reject("Game is invalid.")
                 }
             });
+            if(game.whitesMove && whitePlayerID !== playerID) {
+                reject("It is not your turn.")
+            }
             resolve(moveUCI(game, uci)) 
             return
         })

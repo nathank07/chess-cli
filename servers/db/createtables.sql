@@ -2,8 +2,8 @@ CREATE TABLE game (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     fen TEXT NOT NULL,
     uci TEXT,
-    player1id INTEGER,
-    player2id INTEGER,
+    whitePlayerID INTEGER,
+    blackPlayerID INTEGER,
     FOREIGN KEY(player1id) REFERENCES user(id),
     FOREIGN KEY(player2id) REFERENCES user(id)
 );
