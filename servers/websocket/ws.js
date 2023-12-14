@@ -2,7 +2,7 @@ const { createNewGame } = require("./updatedb/newGame.js")
 const { verify, updateDB } = require('./updatedb/verify');
 const { exportGame } = require('./updatedb/exportGame.js')
 const { tokenToID } = require('./jwt.js')
-const { insertPlayer } = require('./updatedb/players.js')
+const { insertPlayer, returnPlayers } = require('./updatedb/players.js')
 
 const http = require('http');
 const WebSocket = require('ws');
@@ -14,29 +14,31 @@ const server = http.createServer((req, res) => {
 
 const wss = new WebSocket.Server({ server });
 
-wss.on('connection', ws => {
-    ws.on('message', handleMessage);
-    ws.on('close', handleClose);
+wss.on('connection', async ws => {
+    ws.userToken = null;
+    ws.on('message', (e) => handleMessage(ws, e));
+    ws.on('close', (e) => handleClose(ws, e));
+    
 });
 
-function handleMessage(data) {
+async function handleMessage(ws, data) {
     const str = data.toString();
     try {
         const query = JSON.parse(str);
-        const currentTokens = []
-        let whitePlayer = {token: null, id: null}
-        let blackPlayer = {token: null, id: null}
-        if (query.token) {
-            handleTokenQuery(query, currentTokens, whitePlayer, blackPlayer);
+        if (query.token && !query.uci) {
+            joinGame(ws, query, ws.userToken);
         }
         if (query.fen) {
-            sendNewGame(query);
+            sendNewGame(ws, query);
         }
         if (query.id && query.uci && query.token) {
-            sendMove(query, whitePlayer, blackPlayer);
+            sendMove(ws, wss, query);
         }
-        if (query.id && !query.uci) {
-            sendExport(query);
+        if(query.id && query.uci && !query.token) {
+            ws.send(JSON.stringify({ invalid: true, uci: query.uci }))
+        }
+        if (query.id && !query.uci && !query.token) {
+            sendExport(ws, query);
         }
     } catch (e) {
         console.log("FAIL: ", JSON.parse(str))
@@ -44,32 +46,25 @@ function handleMessage(data) {
     }
 }
 
-function handleTokenQuery(query, currentTokens, whitePlayer, blackPlayer) {
-    if (!currentTokens.includes(query.token)) {
-        tokenToID(query.token)
-            .then(id => {
-                insertPlayer(query.id, id)
-                    .then(res => {
-                        if (res === "white") {
-                            whitePlayer.token = query.token
-                            whitePlayer.id = id
-                        } else if (res === "black") {
-                            blackPlayer.token = query.token
-                            blackPlayer.id = id
-                        }
-                        currentTokens.push(query.token)
-                    })
-                    .catch(err => {
-                        console.log(err)
-                    })
-            })
-            .catch(err => {
-                console.log(err)
-            })
+async function joinGame(ws, query) {
+    try {
+        const id = await tokenToID(query.token)
+        const color = await insertPlayer(query.id, id)
+        if (color === "white") {
+            ws.send(JSON.stringify({ isWhite: true }))
+        } else if (color === "black") {
+            ws.send(JSON.stringify({ isWhite: false }))
+        } else if (color === false) {
+            ws.send(JSON.stringify({ isWhite: null }))
+        }  
+        ws.userToken = query.token
+        setPlayerSide(ws, query)  
+    } catch (e) {
+        console.log("Could not join game:", e)
     }
 }
 
-function sendNewGame(query) {
+function sendNewGame(ws, query) {
     createNewGame(query.fen)
         .then(id => {
             ws.send(id);
@@ -79,71 +74,70 @@ function sendNewGame(query) {
         })
 }
 
-function sendMove(query, whitePlayer, blackPlayer) {
+async function sendMove(ws, wss, query) {
     console.log(`Recieved ${query.uci} request to game ${query.id}`)
-    let playerID = null
-    if (query.token === whitePlayer.token || query.token === blackPlayer.token) {
-        if (query.token === whitePlayer.token) {
-            playerID = whitePlayer.id
-        }
-        if (query.token === blackPlayer.token) {
-            playerID = blackPlayer.id
-        }
-    } else {
+    const inGame = ws.playerIsWhite !== undefined || await setPlayerSide(ws, query)
+    if(!inGame) {
+        console.log("canceled move")
+        ws.send(JSON.stringify({ invalid: true, uci: query.uci }))
         return
     }
-    verify(query.uci, query.id, playerID)
-        .then(res => {
-            const messages = []
-            let clientCount = 0
-            if (res) {
-                updateDB(query.uci, query.id)
-                    .then(() => {
-                        messages.push(query.uci)
-                        wss.clients.forEach((client) => {
-                            if (client.gameId === query.id) {
-                                clientCount++
-                                client.send(JSON.stringify({ uci: query.uci }))
-                                if (res.result) {
-                                    if (messages.length === 1) { messages.push(res.result, res.reason) }
-                                    client.send(JSON.stringify({ result: res.result, reason: res.reason }))
-                                }
-                            }
-                        })
-                        console.log(`Sent ${messages} to game ${query.id} (${clientCount} clients)`)
-                    })
-                    .catch((rej) => {
-                        console.log("Database could not be updated", rej)
-                        ws.send(rej)
-                    })
-            } else {
-                console.log(`${query.uci} to ${query.id} was invalid, sending response`)
-                wss.clients.forEach((client) => {
-                    if (client.gameId === query.id) {
-                        client.send(JSON.stringify({ invalid: true, uci: query.uci }))
+    verify(query.uci, query.id, ws.playerIsWhite)
+        .then(async res => {
+            const messages = [];
+            let clientCount = 0;
+            await updateDB(query.uci, query.id);
+            messages.push(query.uci);
+            wss.clients.forEach((client) => {
+                if (client.gameId === query.id) {
+                    clientCount++;
+                    client.send(JSON.stringify({ uci: query.uci }));
+                    if (res.result) {
+                        if (messages.length === 1) { messages.push(res.result, res.reason) }
+                        client.send(JSON.stringify({ result: res.result, reason: res.reason }));
                     }
-                })
-            }
+                }
+        });
+        console.log(`Sent ${messages} to game ${query.id} (${clientCount} clients)`);
         })
-        .catch(rej => {
-            console.log(rej)
-        })
-}
-
-function sendExport(query) {
-    exportGame(query.id)
-        .then(res => {
-            ws.gameId = query.id
-            console.log(`Client of ${ws.gameId} has connected`)
-            ws.send(JSON.stringify({ exportedGame: res, id: query.id }))
-        })
-        .catch(rej => {
-            ws.send("Error: Could not find")
-            console.log(rej)
+        .catch(err => {
+            console.log(`${query.uci} to ${query.id} was invalid, sending response`);
+            console.log(err)
+            wss.clients.forEach((client) => {
+                if (client.gameId === query.id) {
+                    console.log('sending invalid')
+                    client.send(JSON.stringify({ invalid: true, uci: query.uci }));
+                }
+            });
         })
 }
 
-function handleClose() {
+async function sendExport(ws, query) {
+    const res = await exportGame(query.id)
+    ws.gameId = query.id
+    if(query.token) {
+        setPlayerSide(ws, query)
+    }
+    console.log(`Client of ${ws.gameId} has connected`)
+    ws.send(JSON.stringify({ exportedGame: res, id: query.id }))
+}
+
+async function setPlayerSide(ws, query) {
+    try {
+        const id = await tokenToID(ws.userToken)
+        const { whitePlayer, blackPlayer } = await returnPlayers(query.id)
+        if(id && whitePlayer.id === id || blackPlayer.id === id) {
+            ws.playerIsWhite = whitePlayer.id === id
+        }
+        return true
+    }
+    catch(e) {
+        console.log(e)
+        return false
+    }
+}
+
+function handleClose(ws) {
     console.log(`One client of ${ws.gameId} has disconnected`)
 }
 

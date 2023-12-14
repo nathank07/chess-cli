@@ -4,8 +4,8 @@ CREATE TABLE game (
     uci TEXT,
     whitePlayerID INTEGER,
     blackPlayerID INTEGER,
-    FOREIGN KEY(player1id) REFERENCES user(id),
-    FOREIGN KEY(player2id) REFERENCES user(id)
+    FOREIGN KEY(whitePlayerID) REFERENCES user(id),
+    FOREIGN KEY(blackPlayerID) REFERENCES user(id)
 );
 
 CREATE TABLE user (

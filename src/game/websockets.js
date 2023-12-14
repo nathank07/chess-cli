@@ -1,5 +1,5 @@
 import { createGame, fetchMove, importGame } from "../chess/board";
-import { undoMove } from "../chess/modify";
+import { undoMove, flipBoard } from "../chess/modify";
 import { updateToast } from "./main.js";
 
 export async function createWSGame(fen) {
@@ -47,7 +47,7 @@ export async function createWebSocket(id) {
                                 undoMove(importedGame)
                                 return
                             }
-                            if(response.uci.slice(0, 4) !== lastMove) {
+                            if(response.uci.slice(0, 4) !== lastMove && !response.invalid) {
                                 fetchMove(importedGame, response.uci, true);
                             }
                         }
@@ -98,4 +98,59 @@ export default async function newGame(fen, parentDiv) {
             reject(error)
         })
     })
-} 
+}
+
+export async function joinGame(game) {
+    return new Promise((resolve, reject) => {
+        game.socket.send(JSON.stringify({ token: localStorage.getItem('token'), id: game.id }));
+        game.socket.addEventListener('message', sendSide)
+
+        function sendSide(e) {
+            setTimeout(() => {
+                reject("Could not join game")
+                game.socket.removeEventListener('message', sendSide)
+            }, 5000)
+            const response = JSON.parse(e.data)
+            if(response.isWhite !== undefined) {
+                console.log(response, response.isWhite)
+                resolve(response.isWhite)
+                game.socket.removeEventListener('message', sendSide)
+            }
+        }
+    })
+}
+
+export function createTokenAndJoin(game) {
+    return new Promise((resolve, reject) => {
+        let auth
+        if(localStorage.getItem('token')) {
+            auth = localStorage.getItem('token')
+        }
+        fetch("/token", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + auth
+            },
+        })
+            .then(res => res.json())
+            .then(res => {
+                localStorage.setItem('token', res.token)
+                joinGame(game)
+                    .then(color => {
+                        console.log(color)
+                        game.playerIsWhite = color
+                        if(color === false) {
+                            flipBoard(game)
+                        }
+                        resolve(color)
+                    })
+                    .catch(err => {
+                        reject(err)
+                    })
+            })
+            .catch(err => {
+                reject(err)
+            })
+    })
+}

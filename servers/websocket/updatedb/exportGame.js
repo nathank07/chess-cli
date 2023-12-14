@@ -8,6 +8,11 @@ function exportGame(id) {
         db.get("SELECT fen, uci FROM game WHERE id = ?", id, function(err, row) {
             if(err) {
                 reject(err)
+                return
+            }
+            if(row === undefined) {
+                reject("Game does not exist")
+                return
             }
             if(row.uci === null) {
                 resolve([row.fen])

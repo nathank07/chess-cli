@@ -1,11 +1,20 @@
 import "./game.css"
 import "../chess/cburnett/move.svg"
 import { createGame, importGame, fetchMove } from "../chess/board.js"
-import newGame, { existingGame } from "./websockets.js"
+import newGame, { createTokenAndJoin, existingGame } from "./websockets.js"
 import { viewStartHistory, viewBackHistory, viewForwardHistory, viewCurrentGame, undoMove, flipBoard } from '../chess/modify.js'
 
+console.log('hi')
 const game = await existingGame(document.body.dataset.id, document.querySelector('#root'))
+//const game = await newGame(false, document.querySelector('#root'))
 addControls(game)
+createTokenAndJoin(game)
+    .then(isWhite => {
+        updateToast(`You are playing as ${isWhite ? "white" : "black"}`)
+    })
+    .catch(error => {
+        updateToast(error)
+    })
 console.log(game.id)
 
 function addControls(chessGame){

@@ -50,5 +50,6 @@ func main() {
 	})
 	router.POST("/login", handleLogin)
 	router.POST("/register", handleRegistry)
+	router.POST("/token", handleToken)
 	router.Run(":8081")
 }

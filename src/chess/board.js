@@ -267,6 +267,7 @@ export function postMove(game, promotion, socket) {
         socket.send(JSON.stringify({
             uci: UCI,
             id: game.id, 
+            token: localStorage.getItem('token')
         }))
     }
     const end = gameOver(game)
