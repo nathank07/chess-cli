@@ -192,9 +192,9 @@ export function renderBoard(game) {
                 const svg = document.createElement('img')
                 svg.src = pieceSvg
                 if(history === 0 && !game.result) {
-                    //if(game.playerIsWhite !== null && square.isWhite === game.playerIsWhite && game.playerIsWhite === game.whitesMove) {
+                    if(game.playerIsWhite !== null && square.isWhite === game.playerIsWhite && game.playerIsWhite === game.whitesMove) {
                         makeDraggable(square, svg, renderBoard)
-                    //}
+                    }
                 }
                 div.appendChild(svg)
             }

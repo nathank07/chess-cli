@@ -17,6 +17,13 @@ pages.forEach(page => {
         chunks: [`${page}`]
     }))
 });
+js[`home`] = `./src/home/main.js`
+html.push(new HtmlWebpackPlugin({
+    filename: `index.html`,
+    template: path.join(__dirname, `./src/home/home.html`),
+    chunks: [`home`]
+}))
+
 
 const config = {
     entry: js,
@@ -27,11 +34,6 @@ const config = {
     },
     plugins: [
         ...html,
-        new HtmlWebpackPlugin({
-            filename: `index.html`,
-            template: path.join(__dirname, `./src/home/index.html`),
-            chunks: [`home/home`]
-        }),
         new MiniCssExtractPlugin({
             filename: 'assets/css/[name].css'
         }),

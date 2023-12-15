@@ -4,8 +4,10 @@ CREATE TABLE game (
     uci TEXT,
     whitePlayerID INTEGER,
     blackPlayerID INTEGER,
+    game_ended_reason TEXT,
+    game_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(whitePlayerID) REFERENCES user(id),
-    FOREIGN KEY(blackPlayerID) REFERENCES user(id)
+    FOREIGN KEY(blackPlayerID) REFERENCES user(id)  
 );
 
 CREATE TABLE user (
