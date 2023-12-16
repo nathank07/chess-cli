@@ -89,6 +89,9 @@ export default function animateMove(game, fromX, fromY, toX, toY, sound = false,
             .then(() => {
                 renderBoard(game)
             })
+            .catch(() => {
+                renderBoard(game)
+            })
         return true
     }
     return false

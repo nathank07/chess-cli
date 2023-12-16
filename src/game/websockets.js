@@ -112,7 +112,6 @@ export async function joinGame(game) {
             }, 5000)
             const response = JSON.parse(e.data)
             if(response.isWhite !== undefined) {
-                console.log(response, response.isWhite)
                 resolve(response.isWhite)
                 game.socket.removeEventListener('message', sendSide)
             }
@@ -133,17 +132,27 @@ export function createTokenAndJoin(game) {
                 'Authorization': 'Bearer ' + auth
             },
         })
-            .then(res => res.json())
+            .then(async res => {
+                const statusCode = res.status
+                res = await res.json()
+                res.statusCode = statusCode
+                return res
+            })
             .then(res => {
+                if(res.statusCode === 401) {
+                    resolve("You are spectating. Log in to play.")
+                    return
+                }
                 localStorage.setItem('token', res.token)
                 joinGame(game)
-                    .then(color => {
-                        console.log(color)
-                        game.playerIsWhite = color
-                        if(color === false) {
+                    .then(isWhite => {
+                        game.playerIsWhite = isWhite
+                        const spectating = isWhite == null
+                        let toastString = "You are " + (spectating ? "spectating" : `playing as ${isWhite ? "white" : "black"}`)
+                        if(isWhite === false) {
                             flipBoard(game)
                         }
-                        resolve(color)
+                        resolve(toastString)
                     })
                     .catch(err => {
                         reject(err)

@@ -54,6 +54,10 @@ func handleToken(ctx *gin.Context) {
 			ctx.JSON(500, gin.H{"error": err.Error()})
 			return
 		}
+		if tokenString == "" {
+			ctx.JSON(401, gin.H{"status": "You must create an account to play."})
+			return
+		}
 		ctx.JSON(200, gin.H{"token": tokenString})
 	}
 }

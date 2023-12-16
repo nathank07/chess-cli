@@ -302,7 +302,7 @@ export function importGame(fenUCIexport) {
     if(fenUCIexport.length > 1) {
         fenUCIexport.slice(1).forEach(arr => {
             arr.forEach(move => {
-                fetchMove(chessGame, move, false, true)
+                fetchMove(chessGame, move, false, true, false)
             });
         });
     }

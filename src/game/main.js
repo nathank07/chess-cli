@@ -7,8 +7,8 @@ if(document.body.dataset.id) {
     const game = await existingGame(document.body.dataset.id, document.querySelector('#root'))
     addControls(game)
     createTokenAndJoin(game)
-        .then(isWhite => {
-            updateToast(`You are playing as ${isWhite ? "white" : "black"}`)
+        .then(res => {
+            updateToast(res)
         })
         .catch(error => {
             updateToast(error)

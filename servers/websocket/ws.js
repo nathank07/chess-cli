@@ -60,6 +60,7 @@ async function joinGame(ws, query) {
         ws.userToken = query.token
         setPlayerSide(ws, query)  
     } catch (e) {
+        ws.send(JSON.stringify({ isWhite: null }))
         console.log("Could not join game:", e)
     }
 }

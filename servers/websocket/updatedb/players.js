@@ -13,6 +13,14 @@ function insertPlayer(gameID, playerID) {
             if(row === undefined) {
                 reject("Game does not exist")
             }
+            if(row.whitePlayerID === playerID) {
+                resolve("white")
+                return
+            }
+            if(row.blackPlayerID === playerID) {
+                resolve("black")
+                return
+            }
             if(row.whitePlayerID === null) {
                 db.run("UPDATE game SET whitePlayerID = ? WHERE id = ?", playerID, gameID, (err) => {
                     if(err) {
