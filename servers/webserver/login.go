@@ -11,11 +11,12 @@ import (
 func handleLogin(ctx *gin.Context) {
 	username := ctx.PostForm("username")
 	password := ctx.PostForm("password")
-	if checkPassword(username, password) {
+	if dbHasUser(username) && checkPassword(username, password) {
 		createSession(ctx, username)
 		ctx.Redirect(302, "/")
 		return
 	}
+	ctx.JSON(401, gin.H{"status": "Invalid username or password."})
 }
 
 func handleLogout(ctx *gin.Context) {
@@ -114,7 +115,8 @@ func createSession(ctx *gin.Context, username string) {
 	if err != nil {
 		panic(err)
 	}
-	err = db.QueryRow("SELECT id FROM user WHERE username = ?", username).Scan(&id)
+	stripped_username := strings.ToLower(strings.TrimSpace(username))
+	err = db.QueryRow("SELECT id FROM user WHERE TRIM(LOWER(username)) = ?", stripped_username).Scan(&id)
 	if err != nil {
 		panic(err)
 	}
@@ -134,8 +136,8 @@ func dbHasUser(username string) bool {
 	defer db.Close()
 
 	var username_exists int
-	stripped_username := strings.ToLower(strings.TrimSpace(username))
-	err = db.QueryRow("SELECT COUNT(TRIM(LOWER(username))) FROM user WHERE username=(?);", stripped_username).Scan(&username_exists)
+	stripped_username := strings.ToLower(strings.ReplaceAll(username, " ", ""))
+	err = db.QueryRow("SELECT COUNT(*) FROM user WHERE REPLACE(LOWER(username), ' ', '') = ?;", stripped_username).Scan(&username_exists)
 	if err != nil {
 		panic(err)
 	}

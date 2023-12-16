@@ -48,6 +48,9 @@ function addControls(chessGame){
 
 export function updateToast(text) {
     const toast = document.querySelector('#toast')
+    if(!toast) {
+        return
+    } 
     if(text.result) {
         if(text.result === "Stalemate") {
             toast.innerHTML = `Game ended in Stalemate due to ${text.reason}.`
