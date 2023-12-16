@@ -18,6 +18,17 @@ func handleLogin(ctx *gin.Context) {
 	}
 }
 
+func handleLogout(ctx *gin.Context) {
+	session, _ := store.Get(ctx.Request, "login-session")
+	session.Options.MaxAge = -1
+	err := session.Save(ctx.Request, ctx.Writer)
+	if err != nil {
+		panic(err)
+	}
+	ctx.JSON(200, gin.H{"status": "Logged out!"})
+	return
+}
+
 func handleRegistry(ctx *gin.Context) {
 	username := ctx.PostForm("username")
 	password := ctx.PostForm("password")

@@ -54,6 +54,7 @@ func main() {
 		ctx.HTML(http.StatusOK, path+".html", gin.H{"username": username})
 	})
 	router.POST("/login", handleLogin)
+	router.POST("/logout", handleLogout)
 	router.POST("/register", handleRegistry)
 	router.POST("/token", handleToken)
 	router.Run(":8081")

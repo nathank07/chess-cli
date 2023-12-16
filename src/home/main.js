@@ -11,7 +11,7 @@ idList.forEach(async id => {
     parent.appendChild(game.div)
     parent.setAttribute('id', id)
     parent.addEventListener('click', () => {
-        window.location.href += `${id}`
+        window.location.href += id 
     })
     changePlayerSide(game, true)
     document.querySelector('#game-list').appendChild(parent)
@@ -29,7 +29,7 @@ document.querySelector("#create-game").addEventListener('click', () => {
 })
 
 function convertIDList(idList) {
-    if(idList === "") {
+    if (idList === "") {
         return []
     }
     idList = idList.substring(1, idList.length - 1)
