@@ -13,7 +13,7 @@ func handleLogin(ctx *gin.Context) {
 	password := ctx.PostForm("password")
 	if checkPassword(username, password) {
 		createSession(ctx, username)
-		ctx.JSON(200, gin.H{"status": "Logged in!"})
+		ctx.Redirect(302, "/")
 		return
 	}
 }
@@ -25,7 +25,7 @@ func handleLogout(ctx *gin.Context) {
 	if err != nil {
 		panic(err)
 	}
-	ctx.JSON(200, gin.H{"status": "Logged out!"})
+	ctx.Redirect(302, "/")
 	return
 }
 
@@ -49,7 +49,7 @@ func handleRegistry(ctx *gin.Context) {
 	}
 	registerUser(username, password, email)
 	createSession(ctx, username)
-	ctx.JSON(200, gin.H{"status": "Registered!"})
+	ctx.Redirect(302, "/")
 	return
 }
 
