@@ -46,7 +46,7 @@ function insertPlayer(gameID, playerID) {
 
 function returnPlayers(gameID) {
     return new Promise((resolve, reject) => {
-        db.get("SELECT whitePlayerID, blackPlayerID FROM game WHERE id = ?", gameID, (err, row) => {
+        db.get("SELECT whitePlayerID, blackPlayerID FROM game WHERE id = ?", gameID, async (err, row) => {
             if(err) {
                 console.log(err)
                 reject(err)
@@ -58,13 +58,31 @@ function returnPlayers(gameID) {
             let blackPlayer = {id: null, token: null}
             if(row.whitePlayerID) {
                 whitePlayer.id = row.whitePlayerID
+                whitePlayer.username = await idToUsername(row.whitePlayerID)
             }
             if(row.blackPlayerID) {
                 blackPlayer.id = row.blackPlayerID
+                blackPlayer.username = await idToUsername(row.blackPlayerID)
             }
             resolve({whitePlayer, blackPlayer})
         })
     })
+}
+
+function idToUsername(id) {
+    return new Promise((resolve, reject) => {
+        db.get("SELECT username FROM user WHERE id = ?", id, (err, row) => {
+            if(err) {
+                console.log(err)
+                reject(err)
+            }
+            if(row === undefined) {
+                reject("User does not exist")
+            }
+            resolve(row.username)
+        })
+    })
+
 }
 
 module.exports.insertPlayer = insertPlayer

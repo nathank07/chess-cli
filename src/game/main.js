@@ -13,6 +13,12 @@ if(document.body.dataset.id) {
         .catch(error => {
             updateToast(error)
         })
+    const playersDiv = document.createElement('div')
+    playersDiv.id = "players"
+    playersDiv.appendChild(game.whiteUserSpan)
+    playersDiv.appendChild(game.blackUserSpan)
+    game.div.parentNode.prepend(playersDiv)
+    console.log(game.whiteUserSpan, game.blackUserSpan)
     console.log(game.id)
 }
 

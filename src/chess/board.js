@@ -17,6 +17,10 @@ const sounds = {
 }
 
 export function FENtoBoard(FENstring) {
+    const whiteUserSpan = document.createElement('span')
+    const blackUserSpan = document.createElement('span')
+    whiteUserSpan.classList.add('whiteUser')
+    blackUserSpan.classList.add('blackUser')
     const chessGame = {
         board: [...Array(8)].map(e => Array(8).fill(null)),
         div: null,
@@ -39,6 +43,8 @@ export function FENtoBoard(FENstring) {
         showingWhiteSide: true,
         fiftyMoveRule: 0,
         export: [FENstring],
+        whiteUserSpan: whiteUserSpan,
+        blackUserSpan: blackUserSpan,
     }
     
     const pieces = {

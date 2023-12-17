@@ -6,6 +6,7 @@ const { insertPlayer, returnPlayers } = require('./updatedb/players.js')
 
 const http = require('http');
 const WebSocket = require('ws');
+const { send } = require("process");
 
 const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/html' });
@@ -25,19 +26,19 @@ async function handleMessage(ws, data) {
     const str = data.toString();
     try {
         const query = JSON.parse(str);
-        if (query.token && !query.uci) {
-            joinGame(ws, query, ws.userToken);
+        if(query.id && query.token && !query.uci) {
+            joinGame(ws, query);
         }
-        if (query.fen) {
+        if(query.fen) {
             sendNewGame(ws, query);
         }
-        if (query.id && query.uci && query.token) {
-            sendMove(ws, wss, query);
+        if(query.id && query.uci && query.token) {
+            sendMove(ws, query);
         }
         if(query.id && query.uci && !query.token) {
             ws.send(JSON.stringify({ invalid: true, uci: query.uci }))
         }
-        if (query.id && !query.uci && !query.token) {
+        if(query.id && !query.uci && !ws.gameId) {
             sendExport(ws, query);
         }
     } catch (e) {
@@ -75,7 +76,7 @@ function sendNewGame(ws, query) {
         })
 }
 
-async function sendMove(ws, wss, query) {
+async function sendMove(ws, query) {
     console.log(`Recieved ${query.uci} request to game ${query.id}`)
     const inGame = ws.playerIsWhite !== undefined || await setPlayerSide(ws, query)
     if(!inGame) {
@@ -98,8 +99,8 @@ async function sendMove(ws, wss, query) {
                         client.send(JSON.stringify({ result: res.result, reason: res.reason }));
                     }
                 }
-        });
-        console.log(`Sent ${messages} to game ${query.id} (${clientCount} clients)`);
+            });
+            console.log(`Sent ${messages} to game ${query.id} (${clientCount} clients)`);
         })
         .catch(err => {
             console.log(`${query.uci} to ${query.id} was invalid, sending response`);
@@ -114,13 +115,21 @@ async function sendMove(ws, wss, query) {
 }
 
 async function sendExport(ws, query) {
-    const res = await exportGame(query.id)
-    ws.gameId = query.id
-    if(query.token) {
-        setPlayerSide(ws, query)
+    try {
+        const res = await exportGame(query.id)
+        ws.gameId = query.id
+        console.log(`Client of ${ws.gameId} has connected`)
+        ws.send(JSON.stringify({ exportedGame: res, id: query.id }))
+        if(query.token) {
+            setPlayerSide(ws, query)
+        } else {
+            const { whitePlayer, blackPlayer } = await returnPlayers(query.id)
+            sendParticipants(query, whitePlayer.username, blackPlayer.username)
+        }
     }
-    console.log(`Client of ${ws.gameId} has connected`)
-    ws.send(JSON.stringify({ exportedGame: res, id: query.id }))
+    catch(e) {
+        console.log(e)
+    }
 }
 
 async function setPlayerSide(ws, query) {
@@ -130,12 +139,26 @@ async function setPlayerSide(ws, query) {
         if(id && whitePlayer.id === id || blackPlayer.id === id) {
             ws.playerIsWhite = whitePlayer.id === id
         }
+        sendParticipants(query, whitePlayer.username, blackPlayer.username)
         return true
     }
     catch(e) {
         console.log(e)
         return false
     }
+}
+
+function sendParticipants(query, whitePlayerUsername, blackPlayerUsername) {
+    wss.clients.forEach((client) => {
+        if (client.gameId === query.id) {
+            if(whitePlayerUsername && blackPlayerUsername) {
+                client.send(JSON.stringify({ whiteUser: whitePlayerUsername, blackUser: blackPlayerUsername }))
+            } else {
+                const obj = whitePlayerUsername ? { whiteUser: whitePlayerUsername } : { blackUser: blackPlayerUsername }
+                client.send(JSON.stringify(obj))
+            }
+        }
+    });
 }
 
 function handleClose(ws) {

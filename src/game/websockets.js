@@ -55,6 +55,12 @@ export async function createWebSocket(id) {
                             importedGame.result = { result: response.result, reason: response.reason }
                             updateToast(importedGame.result)
                         }
+                        if(response.whiteUser) {
+                            importedGame.whiteUserSpan.textContent = response.whiteUser
+                        }
+                        if(response.blackUser) {
+                            importedGame.blackUserSpan.textContent = response.blackUser
+                        }
                     })
                     socket.removeEventListener('message', fetchGame)
                     resolve(importedGame);

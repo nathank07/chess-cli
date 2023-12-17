@@ -2,10 +2,8 @@
     --board-size: unset !important;
 }
 
-#game-list > div {
-    width: 20rem;
-    height: 20rem;
-    background-color: #fff;
+#game-list > a {
+    background-color: #464646;
     border-radius: 1rem;
     box-shadow: 0 0 1rem rgba(0, 0, 0, 0.2);
     display: flex;
@@ -14,14 +12,43 @@
     padding: 1rem;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
+    text-decoration: none;
 }
 
-#game-list > div > #board-container {
+#game-list > a > #board-container {
     pointer-events: none;
+}
+
+#game-list > a > #board-container > #board > .square > span {
+    display: none;
 }
 
 #game-list {
     display: flex;
     gap: 2rem;
     flex-wrap: wrap;
+}
+
+.preview-players {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    color: whitesmoke;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.preview-players > .blackUser {
+    background-color: black;
+    color: whitesmoke;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+}
+
+.preview-players > .whiteUser {
+    background-color: whitesmoke;
+    color: black;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
 }

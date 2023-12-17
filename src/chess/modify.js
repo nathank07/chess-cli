@@ -75,8 +75,8 @@ export function undoMove(game, render = true) {
         });
     });
     const oldGame = game.history[game.history.length - 1]
-    const properties = ['whiteState', 'blackState', 'lastMove', 'fiftyMoveRule',
-    'lastMoveSound', 'whitesMove', 'drawnArrows', 'userHighlights', 'showingWhiteSide']
+    const properties = ['whiteState', 'blackState', 'lastMove', 'fiftyMoveRule', 'whiteUserSpan',
+    'blackUserSpan', 'lastMoveSound', 'whitesMove', 'drawnArrows', 'userHighlights', 'showingWhiteSide']
     properties.forEach(prop => {
         game[prop] = oldGame[prop]
     });
