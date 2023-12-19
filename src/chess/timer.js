@@ -46,14 +46,14 @@ export default function ChessTimer(secondsLength, secondsIncrement, updateFuncti
 function updateTimer(timer, fn) {
     if (timer.isRunning) {
         const time = new Date().getTime()
+        timer.timeLeft -= ((time - timer.timerStarted) / timer.ticks || 1)
         timer.ticks += 1
-        timer.timeLeft -= ((time - timer.timerStarted) / timer.ticks)
         if(timer.updateFunction) {
             timer.updateFunction(timer.timeLeft)
         }
         if(timer.timeLeft <= 0) {
             if(timer.timerFinishedFunction) { timer.timerFinishedFunction() }
-            timer.updateFunction(0)
+            if(timer.updateFunction) { timer.updateFunction(0) }
             timer.timeLeft = 0
             timer.isRunning = false
         }
