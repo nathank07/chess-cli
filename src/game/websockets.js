@@ -2,13 +2,13 @@ import { createGame, fetchMove, importGame } from "../chess/board";
 import { undoMove, flipBoard } from "../chess/modify";
 import { updateToast } from "./main.js";
 
-export async function createWSGame(fen) {
+export async function createWSGame(fen, timeControl) {
     return new Promise((resolve, reject) => {
         const chessGame = createGame(fen)
         try {
             const socket = new WebSocket('ws://localhost:8080')
             socket.onopen = () => {
-                socket.send(JSON.stringify({fen: fen ? fen : "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"}))
+                socket.send(JSON.stringify({fen: fen ? fen : "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", timeControl: timeControl ? timeControl : { seconds: 300, increment: 0 }}))
             };
             socket.onmessage = (event) => {
                 chessGame.id = event.data
@@ -49,6 +49,9 @@ export async function createWebSocket(id) {
                             }
                             if(response.uci.slice(0, 4) !== lastMove && !response.invalid) {
                                 fetchMove(importedGame, response.uci, true);
+                                if(importedGame.timer) {
+                                    importedGame.timer.alternate()
+                                }
                             }
                         }
                         if(response.result) {
@@ -85,9 +88,9 @@ export async function existingGame(id, parentDiv) {
     })
 }
 
-export default async function newGame(fen, parentDiv) {
+export default async function newGame(fen, parentDiv, timeControl) {
     return new Promise((resolve, reject) => {
-        createWSGame(fen)
+        createWSGame(fen, false, timeControl)
         .then(id => {
             createWebSocket(id)
                 .then(game => {

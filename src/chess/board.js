@@ -269,12 +269,16 @@ export function postMove(game, promotion, socket) {
         if(socket.readyState === 3) {
             undoMove(game, false)
             updateToast("Not connected to the game. Try refreshing?")
+            return
         }
         socket.send(JSON.stringify({
             uci: UCI,
             id: game.id, 
             token: localStorage.getItem('token')
         }))
+        if(game.timer) {
+            game.timer.alternate()
+        }
     }
     const end = gameOver(game)
     if(end) {
