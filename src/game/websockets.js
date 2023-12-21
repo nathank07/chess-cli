@@ -59,6 +59,10 @@ export async function createWebSocket(id) {
                         }
                         if(response.result) {
                             importedGame.result = { result: response.result, reason: response.reason }
+                            if(whiteClock && blackClock) {
+                                whiteClock.pause()
+                                blackClock.pause()
+                            }
                             updateToast(importedGame.result)
                             changePlayerSide(importedGame, true)
                         }
@@ -69,8 +73,8 @@ export async function createWebSocket(id) {
                             importedGame.blackUserSpan.textContent = response.blackUser
                         }
                         if(response.whiteClock && response.blackClock) {
-                            whiteClock = createTimer(response.whiteClock, response.increment, "white")
-                            blackClock = createTimer(response.blackClock, response.increment, "black")
+                            whiteClock = createTimer(response.whiteClock, response.increment, "white", importedGame.id)
+                            blackClock = createTimer(response.blackClock, response.increment, "black", importedGame.id)
                             if(response.activeClock) {
                                 response.activeClock === "white" ? whiteClock.start() : blackClock.start()
                             }

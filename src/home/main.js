@@ -9,6 +9,12 @@ idList.forEach(async id => {
     const game = await existingGame(id)
     const parent = document.createElement('a')
     const players = document.createElement('div')
+    const whiteTimer = document.createElement('div')
+    const blackTimer = document.createElement('div')
+    whiteTimer.setAttribute('gameId', id)
+    blackTimer.setAttribute('gameId', id)  
+    whiteTimer.id = 'whiteTimer'
+    blackTimer.id = 'blackTimer'
     players.classList.add('preview-players')
     players.appendChild(game.whiteUserSpan)
     const vs = document.createElement('span')
@@ -17,6 +23,8 @@ idList.forEach(async id => {
     players.appendChild(game.blackUserSpan)
     parent.appendChild(players)
     parent.appendChild(game.div)
+    parent.appendChild(whiteTimer)
+    parent.appendChild(blackTimer)
     parent.setAttribute('id', id)
     parent.href = window.location.href + id
     changePlayerSide(game, true)

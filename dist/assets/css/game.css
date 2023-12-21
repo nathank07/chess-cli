@@ -206,3 +206,10 @@
     border-radius: 0.5rem;
 }
 
+#whiteTimer, #blackTimer {
+    color: white;
+    background-color: black;
+    width: fit-content;
+}
+
+

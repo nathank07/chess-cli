@@ -51,8 +51,12 @@ function addControls(chessGame){
     document.querySelector('#takeback').addEventListener('click', () => undoMove(chessGame))
 }
 
-export function createTimer(time, increment, color) {
-    const div = document.querySelector(`#${color}Timer`)
+export function createTimer(time, increment, color, id) {
+    let div = document.querySelector(`#${color}Timer`)
+    if(document.querySelectorAll(`#${color}Timer`).length > 1) {
+        div = document.querySelector(`#${color}Timer[gameId="${id}"]`)
+        console.log(div)
+    }
     updateTimer(time * 1000, div)
     return ChessTimer(time, increment, (time) => updateTimer(time, div))
 }
