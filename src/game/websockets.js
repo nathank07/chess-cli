@@ -1,6 +1,7 @@
 import { createGame, fetchMove, importGame } from "../chess/board";
-import { undoMove, flipBoard } from "../chess/modify";
+import { undoMove, flipBoard, changePlayerSide } from "../chess/modify";
 import { updateToast } from "./main.js";
+import { createTimer } from "./main.js";
 
 export async function createWSGame(fen, timeControl) {
     return new Promise((resolve, reject) => {
@@ -8,7 +9,7 @@ export async function createWSGame(fen, timeControl) {
         try {
             const socket = new WebSocket('ws://localhost:8080')
             socket.onopen = () => {
-                socket.send(JSON.stringify({fen: fen ? fen : "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", timeControl: timeControl ? timeControl : { seconds: 300, increment: 0 }}))
+                socket.send(JSON.stringify({fen: fen ? fen : "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", timeControl: timeControl ? timeControl : { seconds: 60, increment: 1 }}))
             };
             socket.onmessage = (event) => {
                 chessGame.id = event.data
@@ -38,6 +39,8 @@ export async function createWebSocket(id) {
                 importedGame.id = data.id
                 importedGame.socket = socket
                 if(importedGame && importedGame.div) {
+                    let whiteClock
+                    let blackClock
                     socket.addEventListener('message', (e) => {
                         const response = JSON.parse(e.data)
                         if(response.uci) {
@@ -57,6 +60,7 @@ export async function createWebSocket(id) {
                         if(response.result) {
                             importedGame.result = { result: response.result, reason: response.reason }
                             updateToast(importedGame.result)
+                            changePlayerSide(importedGame, true)
                         }
                         if(response.whiteUser) {
                             importedGame.whiteUserSpan.textContent = response.whiteUser
@@ -64,6 +68,20 @@ export async function createWebSocket(id) {
                         if(response.blackUser) {
                             importedGame.blackUserSpan.textContent = response.blackUser
                         }
+                        if(response.whiteClock && response.blackClock) {
+                            whiteClock = createTimer(response.whiteClock, response.increment, "white")
+                            blackClock = createTimer(response.blackClock, response.increment, "black")
+                            if(response.activeClock) {
+                                response.activeClock === "white" ? whiteClock.start() : blackClock.start()
+                            }
+                        }
+                        if(response.startClock) {
+                            response.startClock === "white" ? whiteClock.start() : blackClock.start()
+                        }
+                        if(response.stopClock) {
+                            response.stopClock === "white" ? whiteClock.pause() : blackClock.pause()
+                        }
+                        console.log(response)
                     })
                     socket.removeEventListener('message', fetchGame)
                     resolve(importedGame);

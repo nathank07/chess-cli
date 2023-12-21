@@ -1,19 +1,11 @@
 import "./game.css"
 import "../chess/cburnett/move.svg"
 import ChessTimer from "../chess/timer.js"
-import newGame, { createTokenAndJoin, existingGame } from "./websockets.js"
+import { createTokenAndJoin, existingGame } from "./websockets.js"
 import { viewStartHistory, viewBackHistory, viewForwardHistory, viewCurrentGame, undoMove, flipBoard } from '../chess/modify.js'
 
 if(document.body.dataset.id) {
     const game = await existingGame(document.body.dataset.id, document.querySelector('#root'))
-    const blackTimer = document.createElement('div')
-    blackTimer.innerHTML = "5:00.0"
-    const whiteTimer = document.createElement('div')
-    whiteTimer.innerHTML = "5:00.0"
-    const black = ChessTimer(300, 1, (t) => updateTimer(t, blackTimer), alertFunction)
-    const white = ChessTimer(300, 1, (t) => updateTimer(t, whiteTimer), alertFunction, black)
-    game.timer = white
-    white.start()
     addControls(game)
     createTokenAndJoin(game)
         .then(res => {
@@ -24,12 +16,9 @@ if(document.body.dataset.id) {
         })
     const playersDiv = document.createElement('div')
     playersDiv.id = "players"
-    playersDiv.appendChild(whiteTimer)
-    playersDiv.appendChild(blackTimer)
     playersDiv.appendChild(game.whiteUserSpan)
     playersDiv.appendChild(game.blackUserSpan)
     game.div.parentNode.prepend(playersDiv)
-    console.log("hi", whiteTimer, blackTimer)
 }
 
 
@@ -62,6 +51,12 @@ function addControls(chessGame){
     document.querySelector('#takeback').addEventListener('click', () => undoMove(chessGame))
 }
 
+export function createTimer(time, increment, color) {
+    const div = document.querySelector(`#${color}Timer`)
+    updateTimer(time * 1000, div)
+    return ChessTimer(time, increment, (time) => updateTimer(time, div))
+}
+
 function updateTimer(time, div) {
     const minutes = Math.floor(time / 60000)
     const seconds = Math.floor((time - minutes * 60000) / 1000)
@@ -69,8 +64,11 @@ function updateTimer(time, div) {
     div.innerText = `${minutes}:${seconds}.${milliseconds}`
 }
 
-function alertFunction() {
-    console.log("Timer finished")
+function flagTimer(timer, color) {
+    const div = document.querySelector(`#${color}Timer`)
+    timer.pause()
+    updateTimer(0, div)
+    // TODO: Add flag animation
 }
 
 export function updateToast(text) {

@@ -66,7 +66,7 @@ func fetchGames(amount int) []int {
 		panic(err)
 	}
 	defer db.Close()
-	games, err := db.Query("SELECT id FROM game WHERE game_ended_reason IS NULL ORDER BY id DESC LIMIT ?", amount)
+	games, err := db.Query("SELECT id FROM game WHERE game_ended IS NULL ORDER BY id DESC LIMIT ?", amount)
 	if err != nil {
 		panic(err)
 	}

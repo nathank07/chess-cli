@@ -41,6 +41,73 @@ function verify(uci, id, playerIsWhite) {
     })
 }
 
+function startClock(id) {
+    return new Promise((resolve, reject) => {
+        db.get('SELECT uci FROM game WHERE id = ?', id, function(err, row) {
+            if(err) {
+                reject(err)
+            }
+            if(!row) {
+                reject("Could not find game")
+            }
+            if(row.uci === null) {
+                resolve(false)
+                return 
+            }
+            console.log(row.uci.length)
+            resolve(row.uci, row.uci.length > 6) 
+            return
+        })
+    })
+}
+
+function checkFlagDraw(id, isWhiteFlagged) {
+    return new Promise((resolve, reject) => {
+        db.get('SELECT fen, uci FROM game WHERE id = ?', id, function(err, row) {
+            if(err) {
+                reject(err)
+            }
+            if(!row) {
+                reject("Could not find game")
+            }
+            const game = FENtoBoard(row.fen)
+            if(row.uci === null) {
+                resolve(!matingMaterial(game, !isWhiteFlagged))
+                return 
+            }
+            const moves = row.uci.split(" ")
+            moves.forEach(move => {
+                if(move) {
+                    moveUCI(game, move)
+                } else {
+                    reject("Game is invalid.")
+                }
+            });
+            resolve(!matingMaterial(game, !isWhiteFlagged)) 
+            return
+        })
+    })
+}
+
+function matingMaterial(game, white) {
+    let minorPieces = 0;
+    let majorPieces = 0;
+    game.board.forEach((row) => {
+        row.forEach((piece) => {
+            if(piece && piece.isWhite === white && piece.name !== "king") {
+                minorPieces++
+            }
+            if(piece && piece.isWhite === white) {
+                if(piece.name === "queen" || piece.name === "rook" || piece.name === "pawn") {
+                    majorPieces++
+                }
+            }
+        })
+    })
+    console.log(minorPieces, majorPieces)
+    return minorPieces >= 2 || majorPieces >= 1
+}
+
 function updateDB(uci, id) {
     return new Promise((resolve, reject) => {
         db.run('UPDATE game SET uci = CASE WHEN uci IS NULL THEN ? ELSE uci || ? END WHERE id = ?', uci, ` ${uci}`, id, function(err) {
@@ -53,4 +120,6 @@ function updateDB(uci, id) {
 }
 
 module.exports.verify = verify;
+module.exports.startClock = startClock;
+module.exports.checkFlagDraw = checkFlagDraw;
 module.exports.updateDB = updateDB;

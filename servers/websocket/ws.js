@@ -1,12 +1,13 @@
 const { createNewGame } = require("./updatedb/newGame.js")
-const { verify, updateDB } = require('./updatedb/verify');
+const { returnEnd, updateEnd } = require("./updatedb/endGame.js")
+const { verify, checkFlagDraw, startClock, updateDB } = require('./updatedb/verify');
 const { exportGame } = require('./updatedb/exportGame.js')
 const { tokenToID } = require('./jwt.js')
 const { insertPlayer, returnPlayers } = require('./updatedb/players.js')
+const { ChessTimer } = require('./timer.js')
 
 const http = require('http');
 const WebSocket = require('ws');
-const { send } = require("process");
 
 const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/html' });
@@ -26,6 +27,7 @@ async function handleMessage(ws, data) {
     const str = data.toString();
     try {
         const query = JSON.parse(str);
+        console.log(query)
         if(query.id && query.token && !query.uci) {
             joinGame(ws, query);
         }
@@ -67,8 +69,17 @@ async function joinGame(ws, query) {
 }
 
 function sendNewGame(ws, query) {
-    createNewGame(query.fen)
+    createNewGame(query.fen, query.timeControl)
         .then(id => {
+            wss.timers = wss.timers || {}
+            const whiteTimer = ChessTimer(query.timeControl.seconds, query.timeControl.increment, false, () => flagPlayer(id, true))
+            const blackTimer = ChessTimer(query.timeControl.seconds, query.timeControl.increment, false, () => flagPlayer(id, false), whiteTimer)
+            whiteTimer.linkedTimer = blackTimer
+            wss.timers[id] = {
+                whiteTimer: whiteTimer,
+                blackTimer: blackTimer,
+                startClock: false,
+            }
             ws.send(id);
         })
         .catch(err => {
@@ -90,13 +101,14 @@ async function sendMove(ws, query) {
             let clientCount = 0;
             await updateDB(query.uci, query.id);
             messages.push(query.uci);
+            changeClock(query.id, !ws.playerIsWhite)
             wss.clients.forEach((client) => {
                 if (client.gameId === query.id) {
                     clientCount++;
                     client.send(JSON.stringify({ uci: query.uci }));
                     if (res.result) {
                         if (messages.length === 1) { messages.push(res.result, res.reason) }
-                        client.send(JSON.stringify({ result: res.result, reason: res.reason }));
+                        endGame(query.id, res.result, res.reason)
                     }
                 }
             });
@@ -104,10 +116,10 @@ async function sendMove(ws, query) {
         })
         .catch(err => {
             console.log(`${query.uci} to ${query.id} was invalid, sending response`);
+            console.log(ws.playerIsWhite)
             console.log(err)
             wss.clients.forEach((client) => {
                 if (client.gameId === query.id) {
-                    console.log('sending invalid')
                     client.send(JSON.stringify({ invalid: true, uci: query.uci }));
                 }
             });
@@ -117,6 +129,7 @@ async function sendMove(ws, query) {
 async function sendExport(ws, query) {
     try {
         const res = await exportGame(query.id)
+        const end = await returnEnd(query.id)
         ws.gameId = query.id
         console.log(`Client of ${ws.gameId} has connected`)
         ws.send(JSON.stringify({ exportedGame: res, id: query.id }))
@@ -125,6 +138,10 @@ async function sendExport(ws, query) {
         } else {
             const { whitePlayer, blackPlayer } = await returnPlayers(query.id)
             sendParticipants(query, whitePlayer.username, blackPlayer.username)
+            sendClock(query.id, ws)
+        }
+        if(end) {
+            ws.send(JSON.stringify({ result: end.winner, reason: end.reason }))
         }
     }
     catch(e) {
@@ -159,6 +176,93 @@ function sendParticipants(query, whitePlayerUsername, blackPlayerUsername) {
             }
         }
     });
+}
+
+function sendClock(id, ws) {
+    if(wss.timers && wss.timers[id]) {
+        const timersPending = !wss.timers[id].whiteTimer.isRunning && !wss.timers[id].blackTimer.isRunning
+        const activeClock = timersPending ? false : wss.timers[id].whiteTimer.isRunning ? "white" : "black"
+        ws.send(JSON.stringify({
+            increment: wss.timers[id].whiteTimer.increment / 1000, 
+            whiteClock: wss.timers[id].whiteTimer.currentTime() / 1000,
+            blackClock: wss.timers[id].blackTimer.currentTime() / 1000,
+            activeClock: activeClock,
+        }))
+    } else {
+        console.log("Could not find timer for game", id)
+    }
+}
+
+function changeClock(id, isWhite) {
+    let message;
+    if(!wss.timers || !wss.timers[id]) {
+        console.log("Did not find timer for game", id)
+        return
+    }
+    const white = wss.timers[id].whiteTimer
+    const black = wss.timers[id].blackTimer
+    if(!wss.timers[id].startClock) {
+        startClock(id).then(res => { wss.timers[id].startClock = res })
+    }
+    if(wss.timers[id].startClock) {
+        if(!white.isRunning && !black.isRunning) {
+            if(isWhite) {
+                white.start()
+                message = { startClock: "white" }
+                console.log("white started")
+            } else {
+                black.start()
+                message = { startClock: "black" }
+                console.log("black started")
+            }
+        }
+        else {
+            // Could be either white or black, doesn't matter since they are linked
+            white.alternate()
+            message = { startClock: white.isRunning ? "white" : "black",
+                        stopClock: white.isRunning ? "black" : "white" }
+            console.log("White Black", white.isRunning, black.isRunning)
+        }
+    }
+    if(message) {
+        wss.clients.forEach((client) => {
+            if(client.gameId === id) {
+                console.log("sending clock message")
+                client.send(JSON.stringify(message));
+            }
+        })
+    }
+}
+
+function flagPlayer(id, isWhite) {
+    console.log(`Flagged ${isWhite ? "white" : "black"} in game ${id}`)
+    checkFlagDraw(id, isWhite)
+        .then(draw => {
+            if(draw) {
+                console.log("Draw by flag")
+                endGame(id, "draw", "time")
+            } else {
+                console.log("Loss by flag")
+                endGame(id, isWhite ? "black" : "white", "time")
+            }
+        })
+        .catch(err => {
+            console.log(err)
+        })
+}
+
+function endGame(id, outcome, reason) {
+    console.log(`Ending game ${id} with result ${outcome} for reason ${reason}`)
+    wss.clients.forEach((client) => {
+        if (Number(client.gameId) === Number(id)) {
+            client.send(JSON.stringify({ result: outcome, reason: reason }));
+        }
+    });
+    updateEnd(id, outcome, reason)
+        .catch(err => {
+            console.log(err)
+        })
+    delete wss.timers[id]
 }
 
 function handleClose(ws) {

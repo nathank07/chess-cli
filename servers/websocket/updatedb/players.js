@@ -58,11 +58,21 @@ function returnPlayers(gameID) {
             let blackPlayer = {id: null, token: null}
             if(row.whitePlayerID) {
                 whitePlayer.id = row.whitePlayerID
-                whitePlayer.username = await idToUsername(row.whitePlayerID)
+                try {
+                    whitePlayer.username = await idToUsername(row.whitePlayerID)
+                }
+                catch {
+                    reject("User does not exist")
+                }
             }
             if(row.blackPlayerID) {
                 blackPlayer.id = row.blackPlayerID
-                blackPlayer.username = await idToUsername(row.blackPlayerID)
+                try {
+                    blackPlayer.username = await idToUsername(row.blackPlayerID)
+                }
+                catch {
+                    reject("User does not exist")
+                }
             }
             resolve({whitePlayer, blackPlayer})
         })
@@ -78,6 +88,7 @@ function idToUsername(id) {
             }
             if(row === undefined) {
                 reject("User does not exist")
+                return
             }
             resolve(row.username)
         })
