@@ -2,6 +2,7 @@ function ChessTimer(secondsLength, secondsIncrement, updateFunction, timerFinish
     const timer = {
         timerStarted: new Date().getTime(),
         timeLeft: secondsLength * 1000,
+        timeTaken: 0,
         increment: secondsIncrement * 1000,
         isRunning: false,
         updateFunction: updateFunction,
@@ -33,6 +34,8 @@ function ChessTimer(secondsLength, secondsIncrement, updateFunction, timerFinish
     }
     timer.pause = () => {
         if(timer.isRunning) {
+            updateTimer(timer)
+            timer.timeTaken = new Date().getTime() - timer.timerStarted 
             timer.timeLeft += timer.increment
             timer.isRunning = false
             if(updateFunction) {

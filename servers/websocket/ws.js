@@ -1,7 +1,7 @@
 const { createNewGame } = require("./updatedb/newGame.js")
 const { returnEnd, updateEnd } = require("./updatedb/endGame.js")
-const { verify, checkFlagDraw, startClock, updateDB } = require('./updatedb/verify');
-const { exportGame } = require('./updatedb/exportGame.js')
+const { verify, checkFlagDraw, startClock, updateDB, updateTime } = require('./updatedb/verify');
+const { exportGame, recoverTimers } = require('./updatedb/exportGame.js')
 const { tokenToID } = require('./jwt.js')
 const { insertPlayer, returnPlayers } = require('./updatedb/players.js')
 const { ChessTimer } = require('./timer.js')
@@ -14,14 +14,35 @@ const server = http.createServer((req, res) => {
     res.end('Hello, world!');
 });
 
-const wss = new WebSocket.Server({ server });
+let wss;
 
-wss.on('connection', async ws => {
-    ws.userToken = null;
-    ws.on('message', (e) => handleMessage(ws, e));
-    ws.on('close', (e) => handleClose(ws, e));
-    
-});
+loadWebsocket()
+    .then(res => {
+        wss = res
+    })
+    .catch(err => {
+        console.log(err)
+    })
+
+async function loadWebsocket() {
+    console.log("Loading websocket")
+    let wss = new WebSocket.Server({ server });
+    wss.on('connection', async ws => {
+        ws.userToken = null;
+        ws.on('message', (e) => handleMessage(ws, e));
+        ws.on('close', (e) => handleClose(ws, e));
+        
+    });
+    try {
+        const timers = await recoverTimers()
+        console.log("Recovered timers:", timers)
+        wss.timers = timers
+    }
+    catch (e) {
+        console.log("Failed to recover timers:", e)
+    }
+    return wss
+}
 
 async function handleMessage(ws, data) {
     const str = data.toString();
@@ -100,12 +121,14 @@ async function sendMove(ws, query) {
             const messages = [];
             let clientCount = 0;
             await updateDB(query.uci, query.id);
-            messages.push(query.uci);
-            changeClock(query.id, !ws.playerIsWhite)
+            const timeTaken = changeClock(query.id, !ws.playerIsWhite)
+            await updateTime(timeTaken, query.id)
+            console.log(timeTaken)
+            messages.push(query.uci, timeTaken);
             wss.clients.forEach((client) => {
                 if (client.gameId === query.id) {
                     clientCount++;
-                    client.send(JSON.stringify({ uci: query.uci }));
+                    client.send(JSON.stringify({ uci: query.uci, timeTaken: timeTaken }));
                     if (res.result) {
                         if (messages.length === 1) { messages.push(res.result, res.reason) }
                         endGame(query.id, res.result, res.reason)
@@ -166,6 +189,9 @@ async function setPlayerSide(ws, query) {
 }
 
 function sendParticipants(query, whitePlayerUsername, blackPlayerUsername) {
+    if(!whitePlayerUsername && !blackPlayerUsername) {
+        return
+    }
     wss.clients.forEach((client) => {
         if (client.gameId === query.id) {
             if(whitePlayerUsername && blackPlayerUsername) {
@@ -231,7 +257,11 @@ function changeClock(id, isWhite) {
                 client.send(JSON.stringify(message));
             }
         })
+        if(message.stopClock) {
+            return white.isRunning ? black.timeTaken : white.timeTaken
+        }
     }
+    return 0
 }
 
 function flagPlayer(id, isWhite) {

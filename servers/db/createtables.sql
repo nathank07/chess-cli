@@ -2,6 +2,8 @@ CREATE TABLE game (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     fen TEXT NOT NULL,
     uci TEXT,
+    /* Time for each move parallel with uci */
+    timed_uci TEXT, 
     whitePlayerID INTEGER,
     blackPlayerID INTEGER,
     game_ended INTEGER,
@@ -14,9 +16,8 @@ CREATE TABLE game (
 
 CREATE TABLE game_ended (
     id INTEGER PRIMARY KEY,
-    winnerID INTEGER,
-    reason TEXT,
-    FOREIGN KEY(winnerID) REFERENCES user(id)
+    winner TEXT,
+    reason TEXT
 );
 
 CREATE TABLE user (

@@ -119,7 +119,24 @@ function updateDB(uci, id) {
     })
 }
 
+function updateTime(timeTaken, id) {
+    return new Promise((resolve, reject) => {
+        if(!timeTaken && timeTaken !== 0) {
+            resolve(true)
+            return
+        }
+        db.run('UPDATE game SET timed_uci = CASE WHEN timed_uci IS NULL THEN ? ELSE timed_uci || ? END WHERE id = ?', timeTaken, ` ${timeTaken}`, id, function(err) {
+            if(err) {
+                reject(err)
+            }
+            resolve(true)
+        })
+    })
+
+}
+
 module.exports.verify = verify;
 module.exports.startClock = startClock;
 module.exports.checkFlagDraw = checkFlagDraw;
 module.exports.updateDB = updateDB;
+module.exports.updateTime = updateTime;

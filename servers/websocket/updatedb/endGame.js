@@ -23,7 +23,7 @@ function updateEnd(id, winner, reason) {
                 reject(err)
             }
         })
-        db.run("INSERT INTO game_ended (id, winnerID, reason) VALUES (?, ?, ?)", id, winner, reason, function(err) {
+        db.run("INSERT INTO game_ended (id, winner, reason) VALUES (?, ?, ?)", id, winner, reason, function(err) {
             if(err) {
                 reject(err)
             }
@@ -48,7 +48,7 @@ function returnEnd(id) {
                 return
             }
         })
-        db.get("SELECT winnerID, reason FROM game_ended WHERE id = ?", id, function(err, row) {
+        db.get("SELECT winner, reason FROM game_ended WHERE id = ?", id, function(err, row) {
             if(err) {
                 reject(err)
                 return
@@ -57,7 +57,7 @@ function returnEnd(id) {
                 reject("Query returned undefined")
                 return
             }
-            resolve({winner: row.winnerID, reason: row.reason})
+            resolve({winner: row.winner, reason: row.reason})
         })
     })
 }
