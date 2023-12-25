@@ -62,5 +62,21 @@ function returnEnd(id) {
     })
 }
 
-module.exports.updateEnd = updateEnd;
+
+function endGame(wss, id, outcome, reason) {
+    console.log(wss)
+    console.log(`Ending game ${id} with result ${outcome} for reason ${reason}`)
+    wss.clients.forEach((client) => {
+        if (Number(client.gameId) === Number(id)) {
+            client.send(JSON.stringify({ result: outcome, reason: reason }));
+        }
+    });
+    updateEnd(id, outcome, reason)
+        .catch(err => {
+            console.log(err)
+        })
+    delete wss.timers[id]
+}
+
 module.exports.returnEnd = returnEnd;
+module.exports.endGame = endGame;

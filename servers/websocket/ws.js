@@ -1,5 +1,5 @@
 const { createNewGame } = require("./updatedb/newGame.js")
-const { returnEnd, updateEnd } = require("./updatedb/endGame.js")
+const { returnEnd, endGame } = require("./updatedb/endGame.js")
 const { verify, checkFlagDraw, startClock, updateDB, updateTime } = require('./updatedb/verify');
 const { exportGame, recoverTimers } = require('./updatedb/exportGame.js')
 const { tokenToID } = require('./jwt.js')
@@ -34,7 +34,7 @@ async function loadWebsocket() {
         
     });
     try {
-        const timers = await recoverTimers()
+        const timers = await recoverTimers(wss)
         console.log("Recovered timers:", timers)
         wss.timers = timers
     }
@@ -131,7 +131,7 @@ async function sendMove(ws, query) {
                     client.send(JSON.stringify({ uci: query.uci, timeTaken: timeTaken }));
                     if (res.result) {
                         if (messages.length === 1) { messages.push(res.result, res.reason) }
-                        endGame(query.id, res.result, res.reason)
+                        endGame(wss, query.id, res.result, res.reason)
                     }
                 }
             });
@@ -270,29 +270,15 @@ function flagPlayer(id, isWhite) {
         .then(draw => {
             if(draw) {
                 console.log("Draw by flag")
-                endGame(id, "draw", "time")
+                endGame(wss, id, "draw", "time")
             } else {
                 console.log("Loss by flag")
-                endGame(id, isWhite ? "black" : "white", "time")
+                endGame(wss, id, isWhite ? "black" : "white", "time")
             }
         })
         .catch(err => {
             console.log(err)
         })
-}
-
-function endGame(id, outcome, reason) {
-    console.log(`Ending game ${id} with result ${outcome} for reason ${reason}`)
-    wss.clients.forEach((client) => {
-        if (Number(client.gameId) === Number(id)) {
-            client.send(JSON.stringify({ result: outcome, reason: reason }));
-        }
-    });
-    updateEnd(id, outcome, reason)
-        .catch(err => {
-            console.log(err)
-        })
-    delete wss.timers[id]
 }
 
 function handleClose(ws) {

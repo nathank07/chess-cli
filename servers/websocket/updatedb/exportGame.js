@@ -2,7 +2,7 @@ const sqlite3 = require('sqlite3').verbose()
 const path = require('path');
 const dbPath = path.resolve(__dirname, '../../db/data.db');
 const db = new sqlite3.Database(dbPath)
-const { updateEnd } = require('./endGame.js')
+const { endGame } = require('./endGame.js')
 const { ChessTimer } = require('../timer.js')
 const { checkFlagDraw } = require('./verify.js')
 
@@ -27,7 +27,7 @@ function exportGame(id) {
     })
 }
 
-function recoverTimers() {
+function recoverTimers(wss) {
     return new Promise((resolve, reject) => {
         db.all("SELECT fen, id, timed_uci, time_control FROM game WHERE game_ended IS NULL", function(err, rows) {
             if(err) {
@@ -55,8 +55,8 @@ function recoverTimers() {
                     blackTime -= Number(time)
                     blackTime += Number(timeControl[1]) * 1000
                 });
-                const whiteTimer = ChessTimer(whiteTime / 1000, Number(timeControl[1]), false, () => flagPlayer(id, true))
-                const blackTimer = ChessTimer(blackTime / 1000, Number(timeControl[1]), false, () => flagPlayer(id, false), whiteTimer)
+                const whiteTimer = ChessTimer(whiteTime / 1000, Number(timeControl[1]), false, () => flagPlayer(wss, row.id, true))
+                const blackTimer = ChessTimer(blackTime / 1000, Number(timeControl[1]), false, () => flagPlayer(wss, row.id, false), whiteTimer)
                 whiteTimer.linkedTimer = blackTimer
                 if(whiteStart) {
                     timedUCI.length % 2 ? blackTimer.start() : whiteTimer.start()
@@ -74,16 +74,16 @@ function recoverTimers() {
     })
 }
 
-function flagPlayer(id, isWhite) {
+function flagPlayer(wss, id, isWhite) {
     console.log(`Flagged ${isWhite ? "white" : "black"} in game ${id}`)
     checkFlagDraw(id, isWhite)
         .then(draw => {
             if(draw) {
                 console.log("Draw by flag")
-                endGame(id, "draw", "time")
+                endGame(wss, id, "draw", "time")
             } else {
                 console.log("Loss by flag")
-                endGame(id, isWhite ? "black" : "white", "time")
+                endGame(wss, id, isWhite ? "black" : "white", "time")
             }
         })
         .catch(err => {
