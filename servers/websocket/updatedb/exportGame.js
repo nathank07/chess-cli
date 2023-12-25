@@ -2,7 +2,7 @@ const sqlite3 = require('sqlite3').verbose()
 const path = require('path');
 const dbPath = path.resolve(__dirname, '../../db/data.db');
 const db = new sqlite3.Database(dbPath)
-const { endGame } = require('./endGame.js')
+const { endGame, updateEnd } = require('./endGame.js')
 const { ChessTimer } = require('../timer.js')
 const { checkFlagDraw } = require('./verify.js')
 

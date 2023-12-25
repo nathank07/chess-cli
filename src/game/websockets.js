@@ -1,7 +1,7 @@
 import { createGame, fetchMove, importGame } from "../chess/board";
 import { undoMove, flipBoard, changePlayerSide } from "../chess/modify";
 import { updateToast } from "./main.js";
-import { createTimer } from "./main.js";
+import ChessTimer from "../chess/timer.js";
 
 export async function createWSGame(fen, timeControl) {
     return new Promise((resolve, reject) => {
@@ -9,7 +9,7 @@ export async function createWSGame(fen, timeControl) {
         try {
             const socket = new WebSocket('ws://localhost:8080')
             socket.onopen = () => {
-                socket.send(JSON.stringify({fen: fen ? fen : "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", timeControl: timeControl ? timeControl : { seconds: 60, increment: 1 }}))
+                socket.send(JSON.stringify({fen: fen ? fen : "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", timeControl: timeControl ? timeControl : { seconds: 6000, increment: 1 }}))
             };
             socket.onmessage = (event) => {
                 chessGame.id = event.data
@@ -73,8 +73,10 @@ export async function createWebSocket(id) {
                             importedGame.blackUserSpan.textContent = response.blackUser
                         }
                         if(response.whiteClock && response.blackClock) {
-                            whiteClock = createTimer(response.whiteClock, response.increment, "white", importedGame.id)
-                            blackClock = createTimer(response.blackClock, response.increment, "black", importedGame.id)
+                            whiteClock = ChessTimer(response.whiteClock, response.increment)
+                            blackClock = ChessTimer(response.blackClock, response.increment)
+                            importedGame.whiteClock = whiteClock
+                            importedGame.blackClock = blackClock
                             if(response.activeClock) {
                                 response.activeClock === "white" ? whiteClock.start() : blackClock.start()
                             }

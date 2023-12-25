@@ -307,11 +307,16 @@ export function createGame(fen, render = false) {
     return chessGame
 }
 
+// Example input: ["rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", ["d2d4", "d7d5"]] 
+
 export function importGame(fenUCIexport) {
     const chessGame = createGame(fenUCIexport[0], true)
     if(fenUCIexport.length > 1) {
         fenUCIexport.slice(1).forEach(arr => {
             arr.forEach(move => {
+                if(move === "") {
+                    return
+                } 
                 fetchMove(chessGame, move, false, true, false)
             });
         });

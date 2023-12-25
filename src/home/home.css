@@ -2,7 +2,7 @@
     --board-size: unset !important;
 }
 
-#game-list > a {
+#game-list > a, #game-history > a {
     background-color: #464646;
     border-radius: 1rem;
     box-shadow: 0 0 1rem rgba(0, 0, 0, 0.2);
@@ -15,15 +15,15 @@
     text-decoration: none;
 }
 
-#game-list > a > #board-container {
+#game-list > a > #board-container, #game-history > a > #board-container {
     pointer-events: none;
 }
 
-#game-list > a > #board-container > #board > .square > span {
+#game-list > a > #board-container > #board > .square > span, #game-history > a > #board-container > #board > .square > span {
     display: none;
 }
 
-#game-list {
+#game-list, #game-history {
     display: flex;
     gap: 2rem;
     flex-wrap: wrap;

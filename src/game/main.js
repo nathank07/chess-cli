@@ -1,6 +1,5 @@
 import "./game.css"
 import "../chess/cburnett/move.svg"
-import ChessTimer from "../chess/timer.js"
 import { createTokenAndJoin, existingGame } from "./websockets.js"
 import { viewStartHistory, viewBackHistory, viewForwardHistory, viewCurrentGame, undoMove, flipBoard } from '../chess/modify.js'
 
@@ -19,6 +18,8 @@ if(document.body.dataset.id) {
     playersDiv.appendChild(game.whiteUserSpan)
     playersDiv.appendChild(game.blackUserSpan)
     game.div.parentNode.prepend(playersDiv)
+    createTimerDiv(game, true, document.querySelector('#whiteTimer'))
+    createTimerDiv(game, false, document.querySelector('#blackTimer'))
 }
 
 
@@ -51,14 +52,11 @@ function addControls(chessGame){
     document.querySelector('#takeback').addEventListener('click', () => undoMove(chessGame))
 }
 
-export function createTimer(time, increment, color, id) {
-    let div = document.querySelector(`#${color}Timer`)
-    if(document.querySelectorAll(`#${color}Timer`).length > 1) {
-        div = document.querySelector(`#${color}Timer[gameId="${id}"]`)
-        console.log(div)
-    }
-    updateTimer(time * 1000, div)
-    return ChessTimer(time, increment, (time) => updateTimer(time, div))
+export function createTimerDiv(game, isWhite, div) {
+    const timer = isWhite ? game.whiteClock : game.blackClock
+    updateTimer(timer.timeLeft, div)
+    timer.updateFunction = (time) => updateTimer(time, div)
+    return timer
 }
 
 function updateTimer(time, div) {
