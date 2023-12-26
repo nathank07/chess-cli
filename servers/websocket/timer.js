@@ -2,19 +2,19 @@ function ChessTimer(secondsLength, secondsIncrement, updateFunction, timerFinish
     const timer = {
         timerStarted: new Date().getTime(),
         timeLeft: secondsLength * 1000,
+        length: secondsLength * 1000,
         timeTaken: 0,
         increment: secondsIncrement * 1000,
         isRunning: false,
         updateFunction: updateFunction,
         timerFinishedFunction: timerFinishedFunction,
-        ticks: 0,
         linkedTimer: linkedTimer,
     }
     timer.start = () => {
         if(!timer.isRunning) {
             timer.timerStarted = new Date().getTime()
+            timer.length = timer.timeLeft
             timer.isRunning = true
-            timer.ticks = 0
             updateTimer(timer);
             setInterval(function interval() {
                 updateTimer(timer, interval)
@@ -36,7 +36,7 @@ function ChessTimer(secondsLength, secondsIncrement, updateFunction, timerFinish
         if(timer.isRunning) {
             updateTimer(timer)
             timer.timeTaken = new Date().getTime() - timer.timerStarted 
-            timer.timeLeft += timer.increment
+            timer.length += timer.increment
             timer.isRunning = false
             if(updateFunction) {
                 updateFunction(timer.timeLeft)
@@ -53,8 +53,7 @@ function ChessTimer(secondsLength, secondsIncrement, updateFunction, timerFinish
 function updateTimer(timer, fn) {
     if (timer.isRunning) {
         const time = new Date().getTime()
-        timer.timeLeft -= ((time - timer.timerStarted) / timer.ticks || 1)
-        timer.ticks += 1
+        timer.timeLeft = timer.length - (time - timer.timerStarted)
         if(timer.updateFunction) {
             timer.updateFunction(timer.timeLeft)
         }

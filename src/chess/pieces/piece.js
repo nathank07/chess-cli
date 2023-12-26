@@ -121,7 +121,7 @@ export function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) {
             return false
         },
         moves: () => {
-            if(game.fiftyMoveRule > 100 || threeFoldRepetition(game) || game.whitesMove !== isWhite) {
+            if(game.fiftyMoveRule > 100 || game.whitesMove !== isWhite) {
                 return []
             }
             return standardMoves().filter(move => 

@@ -38,7 +38,6 @@ function getLive() {
             await Promise.all(games.map(async game => {
                 const importedGame = await existingGame(game)
                 importedGames.push(importedGame)
-                console.log(importedGame)
             }));
             resolve(importedGames)
         }

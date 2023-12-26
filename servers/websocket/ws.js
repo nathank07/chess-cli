@@ -123,12 +123,12 @@ async function sendMove(ws, query) {
             await updateDB(query.uci, query.id);
             const timeTaken = changeClock(query.id, !ws.playerIsWhite)
             await updateTime(timeTaken, query.id)
-            console.log(timeTaken)
             messages.push(query.uci, timeTaken);
+            const update = returnUpdateClock(query.id)
             wss.clients.forEach((client) => {
                 if (client.gameId === query.id) {
                     clientCount++;
-                    client.send(JSON.stringify({ uci: query.uci, timeTaken: timeTaken }));
+                    client.send(JSON.stringify({ uci: query.uci, update, timeTaken: timeTaken }));
                     if (res.result) {
                         if (messages.length === 1) { messages.push(res.result, res.reason) }
                         endGame(wss, query.id, res.result, res.reason)
@@ -262,6 +262,23 @@ function changeClock(id, isWhite) {
         }
     }
     return 0
+}
+
+function returnUpdateClock(id) {
+    if(wss.timers && wss.timers[id]) {
+        if(wss.timers[id].whiteTimer.isRunning) {
+            return { whiteClock: {
+                length: wss.timers[id].whiteTimer.length,
+                timerStarted: wss.timers[id].whiteTimer.timerStarted,
+            }}
+        }
+        if(wss.timers[id].blackTimer.isRunning) {
+            return { blackClock: {
+                length: wss.timers[id].blackTimer.length,
+                timerStarted: wss.timers[id].blackTimer.timerStarted,
+            }}
+        }
+    }
 }
 
 function flagPlayer(id, isWhite) {

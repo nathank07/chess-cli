@@ -9,7 +9,7 @@ export async function createWSGame(fen, timeControl) {
         try {
             const socket = new WebSocket('ws://localhost:8080')
             socket.onopen = () => {
-                socket.send(JSON.stringify({fen: fen ? fen : "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", timeControl: timeControl ? timeControl : { seconds: 6000, increment: 1 }}))
+                socket.send(JSON.stringify({fen: fen ? fen : "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", timeControl: timeControl ? timeControl : { seconds: 300, increment: 1 }}))
             };
             socket.onmessage = (event) => {
                 chessGame.id = event.data
@@ -21,7 +21,7 @@ export async function createWSGame(fen, timeControl) {
     })
 }
 
-export async function createWebSocket(id) {
+export async function createWebSocket(id, timeFunction) {
     return new Promise((resolve, reject) => {
         const socket = new WebSocket('ws://localhost:8080')
     
@@ -77,6 +77,7 @@ export async function createWebSocket(id) {
                             blackClock = ChessTimer(response.blackClock, response.increment)
                             importedGame.whiteClock = whiteClock
                             importedGame.blackClock = blackClock
+                            if(timeFunction) { timeFunction(importedGame) }
                             if(response.activeClock) {
                                 response.activeClock === "white" ? whiteClock.start() : blackClock.start()
                             }
@@ -86,6 +87,18 @@ export async function createWebSocket(id) {
                         }
                         if(response.stopClock) {
                             response.stopClock === "white" ? whiteClock.pause() : blackClock.pause()
+                        }
+                        if(response.update) {
+                            if(response.update.whiteClock && whiteClock) {
+                                whiteClock.length = response.update.whiteClock.length
+                                whiteClock.timerStarted = response.update.whiteClock.timerStarted
+                                console.log('hi')
+                            }
+                            if(response.update.blackClockUpdate && blackClock) {
+                                blackClock.length = response.update.blackClockUpdate.length
+                                blackClock.timerStarted = response.update.blackClockUpdate.timerStarted
+                                console.log('hi2')
+                            }
                         }
                         console.log(response)
                     })
@@ -97,9 +110,9 @@ export async function createWebSocket(id) {
     });
 }
 
-export async function existingGame(id, parentDiv) {
+export async function existingGame(id, parentDiv, timeFunction) {
     return new Promise((resolve, reject) => {
-        createWebSocket(id)
+        createWebSocket(id, timeFunction)
             .then(game => {
                 if(parentDiv) {
                     parentDiv.appendChild(game.div)

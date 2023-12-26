@@ -4,7 +4,7 @@ import { createTokenAndJoin, existingGame } from "./websockets.js"
 import { viewStartHistory, viewBackHistory, viewForwardHistory, viewCurrentGame, undoMove, flipBoard } from '../chess/modify.js'
 
 if(document.body.dataset.id) {
-    const game = await existingGame(document.body.dataset.id, document.querySelector('#root'))
+    const game = await existingGame(document.body.dataset.id, document.querySelector('#root'), createUpdate)
     addControls(game)
     createTokenAndJoin(game)
         .then(res => {
@@ -18,8 +18,6 @@ if(document.body.dataset.id) {
     playersDiv.appendChild(game.whiteUserSpan)
     playersDiv.appendChild(game.blackUserSpan)
     game.div.parentNode.prepend(playersDiv)
-    createTimerDiv(game, true, document.querySelector('#whiteTimer'))
-    createTimerDiv(game, false, document.querySelector('#blackTimer'))
 }
 
 
@@ -57,6 +55,11 @@ export function createTimerDiv(game, isWhite, div) {
     updateTimer(timer.timeLeft, div)
     timer.updateFunction = (time) => updateTimer(time, div)
     return timer
+}
+
+function createUpdate(game) {
+    createTimerDiv(game, true, document.querySelector('#whiteTimer'))
+    createTimerDiv(game, false, document.querySelector('#blackTimer'))
 }
 
 function updateTimer(time, div) {
