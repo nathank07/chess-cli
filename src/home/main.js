@@ -6,14 +6,30 @@ import { createTimerDiv } from '../game/main.js'
 
 loadGames()
 
+const createGameDialog = document.querySelector('dialog')
+createGameDialog.querySelector('#length').onchange = () => {
+    const length = createGameDialog.querySelector('#length').value
+    createGameDialog.querySelector('#length-span').textContent = length
+}
+createGameDialog.querySelector('#increment').onchange = () => {
+    const increment = createGameDialog.querySelector('#increment').value
+    createGameDialog.querySelector('#increment-span').textContent = increment
+}
+
+createGameDialog.querySelector('#create-final').addEventListener('click', async () => {
+    const timeControl = {
+        seconds: Number(createGameDialog.querySelector('#length').value),
+        increment: Number(createGameDialog.querySelector('#increment').value)
+    }
+    const fen = createGameDialog.querySelector('#fen').value
+    const isBlack = !createGameDialog.querySelector('#white').checked
+    console.log(isBlack)
+    const game = await newGame(fen, timeControl)
+    window.location.href = window.location.href + game.id + `${isBlack ? "?black=true" : ""}`
+})
+
 document.querySelector("#create-game").addEventListener('click', () => {
-    newGame(false)
-        .then(game => {
-            window.location.href += `${game.id}`
-        })
-        .catch(error => {
-            console.log(error)
-        })
+    createGameDialog.showModal()
 })
 
 async function loadGames() {
@@ -28,7 +44,7 @@ async function loadGames() {
 function getLive() {
     return new Promise(async (resolve, reject) => {
         try {
-            const res = await fetch('/live')
+            const res = await fetch('/live', { cache: "no-cache" })
             const games = await res.json()
             if(!games) {
                 resolve([])
@@ -50,7 +66,7 @@ function getLive() {
 function getFinishedGames() {
     return new Promise(async (resolve, reject) => {
         try {
-            const res = await fetch('/games')
+            const res = await fetch('/games', { cache: "no-cache" })
             const games = await res.json()
             const importedGames = []
             games.forEach(game => {

@@ -4,9 +4,14 @@ import { createTokenAndJoin, existingGame } from "./websockets.js"
 import { viewStartHistory, viewBackHistory, viewForwardHistory, viewCurrentGame, undoMove, flipBoard } from '../chess/modify.js'
 
 if(document.body.dataset.id) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const isBlack = urlParams.get('black')
+    window.history.replaceState({}, document.title, "/" + document.body.dataset.id);
     const game = await existingGame(document.body.dataset.id, document.querySelector('#root'), createUpdate)
+    
+    
     addControls(game)
-    createTokenAndJoin(game)
+    createTokenAndJoin(game, isBlack)
         .then(res => {
             updateToast(res)
         })

@@ -16,6 +16,29 @@
     <div id="game-history">
     </div>
     <h3>Create Game:</h3>
+    <dialog>
+        <h3>Create a new game: </h3>
+        <br>
+        <h4>Length of Game</h4>
+        <label for="length">Length of Game (in seconds):</label>
+        <input type="range" id="length" name="length" min="15" max="3600" value="300">
+        <span id="length-span">300</span>
+        <br>
+        <h4>Time Increment</h4>
+        <label for="increment">Time Increment (in seconds):</label>
+        <input type="range" id="increment" name="increment" min="0" max="10" value="0">
+        <span id="increment-span">0</span>
+        <br>
+        <h4>Color</h4>
+        <input type="checkbox" id="white" name="color" value="white" checked>
+        <label for="white">White</label>
+        <br>
+        <h4>Starting FEN</h4>
+        <label for="fen">Starting FEN:</label>
+        <input type="text" id="fen" name="fen" value="">
+        <br>
+        <button id="create-final">Create Game</button>
+    </dialog>
     <button id="create-game">Create Game</button>
     <br>
     <a href="./login">Login</a>

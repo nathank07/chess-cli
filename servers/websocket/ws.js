@@ -72,8 +72,9 @@ async function handleMessage(ws, data) {
 
 async function joinGame(ws, query) {
     try {
+        console.log(query)
         const id = await tokenToID(query.token)
-        const color = await insertPlayer(query.id, id)
+        const color = await insertPlayer(query.id, id, query.joinAsBlack)
         if (color === "white") {
             ws.send(JSON.stringify({ isWhite: true }))
         } else if (color === "black") {
@@ -125,16 +126,19 @@ async function sendMove(ws, query) {
             await updateTime(timeTaken, query.id)
             messages.push(query.uci, timeTaken);
             const update = returnUpdateClock(query.id)
+            let endGame = false
             wss.clients.forEach((client) => {
                 if (client.gameId === query.id) {
                     clientCount++;
                     client.send(JSON.stringify({ uci: query.uci, update, timeTaken: timeTaken }));
                     if (res.result) {
                         if (messages.length === 1) { messages.push(res.result, res.reason) }
-                        endGame(wss, query.id, res.result, res.reason)
                     }
                 }
             });
+            if(endGame) {
+                endGame(wss, query.id, res.result, res.reason)
+            }
             console.log(`Sent ${messages} to game ${query.id} (${clientCount} clients)`);
         })
         .catch(err => {

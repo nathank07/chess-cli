@@ -92,12 +92,10 @@ export async function createWebSocket(id, timeFunction) {
                             if(response.update.whiteClock && whiteClock) {
                                 whiteClock.length = response.update.whiteClock.length
                                 whiteClock.timerStarted = response.update.whiteClock.timerStarted
-                                console.log('hi')
                             }
                             if(response.update.blackClockUpdate && blackClock) {
                                 blackClock.length = response.update.blackClockUpdate.length
                                 blackClock.timerStarted = response.update.blackClockUpdate.timerStarted
-                                console.log('hi2')
                             }
                         }
                         console.log(response)
@@ -125,15 +123,12 @@ export async function existingGame(id, parentDiv, timeFunction) {
     })
 }
 
-export default async function newGame(fen, parentDiv, timeControl) {
+export default async function newGame(fen, timeControl) {
     return new Promise((resolve, reject) => {
-        createWSGame(fen, false, timeControl)
+        createWSGame(fen, timeControl)
         .then(id => {
             createWebSocket(id)
                 .then(game => {
-                    if(parentDiv) {
-                        parentDiv.appendChild(game.div)
-                    }
                     resolve(game)
                 })
                 .catch(error => {
@@ -146,9 +141,10 @@ export default async function newGame(fen, parentDiv, timeControl) {
     })
 }
 
-export async function joinGame(game) {
+export async function joinGame(game, joinAsBlack) {
     return new Promise((resolve, reject) => {
-        game.socket.send(JSON.stringify({ token: localStorage.getItem('token'), id: game.id }));
+        console.log(joinAsBlack)
+        game.socket.send(JSON.stringify({ token: localStorage.getItem('token'), id: game.id, joinAsBlack: joinAsBlack }));
         game.socket.addEventListener('message', sendSide)
 
         function sendSide(e) {
@@ -165,7 +161,7 @@ export async function joinGame(game) {
     })
 }
 
-export function createTokenAndJoin(game) {
+export function createTokenAndJoin(game, joinAsBlack) {
     return new Promise((resolve, reject) => {
         let auth
         if(localStorage.getItem('token')) {
@@ -190,7 +186,7 @@ export function createTokenAndJoin(game) {
                     return
                 }
                 localStorage.setItem('token', res.token)
-                joinGame(game)
+                joinGame(game, joinAsBlack)
                     .then(isWhite => {
                         game.playerIsWhite = isWhite
                         const spectating = isWhite == null

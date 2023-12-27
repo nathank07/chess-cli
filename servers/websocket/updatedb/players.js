@@ -3,7 +3,7 @@ const path = require('path');
 const dbPath = path.resolve(__dirname, '../../db/data.db');
 const db = new sqlite3.Database(dbPath)
 
-function insertPlayer(gameID, playerID) {
+function insertPlayer(gameID, playerID, joiningAsBlack) {
     return new Promise((resolve, reject) => {
         db.get("SELECT whitePlayerID, blackPlayerID FROM game WHERE id = ?", gameID, (err, row) => {
             if(err) {
@@ -21,7 +21,7 @@ function insertPlayer(gameID, playerID) {
                 resolve("black")
                 return
             }
-            if(row.whitePlayerID === null) {
+            if(!joiningAsBlack && row.whitePlayerID === null) {
                 db.run("UPDATE game SET whitePlayerID = ? WHERE id = ?", playerID, gameID, (err) => {
                     if(err) {
                         console.log(err)
