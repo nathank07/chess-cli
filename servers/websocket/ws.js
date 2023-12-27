@@ -72,7 +72,6 @@ async function handleMessage(ws, data) {
 
 async function joinGame(ws, query) {
     try {
-        console.log(query)
         const id = await tokenToID(query.token)
         const color = await insertPlayer(query.id, id, query.joinAsBlack)
         if (color === "white") {
@@ -93,6 +92,18 @@ async function joinGame(ws, query) {
 function sendNewGame(ws, query) {
     createNewGame(query.fen, query.timeControl)
         .then(id => {
+            if(query.timeControl.seconds <= 15) {
+                query.timeControl.seconds = 15
+            }
+            if(query.timeControl.seconds >= 3600) {
+                query.timeControl.seconds = 3600
+            }
+            if(query.timeControl.increment <= 0) {
+                query.timeControl.increment = 0
+            }
+            if(query.timeControl.increment >= 10) {
+                query.timeControl.increment = 10
+            }
             wss.timers = wss.timers || {}
             const whiteTimer = ChessTimer(query.timeControl.seconds, query.timeControl.increment, false, () => flagPlayer(id, true))
             const blackTimer = ChessTimer(query.timeControl.seconds, query.timeControl.increment, false, () => flagPlayer(id, false), whiteTimer)
