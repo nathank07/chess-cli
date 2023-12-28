@@ -137,17 +137,18 @@ async function sendMove(ws, query) {
             await updateTime(timeTaken, query.id)
             messages.push(query.uci, timeTaken);
             const update = returnUpdateClock(query.id)
-            let endGame = false
+            let end = false
             wss.clients.forEach((client) => {
                 if (client.gameId === query.id) {
                     clientCount++;
                     client.send(JSON.stringify({ uci: query.uci, update, timeTaken: timeTaken }));
                     if (res.result) {
                         if (messages.length === 1) { messages.push(res.result, res.reason) }
+                        end = true
                     }
                 }
             });
-            if(endGame) {
+            if(end) {
                 endGame(wss, query.id, res.result, res.reason)
             }
             console.log(`Sent ${messages} to game ${query.id} (${clientCount} clients)`);

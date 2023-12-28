@@ -44,7 +44,7 @@ async function loadGames() {
 function getLive() {
     return new Promise(async (resolve, reject) => {
         try {
-            const res = await fetch('/live', { cache: "no-cache" })
+            const res = await fetch('/api/game/live', { cache: "no-cache" })
             const games = await res.json()
             if(!games) {
                 resolve([])
@@ -66,7 +66,7 @@ function getLive() {
 function getFinishedGames() {
     return new Promise(async (resolve, reject) => {
         try {
-            const res = await fetch('/games', { cache: "no-cache" })
+            const res = await fetch('/api/game/games', { cache: "no-cache" })
             const games = await res.json()
             const importedGames = []
             games.forEach(game => {

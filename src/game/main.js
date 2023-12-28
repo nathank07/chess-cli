@@ -1,5 +1,6 @@
 import "./game.css"
 import "../chess/cburnett/move.svg"
+import { importGame } from '../chess/board.js'
 import { createTokenAndJoin, existingGame } from "./websockets.js"
 import { viewStartHistory, viewBackHistory, viewForwardHistory, viewCurrentGame, undoMove, flipBoard } from '../chess/modify.js'
 
@@ -7,17 +8,26 @@ if(document.body.dataset.id) {
     const urlParams = new URLSearchParams(window.location.search);
     const isBlack = urlParams.get('black')
     window.history.replaceState({}, document.title, "/" + document.body.dataset.id);
-    const game = await existingGame(document.body.dataset.id, document.querySelector('#root'), createUpdate)
-    
-    
+    const res = await fetch(`/api/game/${document.body.dataset.id}`)
+    const gameData = await res.json()
+    let game
+    if(gameData.live) {
+        game = await existingGame(document.body.dataset.id, document.querySelector('#root'), createUpdate)
+        createTokenAndJoin(game, isBlack)
+            .then(res => {
+                updateToast(res)
+            })
+            .catch(error => {
+                updateToast(error)
+            })
+    } else {
+        game = importGame([gameData.game.fen, [...gameData.game.uci.split(' ')]])
+        game.id = gameData.id
+        game.whiteUserSpan.textContent = gameData.game.whitePlayer
+        game.blackUserSpan.textContent = gameData.game.blackPlayer
+        document.querySelector('#root').appendChild(game.div)
+    }
     addControls(game)
-    createTokenAndJoin(game, isBlack)
-        .then(res => {
-            updateToast(res)
-        })
-        .catch(error => {
-            updateToast(error)
-        })
     const playersDiv = document.createElement('div')
     playersDiv.id = "players"
     playersDiv.appendChild(game.whiteUserSpan)

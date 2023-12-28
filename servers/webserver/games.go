@@ -101,3 +101,26 @@ func fetchResult(id int) (string, string) {
 	}
 	return winner, reason
 }
+
+func fetchSingleGame(id int) (bool, Game, error) {
+	db, err := sql.Open("sqlite3", dbLoc)
+	var game Game
+	if err != nil {
+		return false, game, err
+	}
+	defer db.Close()
+
+	var whitePlayerID, blackPlayerID, game_ended int
+	var live = true
+	err = db.QueryRow("SELECT id, fen, IFNULL(uci, ''), IFNULL(timed_uci, ''), IFNULL(whitePlayerID, '0'), IFNULL(blackPlayerID, '0'), IFNULL(game_ended, '0') FROM game WHERE id=?", id).Scan(&game.ID, &game.Fen, &game.Uci, &game.TimedUci, &whitePlayerID, &blackPlayerID, &game_ended)
+	if err != nil {
+		return live, game, err
+	}
+	if game_ended != 0 {
+		game.Winner, game.Reason = fetchResult(game.ID)
+		live = false
+	}
+	game.White = idToUsername(whitePlayerID)
+	game.Black = idToUsername(blackPlayerID)
+	return live, game, nil
+}
