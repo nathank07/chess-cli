@@ -6,7 +6,7 @@ const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
 const isProduction = process.env.NODE_ENV == 'production';
 const stylesHandler = MiniCssExtractPlugin.loader;
 
-const pages = ['game', 'login', 'register']
+const pages = ['game', 'login', 'register', 'landing']
 let js = {}
 let html = []
 pages.forEach(page => {
