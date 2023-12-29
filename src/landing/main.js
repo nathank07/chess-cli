@@ -1,7 +1,7 @@
 import './landing.css'
 import { drawUserMarkings } from '../chess/marking.js'
 import { createGame, animateGame, fetchMove } from '../chess/board.js'
-import { viewStartHistory, viewBackHistory, viewForwardHistory, viewCurrentGame, flipBoard } from '../chess/modify.js'
+import { viewStartHistory, viewBackHistory, viewForwardHistory, viewCurrentGame, flipBoard, changePlayerSide } from '../chess/modify.js'
 
 
 loopAnimation(document.querySelector('#next-section > #board-container-parent'), 500)
@@ -26,6 +26,7 @@ function loopAnimation(div, speed) {
     'b4e7', 'h4h5', 'g8g7', 'h2f4', 'c8f5', 'f4h6', 'g7h7', 'b3b7', 'd2f2', 'h6g5', 'a8h8', 'e5f7', 'f5g6',
     'h5g4', 'c6e5', 'g4h4', 'h7g8', 'f7h8', 'e7g5']
     const game = createGame(false, true)
+    changePlayerSide(game, true)
     animateGame(game, animatedMoves, false, speed)
         .then(() => {
             loopAnimation(div, speed)
