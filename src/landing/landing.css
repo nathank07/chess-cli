@@ -19,6 +19,7 @@ html {
 }
 
 body {
+    position: relative;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -29,7 +30,7 @@ body {
     color: var(--foreground-color);
     width: clamp(20rem, 100%, 1920px);
     overflow-x: hidden;
-    background-image: radial-gradient(ellipse at top, #031c55 0% , #0a1429 100%);
+    background-image: radial-gradient(ellipse at top, #0538af 0% , #0a1429 100%);
     background-repeat: no-repeat;
     background-size: cover;
 }
@@ -172,13 +173,13 @@ main .options {
 }
 
 a#next {
+    position: fixed;
     display: flex;
     justify-content: center;
     align-items: center;
     color: rgba(255, 255, 255, 0.8);
     text-decoration: none;
     padding: 1rem 1rem;
-    position: absolute;
     bottom: 5%;
     animation: showNext 3s ease-in-out;
     transition: all 0.3s ease-in-out;
@@ -197,6 +198,7 @@ a#next:hover {
 
 a#next.hidden {
     opacity: 0%;
+    pointer-events: none;
 }
 
 @keyframes showNext {
@@ -220,7 +222,7 @@ section {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     grid-gap: 1rem;
-    width: 100%;
+    width: 80%;
     margin-top: 1rem;
 }
 
@@ -234,4 +236,10 @@ section > * {
     padding: 1rem;
 }
 
-
+#board-container-parent {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 1rem;
+}

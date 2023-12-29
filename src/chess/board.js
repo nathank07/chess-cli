@@ -288,6 +288,21 @@ export function postMove(game, promotion, socket) {
     return UCI
 }
 
+export function animateGame(game, moves, sound, msspeed = 1000) {
+    const interval = setInterval(() => {
+        if(moves.length === 0) {
+            clearInterval(interval)
+            return
+        }
+        const move = moves.shift()
+        fetchMove(game, move, sound)
+    }, msspeed)
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve()
+        }, msspeed * (moves.length + 2))
+    })
+}
 
 export function createGame(fen, render = false) {
     const boardContainer = document.createElement('div');

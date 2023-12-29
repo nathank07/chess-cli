@@ -23,7 +23,7 @@
     <main>
         <h1>Your safe haven for everything Chess.</h1>
         <a href="#next-section" aria-label="Learn More" id="next">
-            <i class="material-icons md-36">keyboard_arrow_down</i>
+            <i class="material-icons md-36">expand_more</i>
         </a>
         <section id="next-section">
             <h2>Spectate and play games in real time.</h2>
@@ -31,7 +31,26 @@
         </section>
         <section>
             <h2>Analyze games with arrows and highlighting.</h2>
-            <div id="board-container-parent" aria-label="board"></div>
+            <div>
+                <div id="board-container-parent" aria-label="board"></div>
+                <div id="board-controls">
+                    <button id="start" aria-label="Start">
+                        <i class="material-icons md-36">first_page</i>
+                    </button>
+                    <button id="back" aria-label="Back">
+                        <i class="material-icons md-36">arrow_back</i>
+                    </button>
+                    <button id="forward" aria-label="Forward">
+                        <i class="material-icons md-36">arrow_forward</i>
+                    </button>
+                    <button id="end" aria-label="End">
+                        <i class="material-icons md-36">last_page</i>
+                    </button>
+                    <button id="flip" aria-label="Flip">
+                        <i class="material-icons md-36">flip</i>
+                    </button>
+                </div>
+            </div>
         </section>
     </main>
 </body>
