@@ -4,7 +4,7 @@ import { createGame, animateGame, fetchMove } from '../chess/board.js'
 import { viewStartHistory, viewBackHistory, viewForwardHistory, viewCurrentGame, flipBoard, changePlayerSide } from '../chess/modify.js'
 
 
-loopAnimation(document.querySelector('#next-section > #board-container-parent'), 500)
+loopAnimation(document.querySelector('#next-section > div > #board-container-parent'), 1000)
 analyzeEnglundOpening(document.querySelectorAll('section #board-container-parent')[1])
 
 const nextAnchor = document.querySelector('a#next');
