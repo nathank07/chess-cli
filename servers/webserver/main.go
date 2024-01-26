@@ -24,7 +24,11 @@ func main() {
 	router.GET("/", func(ctx *gin.Context) {
 		session, _ := store.Get(ctx.Request, "login-session")
 		username := session.Values["username"]
-		ctx.HTML(http.StatusOK, "index.html", gin.H{"username": username})
+		if username == nil {
+			ctx.HTML(http.StatusOK, "landing.html", gin.H{"username": username})
+		} else {
+			ctx.Redirect(http.StatusFound, "/home")
+		}
 	})
 	router.GET("/:path", func(ctx *gin.Context) {
 		path := ctx.Param("path")
@@ -32,6 +36,11 @@ func main() {
 		username := session.Values["username"]
 		if matched, _ := regexp.MatchString("^[0-9]+$", path); matched {
 			ctx.HTML(http.StatusOK, "game.html", gin.H{"id": path, "username": username})
+			return
+		}
+		if path == "home" {
+			fmt.Println("FOUND HOME")
+			ctx.HTML(http.StatusOK, "index.html", gin.H{"username": username})
 			return
 		}
 		_, err := os.Stat("dist/" + path + ".html")

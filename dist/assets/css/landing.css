@@ -288,9 +288,12 @@ section h2 {
 }
 
 footer {
-    width: 100%;
     padding: 2rem 0;
     padding-bottom: 0;
+}
+
+footer > * {
+    width: 100vw !important;
 }
 
 footer > section > div:first-child {

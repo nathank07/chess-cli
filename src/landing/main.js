@@ -9,6 +9,13 @@ analyzeEnglundOpening(document.querySelectorAll('section #board-container-parent
 
 const nextAnchor = document.querySelector('a#next');
 
+nextAnchor.addEventListener('click', (e) => {
+    // So #next-section doesn't appear in the url
+    e.preventDefault();
+    const nextSection = document.querySelector('#next-section');
+    nextSection.scrollIntoView({ behavior: 'smooth' });
+});
+
 window.addEventListener('scroll', () => {
     if (window.scrollY >= 30) {
         nextAnchor.classList.add('hidden');
