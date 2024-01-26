@@ -1,4 +1,6 @@
+import '../header/header.css'
 import './landing.css'
+
 import { drawUserMarkings } from '../chess/marking.js'
 import { createGame, animateGame, fetchMove } from '../chess/board.js'
 import { viewStartHistory, viewBackHistory, viewForwardHistory, viewCurrentGame, flipBoard, changePlayerSide } from '../chess/modify.js'

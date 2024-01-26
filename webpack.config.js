@@ -6,24 +6,27 @@ const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
 const isProduction = process.env.NODE_ENV == 'production';
 const stylesHandler = MiniCssExtractPlugin.loader;
 
-const pages = ['game', 'login', 'register', 'landing']
+const pages = ['game', 'login', 'register', 'landing', 'header', 'footer']
 let js = {}
 let html = []
 pages.forEach(page => {
-    js[`${page}`] = `./src/${page}/main.js`
     html.push(new HtmlWebpackPlugin({
         filename: `${page}.html`,
         template: path.join(__dirname, `./src/${page}/${page}.html`),
-        chunks: [`${page}`]
+        chunks: [`${page}`],
     }))
+    js[`${page}`] = `./src/${page}/main.js`
 });
 js[`home`] = `./src/home/main.js`
+
 html.push(new HtmlWebpackPlugin({
     filename: `index.html`,
     template: path.join(__dirname, `./src/home/home.html`),
     chunks: [`home`]
 }))
 
+delete js['header']
+delete js['footer']
 
 const config = {
     entry: js,

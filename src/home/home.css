@@ -1,5 +1,22 @@
 :root {
+    --background-color: #0f0f0f;
+    --secondary-background-color: #1b1b1b;
+    --tertiary-background-color: #1f1f1f;
+    --foreground-color: #F8EDEB;
+    --alt-background: #A32525;
+    --alt-background-hover: #C11B1B;
+    --nav-font-size: 1.1rem;
+    --nav-padding: 1vw;
     --board-size: unset !important;
+}
+
+body {
+    margin: 0;
+    background-color: var(--background-color);
+}
+
+* {
+    color: var(--foreground-color)
 }
 
 #game-list > a, #game-history > a {

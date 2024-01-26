@@ -536,7 +536,7 @@ eval("module.exports = __webpack_require__.p + \"assets/sounds/5a58dd80a641cfdf5
 /******/ 		// or pass an empty string ("") and set the __webpack_public_path__ variable from your code to use your own logic.
 /******/ 		if (!scriptUrl) throw new Error("Automatic publicPath is not supported in this browser");
 /******/ 		scriptUrl = scriptUrl.replace(/#.*$/, "").replace(/\?.*$/, "").replace(/\/[^\/]+$/, "/");
-/******/ 		__webpack_require__.p = scriptUrl + "../../";
+/******/ 		__webpack_require__.p = scriptUrl + "../../dist/";
 /******/ 	})();
 /******/ 	
 /************************************************************************/

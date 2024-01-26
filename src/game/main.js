@@ -1,4 +1,6 @@
 import "./game.css"
+import "../header/header.css"
+import "../footer/footer.css"
 import "../chess/cburnett/move.svg"
 import { importGame } from '../chess/board.js'
 import { createTokenAndJoin, existingGame } from "./websockets.js"

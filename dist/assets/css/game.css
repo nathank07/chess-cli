@@ -224,3 +224,147 @@
 }
 
 
+/*!*************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./src/header/header.css ***!
+  \*************************************************************************/
+:root {
+    --background-color: #0f0f0f;
+    --secondary-background-color: #1b1b1b;
+    --tertiary-background-color: #1f1f1f;
+    --quaternary-background-color: #2b2b2b;
+    --foreground-color: #F8EDEB;
+    --alt-background: #A32525;
+    --alt-background-hover: #C11B1B;
+    --nav-font-size: 1.1rem;
+    --nav-padding: 1vw;
+}
+
+#icon {
+    content: url(../../assets/images/30871ebbc0ad7f46a1c7.svg);
+    width: 2.5rem;
+    height: 2.5rem;
+    margin: 0;
+}
+
+header {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+nav {
+    background-color: var(--secondary-background-color);
+    font-size: var(--nav-font-size);
+    height: calc(var(--nav-font-size) * 3.5);
+    width: 100vw;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: rgba(0, 0, 0, 0.1) 0.1rem solid;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+nav #nav-links {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-right: var(--nav-padding);
+}
+
+nav #nav-links #register {
+    background-color: var(--alt-background);
+    border-radius: 0.25rem;
+    padding: 0.5rem 1rem;
+    color: var(--foreground-color);
+}
+
+nav #nav-links #login {
+    background-color: var(--tertiary-background-color);
+    border-radius: 0.25rem;
+    padding: 0.5rem 1rem;
+    color: var(--foreground-color);
+}
+
+nav #nav-links #register:hover {
+    background-color: var(--alt-background-hover);
+    color: #fff;
+}
+
+nav #nav-links #login:hover {
+    background-color: var(--quaternary-background-color);
+    color: #fff;
+}
+
+nav a {
+    color: var(--foreground-color);
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    font-size: calc(var(--nav-font-size) * 0.8);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+nav a:hover {
+    color: #fff;
+    transition-duration: 0.3s;
+    transition-timing-function: ease-in-out;
+}
+
+nav #title {
+    display: flex;
+    align-items: center;
+    border: none;
+    padding: 0;
+    margin-left: var(--nav-padding);
+    box-shadow: none;
+}
+
+nav #title #icon {
+    margin-right: calc(var(--nav-font-size) * 0.3);
+    width: calc(var(--nav-font-size) * 1.8);
+    height: calc(var(--nav-font-size) * 1.8);
+}
+
+nav h1 {
+    margin: 0;
+    padding: 0;
+}
+/*!*************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./src/footer/footer.css ***!
+  \*************************************************************************/
+:root {
+    --background-color: #0f0f0f;
+    --secondary-background-color: #1b1b1b;
+    --tertiary-background-color: #1f1f1f;
+    --foreground-color: #F8EDEB;
+    --alt-background: #A32525;
+    --alt-background-hover: #C11B1B;
+    --nav-font-size: 1.1rem;
+    --nav-padding: 1vw;
+}
+
+footer {
+    padding: 2rem 0;
+    padding-bottom: 0;
+}
+
+footer > * {
+    width: 100vw !important;
+    color: var(--foreground-color)
+}
+
+#end-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    padding: 1rem 0;
+    background-color: var(--secondary-background-color);
+    border-radius: 0;
+}
+

@@ -1,0 +1,30 @@
+:root {
+    --background-color: #0f0f0f;
+    --secondary-background-color: #1b1b1b;
+    --tertiary-background-color: #1f1f1f;
+    --foreground-color: #F8EDEB;
+    --alt-background: #A32525;
+    --alt-background-hover: #C11B1B;
+    --nav-font-size: 1.1rem;
+    --nav-padding: 1vw;
+}
+
+footer {
+    padding: 2rem 0;
+    padding-bottom: 0;
+}
+
+footer > * {
+    width: 100vw !important;
+    color: var(--foreground-color)
+}
+
+#end-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    padding: 1rem 0;
+    background-color: var(--secondary-background-color);
+    border-radius: 0;
+}

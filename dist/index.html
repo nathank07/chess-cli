@@ -6,6 +6,7 @@
     <title>NK Chess Home</title>
 <link rel="icon" href="assets/favicon.svg"><script defer src="assets/js/home.js"></script><link href="assets/css/home.css" rel="stylesheet"></head>
 <body>
+    {{ template "header.html" . }}
     <h1>Hello {{.username}}!</h1>
     <h2>Live Games:</h2>
     <div id="game-list">
@@ -48,5 +49,6 @@
     <form action="/logout" method="POST">
         <button>Logout</button>
     </form>
+    {{ template "footer.html" . }}
 </body>
 </html>

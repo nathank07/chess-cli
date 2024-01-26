@@ -1,4 +1,6 @@
 import './home.css'
+import '../header/header.css'
+import '../footer/footer.css'
 import newGame, { existingGame } from "../game/websockets.js"
 import { changePlayerSide } from "../chess/modify.js"
 import { importGame } from '../chess/board.js'
@@ -107,7 +109,7 @@ function createBoards(games, divHolder) {
         parent.appendChild(whiteTimer)
         parent.appendChild(blackTimer)
         parent.setAttribute('id', id)
-        parent.href = window.location.href + id
+        parent.href = `${window.location.origin}/game/${id}`
         changePlayerSide(game, true)
         if(game.whiteClock && game.blackClock) {
             createTimerDiv(game, true, whiteTimer)

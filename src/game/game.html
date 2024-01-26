@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/">
     <title>Chess</title>
 </head>
 <body data-id="{{ .id }}">
+    {{ template "header.html" . }}
     <div id="root">
     </div>
     <div id="whiteTimer">1</div>
@@ -23,5 +25,6 @@
             <button id="draw">Draw</button>
         </div>
     </div>
+    {{ template "footer.html" .}}
 </body>
 </html>
