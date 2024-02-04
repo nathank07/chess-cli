@@ -88,6 +88,10 @@ function getFinishedGames() {
 }
 
 function createBoards(games, divHolder) {
+    if(games.length === 0) {
+        divHolder.replaceWith(createLiveEmpty())
+        return
+    }
     games.forEach(game => {
         const parent = document.createElement('a')
         const players = document.createElement('div')
@@ -117,4 +121,28 @@ function createBoards(games, divHolder) {
         }
         divHolder.appendChild(parent)
     });
+}
+
+function createLiveEmpty() {
+    const messageContainer = document.createElement('div')
+
+    const message = document.createElement('h2')
+    message.textContent = "No Live Games"
+    const emoji = document.createElement('div')
+    emoji.textContent = "😢"
+    emoji.classList.add('large-emoji')
+
+    const createGameButton = document.createElement('button')
+    createGameButton.textContent = "Create a New Game"
+    createGameButton.id = "create-game"
+    createGameButton.addEventListener('click', () => {
+        createGameDialog.showModal()
+    })
+
+    messageContainer.appendChild(emoji)
+    messageContainer.appendChild(message)
+    messageContainer.appendChild(createGameButton)
+    messageContainer.id = "no-games"
+    
+    return messageContainer
 }
