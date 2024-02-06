@@ -37,6 +37,7 @@ body {
 
 #game-list > a > #board-container, #game-history > a > #board-container {
     pointer-events: none;
+    width: 25rem;
 }
 
 #game-list > a > #board-container > #board > .square > span, #game-history > a > #board-container > #board > .square > span {

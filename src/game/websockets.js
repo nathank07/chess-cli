@@ -110,7 +110,8 @@ export async function createWebSocket(id, timeFunction) {
 
 export async function existingGame(id, parentDiv, timeFunction) {
     return new Promise((resolve, reject) => {
-        createWebSocket(id, timeFunction)
+        // id must be string if not weird things happen
+        createWebSocket(`${id}`, timeFunction)
             .then(game => {
                 if(parentDiv) {
                     parentDiv.appendChild(game.div)

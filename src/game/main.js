@@ -9,7 +9,7 @@ import { viewStartHistory, viewBackHistory, viewForwardHistory, viewCurrentGame,
 if(document.body.dataset.id) {
     const urlParams = new URLSearchParams(window.location.search);
     const isBlack = urlParams.get('black')
-    window.history.replaceState({}, document.title, "/" + document.body.dataset.id);
+    window.history.replaceState({}, document.title, "/game/" + document.body.dataset.id);
     const res = await fetch(`/api/game/${document.body.dataset.id}`)
     const gameData = await res.json()
     let game
