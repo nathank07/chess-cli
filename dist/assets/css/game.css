@@ -217,12 +217,6 @@
     border-radius: 0.5rem;
 }
 
-#whiteTimer, #blackTimer {
-    color: white;
-    background-color: black;
-    width: fit-content;
-}
-
 
 /*!*************************************************************************!*\
   !*** css ./node_modules/css-loader/dist/cjs.js!./src/header/header.css ***!
@@ -311,7 +305,7 @@ nav a {
 
 nav a:hover {
     color: #fff;
-    transition-duration: 0.3s;
+    transition-duration: 0.1s;
     transition-timing-function: ease-in-out;
 }
 

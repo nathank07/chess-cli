@@ -6,31 +6,12 @@ import { changePlayerSide } from "../chess/modify.js"
 import { createTimerDiv } from '../game/main.js'
 import createLiveBoards from './livegames.js'
 import getFinishedGames from './completegames.js'
+import linkDialog from './dialog.js'
 
 loadGames()
 
 const createGameDialog = document.querySelector('dialog')
-createGameDialog.querySelector('#length').onchange = () => {
-    const length = createGameDialog.querySelector('#length').value
-    createGameDialog.querySelector('#length-span').textContent = length
-}
-createGameDialog.querySelector('#increment').onchange = () => {
-    const increment = createGameDialog.querySelector('#increment').value
-    createGameDialog.querySelector('#increment-span').textContent = increment
-}
-
-createGameDialog.querySelector('#create-final').addEventListener('click', async () => {
-    const timeControl = {
-        seconds: Number(createGameDialog.querySelector('#length').value),
-        increment: Number(createGameDialog.querySelector('#increment').value)
-    }
-    const fen = createGameDialog.querySelector('#fen').value
-    const isBlack = !createGameDialog.querySelector('#white').checked
-    console.log(isBlack)
-    const game = await newGame(fen, timeControl)
-    window.location.href = window.location.href + game.id + `${isBlack ? "?black=true" : ""}`
-})
-
+linkDialog(createGameDialog)
 document.querySelector("#create-game").addEventListener('click', () => {
     createGameDialog.showModal()
 })

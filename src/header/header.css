@@ -82,7 +82,7 @@ nav a {
 
 nav a:hover {
     color: #fff;
-    transition-duration: 0.3s;
+    transition-duration: 0.1s;
     transition-timing-function: ease-in-out;
 }
 

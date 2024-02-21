@@ -1,4 +1,4 @@
-import { existingGame } from "../game/websockets"
+import newGame, { existingGame } from "../game/websockets"
 import { changePlayerSide } from "../chess/modify.js"
 import { createTimerDiv } from '../game/main.js'
 
@@ -8,7 +8,7 @@ export default async function createLiveBoards(divHolder) {
         divHolder.replaceWith(createLiveEmpty())
         return
     }
-    gameIDs.forEach(async gameID => {
+    for(const gameID of gameIDs){
         const parent = document.createElement('a')
         const whiteTimer = document.createElement('div')
         const blackTimer = document.createElement('div')
@@ -20,11 +20,20 @@ export default async function createLiveBoards(divHolder) {
             createTimerDiv(game, true, whiteTimer)
             createTimerDiv(game, false, blackTimer)
         })
-        parent.appendChild(game.blackUserSpan)
-        parent.appendChild(blackTimer)
+        const top = document.createElement('div')
+        const bottom = document.createElement('div')
+        top.ariaLabel = "Black Player"
+        bottom.ariaLabel = "White Player"
+
+        top.appendChild(game.blackUserSpan)
+        top.appendChild(blackTimer)
+        bottom.appendChild(game.whiteUserSpan)
+        bottom.appendChild(whiteTimer)
+
+        parent.appendChild(top)
         parent.appendChild(game.div)
-        parent.appendChild(game.whiteUserSpan)
-        parent.appendChild(whiteTimer)
+        parent.appendChild(bottom)
+        
         parent.setAttribute('id', gameID)
         parent.href = `${window.location.origin}/game/${gameID}`
         changePlayerSide(game, true)
@@ -33,7 +42,14 @@ export default async function createLiveBoards(divHolder) {
             createTimerDiv(game, false, blackTimer)
         }
         divHolder.appendChild(parent)
-    });
+    }
+    const newGameButton = document.createElement('button')
+    newGameButton.innerHTML = '<i class="material-icons">add</i>\nNew Game';
+    newGameButton.addEventListener('click', () => {
+        const createGameDialog = document.querySelector('dialog')
+        createGameDialog.showModal()
+    })
+    divHolder.appendChild(newGameButton)
 }
 
 function getLiveIDs() {

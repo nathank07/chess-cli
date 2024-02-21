@@ -8,6 +8,7 @@
     --nav-font-size: 1.1rem;
     --nav-padding: 1vw;
     --board-size: unset !important;
+    --game-list-padding: 0.5rem;
 }
 
 body {
@@ -19,32 +20,74 @@ body {
     color: var(--foreground-color)
 }
 
-#game-list > a, #game-history > a {
-    background-color: #464646;
-    border-radius: 1rem;
-    box-shadow: 0 0 1rem rgba(0, 0, 0, 0.2);
+#game-list > a, #game-history > a, #game-list > button {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 1rem;
+    padding: var(--game-list-padding);
     cursor: pointer;
-    transition: all 0.2s ease-in-out;
+    transition: all 0.1s ease-in-out;
     text-decoration: none;
+    max-width: 640px;
+    border-radius: 4px;
+}
+
+#game-list > button {
+    display: flex;
+    font-size: 1.2rem;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--tertiary-background-color);
+    margin: var(--game-list-padding);
+    margin-top: calc(var(--game-list-padding) + 15px);
+    aspect-ratio: 1/1;
+    opacity: 80%;
+    border: none;
+}
+
+#game-list > button > i {
+    font-size: 4rem;
+}
+
+#game-list > button:hover {
+    opacity: 100%;
+
+}
+
+#game-list > a > div:first-child, #game-list > a > div:last-child {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#game-list > a > div:first-child {
+    margin-top: calc(var(--game-list-padding) * -1);
+}
+
+#game-list > a > div:last-child {
+    margin-bottom: calc(var(--game-list-padding) * -1);
+}
+
+#whiteTimer, #blackTimer {
+    width: fit-content;
+    /* padding: 0.5rem; */
+    padding-right: 0;
+    border-radius: 0.5rem;
+    color: var(--foreground-color);
+    font-weight: bold;
 }
 
 #game-list > a > #board-container, #game-history > a > #board-container {
     pointer-events: none;
-    width: 25rem;
 }
 
 #game-list > a > #board-container > #board > .square > span, #game-history > a > #board-container > #board > .square > span {
     display: none;
 }
 
-#game-list, #game-history {
-    display: flex;
-    gap: 2rem;
-    flex-wrap: wrap;
+#game-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
 }
 
 .preview-players {

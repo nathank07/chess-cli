@@ -19,6 +19,6 @@ export default function linkDialog(createGameDialog) {
         const isBlack = !createGameDialog.querySelector('#white').checked
         console.log(isBlack)
         const game = await newGame(fen, timeControl)
-        window.location.href = window.location.origin + "/" + game.id + "/" + `${isBlack ? "?black=true" : ""}`
+        window.location.href = window.location.origin + "/game/" + game.id + `${isBlack ? "?black=true" : ""}`
     })
 }
