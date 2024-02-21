@@ -19,11 +19,15 @@ body {
     background-color: var(--background-color);
 }
 
+h1, h2 {
+    text-align: center;
+}
+
 * {
     color: var(--foreground-color)
 }
 
-#game-list > a, #game-history > a, #game-list > button {
+#game-list > a, #game-list > button {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -50,6 +54,7 @@ body {
 
 #game-list > button > i {
     font-size: 4rem;
+    line-height: unset;
 }
 
 #game-list > button:hover {
@@ -73,24 +78,102 @@ body {
 
 #whiteTimer, #blackTimer {
     width: fit-content;
-    /* padding: 0.5rem; */
     padding-right: 0;
     border-radius: 0.5rem;
     color: var(--foreground-color);
     font-weight: bold;
 }
 
-#game-list > a > #board-container, #game-history > a > #board-container {
+#game-list > a > #board-container {
     pointer-events: none;
 }
 
-#game-list > a > #board-container > #board > .square > span, #game-history > a > #board-container > #board > .square > span {
+#game-list > a > #board-container > #board > .square > span {
     display: none;
 }
 
 #game-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+}
+
+#game-history {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+#game-history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    background-color: var(--secondary-background-color);
+    width: 50%;
+    margin: 0 auto;
+}
+
+#game-history-list > a {
+    display: flex;
+    text-decoration: none;
+}
+
+#game-history-list > a > .players {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: left;
+}
+
+#game-history-list > a > .players > * {
+    display: flex;
+}
+
+#game-history-list > a > .players > * > .side {
+    width: 1.2rem;
+    height: 1.2rem;
+    padding: 0.7rem;
+    border-radius: 0.5rem;
+    box-sizing: border-box;    
+}
+
+
+.white-player > .side {
+    background-color: var(--foreground-color);
+    border: black 2px solid;
+}
+
+.black-player > .side {
+    background-color: var(--tertiary-background-color);
+    border: var(--foreground-color) 2px solid;
+}
+
+#game-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    width: 100%;
+    aspect-ratio: 1/1;
+}
+
+#game-preview > #preview-board {
+    width: 100vh;
+}
+
+@media screen and (max-width: 1200px) {
+    #game-history {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    #game-history-list {
+        width: 100%;
+    }
+    #game-preview {
+        display: none;
+    }
 }
 
 .preview-players {

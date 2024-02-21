@@ -54,7 +54,10 @@ function returnEnd(id) {
                 return
             }
             if(row === undefined) {
-                reject("Query returned undefined")
+                // reject("Query returned undefined")
+                // This should be a reject but it will have intermitent errors
+                // when loading so I'm just going to resolve false
+                resolve(false)
                 return
             }
             resolve({winner: row.winner, reason: row.reason})

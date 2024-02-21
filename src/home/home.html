@@ -3,21 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <title>NK Chess Home</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />    <title>NK Chess Home</title>
 </head>
 <body>
     {{ template "header.html" . }}
-    <h1>Hello {{.username}}!</h1>
+    <h1>Hello, {{.username}}!</h1>
     <h2>Live Games:</h2>
     <div id="game-list">
-        
     </div>
     <br>
     <h2>Game History:</h2>
     <div id="game-history">
+        <div id="game-history-list">
+        </div>
+        <div id="game-preview">
+
+        </div>
     </div>
-    <h3>Create Game:</h3>
     <dialog>
         <h3>Create a new game: </h3>
         <br>
@@ -41,12 +43,6 @@
         <br>
         <button id="create-final">Create Game</button>
     </dialog>
-    <button id="create-game">Create Game</button>
-    <br>
-    <a href="./login">Login</a>
-    <br>
-    <a href="./register">Register</a>
-    <br>
     <form action="/logout" method="POST">
         <button>Logout</button>
     </form>

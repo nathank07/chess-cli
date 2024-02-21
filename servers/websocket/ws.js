@@ -184,7 +184,7 @@ async function sendExport(ws, query) {
         }
     }
     catch(e) {
-        console.log(e)
+        console.log("sendExport returned error: ", e)
     }
 }
 

@@ -8,7 +8,8 @@ export default async function createLiveBoards(divHolder) {
         divHolder.replaceWith(createLiveEmpty())
         return
     }
-    for(const gameID of gameIDs){
+    const games = await Promise.all(gameIDs.map(async (gameID) => {
+        console.log('hi')
         const parent = document.createElement('a')
         const whiteTimer = document.createElement('div')
         const blackTimer = document.createElement('div')
@@ -16,10 +17,15 @@ export default async function createLiveBoards(divHolder) {
         blackTimer.setAttribute('gameid', gameID)
         whiteTimer.id = 'whiteTimer'
         blackTimer.id = 'blackTimer'
-        const game = await getLive(gameID, parent, () => {
-            createTimerDiv(game, true, whiteTimer)
-            createTimerDiv(game, false, blackTimer)
-        })
+        let game;
+        try {
+            game = await getLive(gameID, parent, () => {
+                createTimerDiv(game, true, whiteTimer)
+                createTimerDiv(game, false, blackTimer)
+            })
+        } catch (e){
+            console.log(e)
+        }
         const top = document.createElement('div')
         const bottom = document.createElement('div')
         top.ariaLabel = "Black Player"
@@ -41,16 +47,21 @@ export default async function createLiveBoards(divHolder) {
             createTimerDiv(game, true, whiteTimer)
             createTimerDiv(game, false, blackTimer)
         }
-        divHolder.appendChild(parent)
-    }
+        return parent;
+    })).catch(e => console.log(e));
+    console.log("escaped promise");
+    games.forEach(game => {
+        divHolder.appendChild(game)
+    });
     const newGameButton = document.createElement('button')
-    newGameButton.innerHTML = '<i class="material-icons">add</i>\nNew Game';
+    newGameButton.innerHTML = '<i class="material-symbols-outlined">add</i>\nNew Game';
     newGameButton.addEventListener('click', () => {
         const createGameDialog = document.querySelector('dialog')
         createGameDialog.showModal()
     })
     divHolder.appendChild(newGameButton)
 }
+
 
 function getLiveIDs() {
     return new Promise(async (resolve, reject) => {

@@ -11,6 +11,7 @@ type Game struct {
 	Fen         string `json:"fen"`
 	Uci         string `json:"uci"`
 	TimedUci    string `json:"timed_uci"`
+	TimeControl string `json:"time_control"`
 	White       string `json:"whitePlayer"`
 	Black       string `json:"blackPlayer"`
 	Winner      string `json:"winner"`
@@ -48,7 +49,7 @@ func fetchFinishedGames(amount int) []Game {
 		panic(err)
 	}
 	defer db.Close()
-	games, err := db.Query("SELECT id, fen, IFNULL(uci, ''), IFNULL(timed_uci, ''), IFNULL(whitePlayerID, '0'), IFNULL(blackPlayerID, '0'), game_created FROM game WHERE game_ended IS NOT NULL ORDER BY id DESC LIMIT ?", amount)
+	games, err := db.Query("SELECT id, fen, IFNULL(uci, ''), IFNULL(timed_uci, ''), IFNULL(whitePlayerID, '0'), IFNULL(blackPlayerID, '0'), game_created, time_control FROM game WHERE game_ended IS NOT NULL ORDER BY id DESC LIMIT ?", amount)
 	if err != nil {
 		panic(err)
 	}
@@ -56,7 +57,7 @@ func fetchFinishedGames(amount int) []Game {
 	for games.Next() {
 		var game Game
 		var whitePlayerID, blackPlayerID int
-		err = games.Scan(&game.ID, &game.Fen, &game.Uci, &game.TimedUci, &whitePlayerID, &blackPlayerID, &game.GameCreated)
+		err = games.Scan(&game.ID, &game.Fen, &game.Uci, &game.TimedUci, &whitePlayerID, &blackPlayerID, &game.GameCreated, &game.TimeControl)
 		game.Winner, game.Reason = fetchResult(game.ID)
 		game.White = idToUsername(whitePlayerID)
 		game.Black = idToUsername(blackPlayerID)
