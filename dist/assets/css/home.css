@@ -135,18 +135,17 @@ h1, h2 {
     height: 1.2rem;
     padding: 0.7rem;
     border-radius: 0.5rem;
-    box-sizing: border-box;    
+    box-sizing: border-box;   
+    border: #888 2px solid; 
 }
 
 
 .white-player > .side {
     background-color: var(--foreground-color);
-    border: black 2px solid;
 }
 
 .black-player > .side {
     background-color: var(--tertiary-background-color);
-    border: var(--foreground-color) 2px solid;
 }
 
 #game-preview {

@@ -22,7 +22,6 @@ export function getFinishedGames() {
 }
 
 export default async function showCompleteList(divHolder, userOnly) {
-    // Note to self: Use stuff from google material icons to represent reason for losing
     const games = await getFinishedGames()
     const preview = document.querySelector('#game-preview')
     games.forEach(game => {
@@ -30,34 +29,33 @@ export default async function showCompleteList(divHolder, userOnly) {
         const boardParent = document.createElement('div')
         boardParent.appendChild(game.div)
         const date = document.createElement('div')
-        const timeControl = document.createElement('div')
+        const timeControlParent = document.createElement('div')
+        const timeControlText = document.createElement('div')
+        const timeControlIcon = document.createElement('i')
         const white = document.createElement('div')
         const black = document.createElement('div')
         const players = document.createElement('div')
-        const result = document.createElement('div')
-        const reason = document.createElement('div')
-        
         date.classList.add('date')
-        timeControl.classList.add('time-control')
+        timeControlParent.classList.add('time-control')
+        timeControlIcon.classList.add('material-symbols-outlined')
         players.classList.add('players')
         white.classList.add('white-player')
         black.classList.add('black-player')
         boardParent.id = 'preview-board'
-        result.classList.add('result')
 
         date.innerHTML = formatDate(game.game_created)
-        timeControl.innerHTML = game.time_control
-        white.innerHTML = `<div class="side"></div><span>${game.whitePlayer}</span>`
-        black.innerHTML = `<div class="side"></div><span>${game.blackPlayer}</span>`
-        result.innerHTML = game.winner
-        reason.innerHTML = game.reason
+        timeControlText.innerHTML = game.time_control.slice(-2) === '+0' ? game.time_control.slice(0, -2) : game.time_control
+        timeControlIcon.innerHTML = game.time_control.slice(-2) === '+0' ? 'schedule' : 'more_time' 
+        white.innerHTML = `<div class="side"></div><div><span>${game.whitePlayer}</span>${trophy(true, game)}</div>`
+        black.innerHTML = `<div class="side"></div><div><span>${game.blackPlayer}</span>${trophy(false, game)}</div>`
 
+        timeControlParent.appendChild(timeControlIcon)
+        timeControlParent.appendChild(timeControlText)
         players.appendChild(white)
         players.appendChild(black)
-        link.appendChild(timeControl)
+        link.appendChild(timeControlParent)
         link.appendChild(players)
-        link.appendChild(result)
-        link.appendChild(reason)
+        link.appendChild(reason(game))
         link.appendChild(date)
         link.href = `${window.location.origin}/game/${game.id}`
         link.addEventListener('mouseenter', () => {
@@ -90,4 +88,67 @@ function formatDate(date) {
         const year = gameDate.getFullYear();
         return `${month} ${day}, ${year}`;
     }
+}
+
+function trophy(isWhite, game) {
+    const lwinner = game.winner ? game.winner.toLowerCase() : 'draw';
+    const side = isWhite ? 'white' : 'black';
+    if (lwinner !== 'draw') {
+        return lwinner === side ? `<i class="material-symbols-outlined winner">trophy</i>` : '';
+    }
+    return '';
+}
+
+function reason(game) {
+    const lsreason = game.reason ? game.reason.toLowerCase().split(' ')[0] : '';
+    const reasonParent = document.createElement('div');
+    const icon = document.createElement('i');
+    reasonParent.classList.add('reason');
+    icon.classList.add('material-symbols-outlined');
+    let iconInner;
+    let textInner;
+    switch(lsreason) {
+        case "checkmate":
+            iconInner = 'done_all'
+            textInner = 'Checkmate'
+            break
+        case "resign":
+            iconInner = 'flag'
+            textInner = 'Resignation'
+            break
+        case "time":
+            iconInner = 'history_toggle_off'
+            textInner = 'Flagged'
+            break
+        // Stalemate due to no moves
+        case "no":
+            iconInner = 'trending-flat'
+            textInner = 'Stalemate'
+            break
+        case "insufficient":
+            iconInner = 'pulse-alert'
+            textInner = 'No Material'
+            break
+        case "threefold":
+            iconInner = 'cycle';
+            textInner = 'Threefold Repitition';
+            break
+        case "fifty":
+            iconInner = 'tactic';
+            textInner = 'Fifty Move Rule';
+            break
+        // This is if the game times out (server), this should not appear in match history
+        case "game":
+            iconInner = 'question_mark';
+            textInner = 'Server Timeout';
+            break
+        default:
+            iconInner = 'question_mark';
+            textInner = 'Unknown';
+            break
+    }
+    icon.innerHTML = iconInner;
+    icon.title = textInner;
+    reasonParent.appendChild(icon);
+    return reasonParent;
 }
