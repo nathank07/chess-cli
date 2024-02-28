@@ -22,7 +22,7 @@ export function getFinishedGames() {
 }
 
 export default async function showCompleteList(divHolder, userOnly) {
-    const gamesArr = Array.from({ length: 10 }, () => []);
+    const gamesArr = [];
     const games = await getFinishedGames()
     const preview = document.querySelector('#game-preview')
     games.forEach((game, index) => {
@@ -68,6 +68,9 @@ export default async function showCompleteList(divHolder, userOnly) {
             preview.removeChild(preview.querySelector('#preview-board'));
             preview.appendChild(boardParent);
         });
+        if(gamesArr[Math.trunc(index / 10)] === undefined) {
+            gamesArr[Math.trunc(index / 10)] = []
+        }
         gamesArr[Math.trunc(index / 10)].push(link)
         if(Math.trunc(index / 10) === 0) {
             divHolder.appendChild(link)
@@ -81,8 +84,8 @@ export default async function showCompleteList(divHolder, userOnly) {
 function createPaginator(games) {
     // TODO: Hide cells if they cannot be replaced
     const minPage = 0
-    const maxPage = games.length - 1
     let currentPage = 0;
+    const maxPage = games.length - 1
     const paginator = document.createElement('div')
     paginator.classList.add('paginator')
     const prev = document.createElement('button')
