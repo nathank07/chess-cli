@@ -45,9 +45,14 @@ export default async function showCompleteList(divHolder, userOnly) {
 
         date.innerHTML = formatDate(game.game_created)
         timeControlText.innerHTML = game.time_control.slice(-2) === '+0' ? game.time_control.slice(0, -2) : game.time_control
-        timeControlIcon.innerHTML = game.time_control.slice(-2) === '+0' ? 'schedule' : 'more_time' 
-        white.innerHTML = `<div class="side"></div><div><span>${game.whitePlayer}</span>${trophy(true, game)}</div>`
-        black.innerHTML = `<div class="side"></div><div><span>${game.blackPlayer}</span>${trophy(false, game)}</div>`
+        timeControlIcon.innerHTML = 'schedule'
+        if(game.time_control.slice(-2) !== "+0") {
+            timeControlIcon.innerHTML = 'more_time';
+            // +2px because schedule icon is slightly smaller
+            timeControlIcon.style.fontSize = "26px";
+        } 
+        white.innerHTML = `<div class="side">${trophy(true, game)}</div><div>${game.whitePlayer}</div>`
+        black.innerHTML = `<div class="side">${trophy(false, game)}</div><div>${game.blackPlayer}</div>`
 
         timeControlParent.appendChild(timeControlIcon)
         timeControlParent.appendChild(timeControlText)
@@ -94,7 +99,7 @@ function trophy(isWhite, game) {
     const lwinner = game.winner ? game.winner.toLowerCase() : 'draw';
     const side = isWhite ? 'white' : 'black';
     if (lwinner !== 'draw') {
-        return lwinner === side ? `<i class="material-symbols-outlined winner">trophy</i>` : '';
+        return lwinner === side ? `<i class="material-symbols-outlined winner">check</i>` : '';
     }
     return '';
 }
@@ -103,6 +108,7 @@ function reason(game) {
     const lsreason = game.reason ? game.reason.toLowerCase().split(' ')[0] : '';
     const reasonParent = document.createElement('div');
     const icon = document.createElement('i');
+    const text = document.createElement('div');
     reasonParent.classList.add('reason');
     icon.classList.add('material-symbols-outlined');
     let iconInner;
@@ -122,7 +128,7 @@ function reason(game) {
             break
         // Stalemate due to no moves
         case "no":
-            iconInner = 'trending-flat'
+            iconInner = 'horizontal-rule'
             textInner = 'Stalemate'
             break
         case "insufficient":
@@ -131,7 +137,7 @@ function reason(game) {
             break
         case "threefold":
             iconInner = 'cycle';
-            textInner = 'Threefold Repitition';
+            textInner = 'Threefold Repetition';
             break
         case "fifty":
             iconInner = 'tactic';
@@ -149,6 +155,8 @@ function reason(game) {
     }
     icon.innerHTML = iconInner;
     icon.title = textInner;
+    text.innerHTML = textInner;
     reasonParent.appendChild(icon);
+    reasonParent.appendChild(text);
     return reasonParent;
 }
