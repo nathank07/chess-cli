@@ -112,34 +112,33 @@ h1, h2 {
     margin: 0 auto;
 }
 
-#game-history-list > a {
-    display: flex;
+#game-history-list > a, #game-history-list > div {
+    display: grid;
+    grid-template-columns: minmax(50px, 1fr) minmax(50px, 200px) minmax(50px, 1fr) minmax(50px, 1fr);
     text-decoration: none;
     padding: var(--game-list-padding) 0 var(--game-list-padding) 0;
     border: var(--background-color) 1px solid;
-    justify-content: space-between;
-}
-
-#game-history-list > a > .time-control {
-    display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    width: 5.5rem;
-    gap: 0.5rem;
-    flex: 0.5;
 }
 
-#game-history-list > a > .reason {
+#game-history-list > div {
+    font-weight: bold;
+}
+
+#game-history-list > * > .time-control,
+#game-history-list > * > .reason,
+#game-history-list > div > .players,
+#game-history-list > * > .date {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    flex: 1;
 }
 
 #game-history-list > a > .reason > div {
+    width: 100%;
+    overflow: hidden;
     text-align: center;
 }
 
@@ -148,17 +147,18 @@ h1, h2 {
     flex-direction: column;
     gap: 0.5rem;
     align-items: left;
-    flex: 1;
 }
 
 #game-history-list > a > .players > * {
     display: flex;
     gap: 8px;
-    align-items: center;
 }
 
-#game-history-list > a > .players > * > div {
+#game-history-list > a > .players > * > div:last-child {
     height: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 #game-history-list > a > .players > * > .side {
@@ -170,7 +170,8 @@ h1, h2 {
     padding: 0.7rem;
     border-radius: 0.5rem;
     box-sizing: border-box;   
-    border: #888 2px solid; 
+    border: #888 2px solid;
+    flex-grow: 0; 
 }
 
 #game-history-list > a > .players > * > .side > .winner {
@@ -198,7 +199,6 @@ h1, h2 {
     display: flex;
     justify-content: center;
     align-items: center;
-    flex: 1;
 }
 
 #game-preview {
@@ -206,7 +206,6 @@ h1, h2 {
     align-items: center;
     justify-content: center;
     flex-grow: 1;
-    width: 100%;
     aspect-ratio: 1/1;
 }
 
@@ -221,10 +220,19 @@ h1, h2 {
         align-items: center;
     }
     #game-history-list {
-        width: 100%;
+        width: 800px;
     }
     #game-preview {
         display: none;
+    }
+}
+
+@media screen and (max-width: 500px) {
+    #game-history-list > a > .reason > div:last-child{
+        display: none;
+    }
+    #game-history-list > a {
+        min-width: 400px;
     }
 }
 

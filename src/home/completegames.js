@@ -109,6 +109,9 @@ function reason(game) {
     const reasonParent = document.createElement('div');
     const icon = document.createElement('i');
     const text = document.createElement('div');
+    new ResizeObserver(() => {
+        text.style.display = text.parentNode.clientWidth < 100 ? 'none' : 'block';
+    }).observe(reasonParent);
     reasonParent.classList.add('reason');
     icon.classList.add('material-symbols-outlined');
     let iconInner;
