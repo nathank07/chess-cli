@@ -49,7 +49,7 @@ func fetchFinishedGames(amount int) []Game {
 		panic(err)
 	}
 	defer db.Close()
-	games, err := db.Query("SELECT id, fen, IFNULL(uci, ''), IFNULL(timed_uci, ''), IFNULL(whitePlayerID, '0'), IFNULL(blackPlayerID, '0'), game_created, time_control FROM game WHERE game_ended IS NOT NULL ORDER BY id DESC LIMIT ?", amount)
+	games, err := db.Query("SELECT id, fen, IFNULL(uci, ''), IFNULL(timed_uci, ''), IFNULL(whitePlayerID, '0'), IFNULL(blackPlayerID, '0'), game_created, time_control FROM game WHERE game_ended IS NOT NULL AND id IN (SELECT id FROM game_ended WHERE reason != 'Game timed out') ORDER BY id DESC LIMIT ?", amount)
 	if err != nil {
 		panic(err)
 	}
