@@ -77,6 +77,10 @@ function endGame(wss, id, outcome, reason) {
         .catch(err => {
             console.log(err)
         })
+    wss.timers[id].whiteTimer.timerFinishedFunction = () => {}
+    wss.timers[id].whiteTimer.updateFunction = () => {}
+    wss.timers[id].blackTimer.timerFinishedFunction = () => {}
+    wss.timers[id].blackTimer.updateFunction = () => {}
     delete wss.timers[id]
 }
 
