@@ -22,9 +22,10 @@ export function getFinishedGames() {
 }
 
 export default async function showCompleteList(divHolder, userOnly) {
+    const gamesArr = Array.from({ length: 10 }, () => []);
     const games = await getFinishedGames()
     const preview = document.querySelector('#game-preview')
-    games.forEach(game => {
+    games.forEach((game, index) => {
         const link = document.createElement('a')
         const boardParent = document.createElement('div')
         boardParent.appendChild(game.div)
@@ -67,10 +68,56 @@ export default async function showCompleteList(divHolder, userOnly) {
             preview.removeChild(preview.querySelector('#preview-board'));
             preview.appendChild(boardParent);
         });
-        divHolder.appendChild(link)
+        gamesArr[Math.trunc(index / 10)].push(link)
+        if(Math.trunc(index / 10) === 0) {
+            divHolder.appendChild(link)
+        }
     });
+    console.log(gamesArr)
+    divHolder.appendChild(createPaginator(gamesArr))
     preview.appendChild(games[0].div.parentNode)
+}
 
+function createPaginator(games) {
+    // TODO: Hide cells if they cannot be replaced
+    const minPage = 0
+    const maxPage = games.length - 1
+    let currentPage = 0;
+    const paginator = document.createElement('div')
+    paginator.classList.add('paginator')
+    const prev = document.createElement('button')
+    const next = document.createElement('button')
+    const prevIcon = document.createElement('i')
+    const nextIcon = document.createElement('i')
+    prevIcon.innerHTML = 'arrow_back'
+    nextIcon.innerHTML = 'arrow_forward'
+    prevIcon.classList.add('material-symbols-outlined')
+    nextIcon.classList.add('material-symbols-outlined')
+    prev.appendChild(prevIcon)
+    next.appendChild(nextIcon)
+    prev.addEventListener('click', () => {
+        if(currentPage > minPage) {
+            games[currentPage].forEach((game, index) => {
+                if(games[currentPage - 1][index] !== undefined && games[currentPage - 1][index] !== null) {
+                    game.parentNode.replaceChild(games[currentPage - 1][index], game)
+                }
+            })
+            currentPage--
+        }
+    })
+    next.addEventListener('click', () => {
+        if(currentPage < maxPage) {
+            games[currentPage].forEach((game, index) => {
+                if(games[currentPage + 1][index] !== undefined && games[currentPage + 1][index] !== null) {
+                    game.parentNode.replaceChild(games[currentPage + 1][index], game)
+                }
+            })
+            currentPage++
+        }
+    })
+    paginator.appendChild(prev)
+    paginator.appendChild(next)
+    return paginator
 }
 
 function formatDate(date) {

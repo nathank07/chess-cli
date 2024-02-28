@@ -92,7 +92,7 @@ func main() {
 			return
 		}
 		if path == "games" {
-			games := fetchFinishedGames(20)
+			games := fetchFinishedGames(100)
 			ctx.JSON(http.StatusOK, games)
 			return
 		}

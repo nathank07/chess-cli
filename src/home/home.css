@@ -20,6 +20,10 @@ h1, h2 {
     text-align: center;
 }
 
+h2.history {
+    margin: 8rem 0 4rem 0;
+}
+
 * {
     color: var(--foreground-color)
 }
@@ -96,17 +100,60 @@ h1, h2 {
 
 #game-history {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
+    margin: auto;
+    width: 90%;
+    max-width: 1920px;
+    gap: 4rem;
+}
+
+#game-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1/1;
+    width: 200lvh;
 }
 
 #game-history-list {
     display: flex;
     flex-direction: column;
     border-radius: 0.5rem;
-    background-color: var(--secondary-background-color);
-    width: 50%;
+    width: 100%;
     margin: 0 auto;
+}
+
+#game-history-list > .paginator {
+    background-color: transparent;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+#game-history-list > .paginator > button {
+    all: unset;
+    background-color: var(--alt-background);
+    color: var(--foreground-color);
+    text-decoration: none;
+    border-radius: 0.25rem;
+    font-size: calc(var(--nav-font-size) * 0.8);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition-duration: 0.1s;
+    transition-timing-function: ease-in-out;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+}
+
+#game-history-list > .paginator > button:hover {
+    color: #fff;
+    background-color: var(--alt-background-hover);
 }
 
 #game-history-list > a, #game-history-list > div {
@@ -115,6 +162,8 @@ h1, h2 {
     text-decoration: none;
     padding: var(--game-list-padding) 0 var(--game-list-padding) 0;
     border: var(--background-color) 1px solid;
+    background-color: var(--tertiary-background-color);
+    border-radius: 4px;
     align-items: center;
 }
 
@@ -198,16 +247,8 @@ h1, h2 {
     align-items: center;
 }
 
-#game-preview {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-grow: 1;
-    aspect-ratio: 1/1;
-}
-
 #game-preview > #preview-board {
-    width: 100vh;
+    width: 100%;
 }
 
 @media screen and (max-width: 1200px) {
@@ -227,9 +268,6 @@ h1, h2 {
 @media screen and (max-width: 500px) {
     #game-history-list > a > .reason > div:last-child{
         display: none;
-    }
-    #game-history-list > a {
-        min-width: 400px;
     }
 }
 
