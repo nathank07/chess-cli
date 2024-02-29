@@ -31,6 +31,10 @@ h2.history {
     color: var(--foreground-color)
 }
 
+#game-list > .empty, #no-games {
+    height: 350px;
+}
+
 #game-list > a, #game-list > button {
     display: flex;
     flex-direction: column;
@@ -174,6 +178,10 @@ h2.history {
     font-weight: bold;
 }
 
+#game-history-list > div:not(#game-history-list > div:first-child, #game-history-list > div:last-child) {
+    height: 3.8rem;
+}
+
 #game-history-list > * > .time-control,
 #game-history-list > * > .reason,
 #game-history-list > div > .players,
@@ -188,7 +196,9 @@ h2.history {
 #game-history-list > a > .reason > div {
     width: 100%;
     overflow: hidden;
+    text-overflow: ellipsis;
     text-align: center;
+    white-space: nowrap;
 }
 
 #game-history-list > a > .players {
@@ -245,9 +255,12 @@ h2.history {
 }
 
 #game-history-list > a > .date {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    width: 100%;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+    white-space: nowrap;
 }
 
 #game-preview > #preview-board {

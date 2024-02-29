@@ -59,6 +59,7 @@ export default async function createLiveBoards(divHolder) {
         const createGameDialog = document.querySelector('dialog')
         createGameDialog.showModal()
     })
+    document.querySelector('.empty').remove()
     divHolder.appendChild(newGameButton)
 }
 

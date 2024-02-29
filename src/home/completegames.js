@@ -25,6 +25,10 @@ export default async function showCompleteList(divHolder, userOnly) {
     const gamesArr = [];
     const games = await getFinishedGames()
     const preview = document.querySelector('#game-preview')
+    const emptyDivs = document.querySelectorAll('#game-history-list > div:not(#game-history-list > div:first-child')
+    emptyDivs.forEach(emptyDiv => {
+        emptyDiv.remove()
+    });
     games.forEach((game, index) => {
         const link = document.createElement('a')
         const boardParent = document.createElement('div')
@@ -65,8 +69,7 @@ export default async function showCompleteList(divHolder, userOnly) {
         link.appendChild(date)
         link.href = `${window.location.origin}/game/${game.id}`
         link.addEventListener('mouseenter', () => {
-            preview.removeChild(preview.querySelector('#preview-board'));
-            preview.appendChild(boardParent);
+            preview.firstElementChild.replaceWith(boardParent);
         });
         if(gamesArr[Math.trunc(index / 10)] === undefined) {
             gamesArr[Math.trunc(index / 10)] = []
@@ -76,9 +79,8 @@ export default async function showCompleteList(divHolder, userOnly) {
             divHolder.appendChild(link)
         }
     });
-    console.log(gamesArr)
     divHolder.appendChild(createPaginator(gamesArr))
-    preview.appendChild(games[0].div.parentNode)
+    preview.firstElementChild.replaceWith(games[0].div.parentNode)
 }
 
 function createPaginator(games) {
@@ -86,6 +88,13 @@ function createPaginator(games) {
     const minPage = 0
     let currentPage = 0;
     const maxPage = games.length - 1
+    console.log(games)
+    for(let i = 0; i < 10; i++) {
+        if(games[maxPage][i] === undefined) {
+            const emptyCell = document.createElement('div')
+            games[maxPage][i] = emptyCell
+        }
+    }
     const paginator = document.createElement('div')
     paginator.classList.add('paginator')
     const prev = document.createElement('button')

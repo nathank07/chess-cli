@@ -1,15 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />    <title>NK Chess Home</title>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <title>NK Chess Home</title>
 <link rel="icon" href="assets/favicon.svg"><script defer src="assets/js/home.js"></script><link href="assets/css/home.css" rel="stylesheet"></head>
+
 <body>
     {{ template "header.html" . }}
     <h1>Hello, {{.username}}!</h1>
     <h2>Live Games:</h2>
     <div id="game-list">
+        <div class="empty"></div>
     </div>
     <h2 class="history">Game History:</h2>
     <div id="game-history">
@@ -20,8 +25,173 @@
                 <div class="reason">End</div>
                 <div class="date">Date</div>
             </div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div class="paginator">
+                <button><i class="material-symbols-outlined">arrow_back</i></button>
+                <button><i class="material-symbols-outlined">arrow_forward</i></button>
+            </div>
         </div>
         <div id="game-preview">
+            <div id="preview-board">
+                <div id="board-container">
+                    <div id="board">
+                        <div notation="a8" class="square">
+                            <span class="left-notation dark">8</span>
+                            <img src=assets/images/48665a8ce082e5f12710.svg>
+                        </div>
+                        <div notation="b8" class="square dark">
+                            <img src=assets/images/2806967ff884b67af8fc.svg>
+                        </div>
+                        <div notation="c8" class="square">
+                            <img src=assets/images/e196dd569ecbcb92d569.svg>
+                        </div>
+                        <div notation="d8" class="square dark">
+                            <img src=assets/images/e475a365a63ab9c3b484.svg>
+                        </div>
+                        <div notation="e8" class="square">
+                            <img src=assets/images/c83f5581968cfa1416d4.svg>
+                        </div>
+                        <div notation="f8" class="square dark">
+                            <img src=assets/images/e196dd569ecbcb92d569.svg>
+                        </div>
+                        <div notation="g8" class="square">
+                            <img src=assets/images/2806967ff884b67af8fc.svg>
+                        </div>
+                        <div notation="h8" class="square dark">
+                            <img src=assets/images/48665a8ce082e5f12710.svg>
+                        </div>
+                        <div notation="a7" class="square dark">
+                            <span class="left-notation light">7</span>
+                            <img src=assets/images/0bac57fcee185c845528.svg>
+                        </div>
+                        <div notation="b7" class="square">
+                            <img src=assets/images/0bac57fcee185c845528.svg>
+                        </div>
+                        <div notation="c7" class="square dark">
+                            <img src=assets/images/0bac57fcee185c845528.svg>
+                        </div>
+                        <div notation="d7" class="square">
+                            <img src=assets/images/0bac57fcee185c845528.svg>
+                        </div>
+                        <div notation="e7" class="square dark">
+                            <img src=assets/images/0bac57fcee185c845528.svg>
+                        </div>
+                        <div notation="f7" class="square">
+                            <img src=assets/images/0bac57fcee185c845528.svg>
+                        </div>
+                        <div notation="g7" class="square dark">
+                            <img src=assets/images/0bac57fcee185c845528.svg>
+                        </div>
+                        <div notation="h7" class="square">
+                            <img src=assets/images/0bac57fcee185c845528.svg>
+                        </div>
+                        <div notation="a6" class="square">
+                            <span class="left-notation dark">6</span>
+                        </div>
+                        <div notation="b6" class="square dark"></div>
+                        <div notation="c6" class="square"></div>
+                        <div notation="d6" class="square dark"></div>
+                        <div notation="e6" class="square"></div>
+                        <div notation="f6" class="square dark"></div>
+                        <div notation="g6" class="square"></div>
+                        <div notation="h6" class="square dark"></div>
+                        <div notation="a5" class="square dark">
+                            <span class="left-notation light">5</span>
+                        </div>
+                        <div notation="b5" class="square"></div>
+                        <div notation="c5" class="square dark"></div>
+                        <div notation="d5" class="square"></div>
+                        <div notation="e5" class="square dark"></div>
+                        <div notation="f5" class="square"></div>
+                        <div notation="g5" class="square dark"></div>
+                        <div notation="h5" class="square"></div>
+                        <div notation="a4" class="square"><span class="left-notation dark">4</span></div>
+                        <div notation="b4" class="square dark"></div>
+                        <div notation="c4" class="square"></div>
+                        <div notation="d4" class="square dark"></div>
+                        <div notation="e4" class="square"></div>
+                        <div notation="f4" class="square dark"></div>
+                        <div notation="g4" class="square"></div>
+                        <div notation="h4" class="square dark"></div>
+                        <div notation="a3" class="square dark"><span class="left-notation light">3</span></div>
+                        <div notation="b3" class="square"></div>
+                        <div notation="c3" class="square dark"></div>
+                        <div notation="d3" class="square"></div>
+                        <div notation="e3" class="square dark"></div>
+                        <div notation="f3" class="square"></div>
+                        <div notation="g3" class="square dark"></div>
+                        <div notation="h3" class="square"></div>
+                        <div notation="a2" class="square">
+                            <span class="left-notation dark">2</span>
+                            <img src=assets/images/2062ce2d4d0e8d018369.svg>
+                        </div>
+                        <div notation="b2" class="square dark">
+                            <img src=assets/images/2062ce2d4d0e8d018369.svg>
+                        </div>
+                        <div notation="c2" class="square">
+                            <img src=assets/images/2062ce2d4d0e8d018369.svg>
+                        </div>
+                        <div notation="d2" class="square dark">
+                            <img src=assets/images/2062ce2d4d0e8d018369.svg>
+                        </div>
+                        <div notation="e2" class="square">
+                            <img src=assets/images/2062ce2d4d0e8d018369.svg>
+                        </div>
+                        <div notation="f2" class="square dark">
+                            <img src=assets/images/2062ce2d4d0e8d018369.svg>
+                        </div>
+                        <div notation="g2" class="square">
+                            <img src=assets/images/2062ce2d4d0e8d018369.svg>
+                        </div>
+                        <div notation="h2" class="square dark">
+                            <img src=assets/images/2062ce2d4d0e8d018369.svg>
+                        </div>
+                        <div notation="a1" class="square dark">
+                            <span class="bottom-notation light">a</span>
+                            <span class="left-notation light">1</span>
+                            <img src=assets/images/c051a30b157b9deadd0d.svg>
+                        </div>
+                        <div notation="b1" class="square">
+                            <span class="bottom-notation dark">b</span>
+                            <img src=assets/images/dc9544a72b2cf7a92579.svg>
+                        </div>
+                        <div notation="c1" class="square dark">
+                            <span class="bottom-notation light">c</span>
+                            <img src=assets/images/b2002308f81e96903120.svg>
+                        </div>
+                        <div notation="d1" class="square">
+                            <span class="bottom-notation dark">d</span>
+                            <img src=assets/images/30871ebbc0ad7f46a1c7.svg>
+                        </div>
+                        <div notation="e1" class="square dark">
+                            <span class="bottom-notation light">e</span>
+                            <img src=assets/images/ae4879833ee0111ba3b2.svg>
+                        </div>
+                        <div notation="f1" class="square">
+                            <span class="bottom-notation dark">f</span>
+                            <img src=assets/images/b2002308f81e96903120.svg>
+                        </div>
+                        <div notation="g1" class="square dark">
+                            <span class="bottom-notation light">g</span>
+                            <img src=assets/images/dc9544a72b2cf7a92579.svg>
+                        </div>
+                        <div notation="h1" class="square">
+                            <span class="bottom-notation dark">h</span>
+                            <img src=assets/images/c051a30b157b9deadd0d.svg>
+                        </div>
+                    </div>
+                    <svg id="svg-canvas" height="0" width="0" viewBox="0 0 0 0"></svg>
+                </div>
+            </div>
         </div>
     </div>
     <dialog>
@@ -52,4 +222,5 @@
     </form>
     {{ template "footer.html" . }}
 </body>
+
 </html>
