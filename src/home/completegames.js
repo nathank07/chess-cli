@@ -84,7 +84,6 @@ export default async function showCompleteList(divHolder, userOnly) {
 }
 
 function createPaginator(games) {
-    // TODO: Hide cells if they cannot be replaced
     const minPage = 0
     let currentPage = 0;
     const maxPage = games.length - 1
