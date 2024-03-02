@@ -48,7 +48,6 @@ export default async function createLiveBoards(divHolder) {
         }
         return parent;
     })).catch(e => console.log(e));
-    console.log("escaped promise");
     games.forEach(game => {
         divHolder.appendChild(game)
     });

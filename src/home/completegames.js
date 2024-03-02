@@ -1,12 +1,16 @@
 import { importGame } from '../chess/board.js'
 import { changePlayerSide } from '../chess/modify.js'
 
-export function getFinishedGames() {
+export function getFinishedGames(user) {
     return new Promise(async (resolve, reject) => {
         try {
-            const res = await fetch('/api/game/games', { cache: "no-cache" })
+            const endpoint = user ? `/api/game/games/${user}` : '/api/game/games'
+            const res = await fetch(endpoint, { cache: "no-cache" })
             const games = await res.json()
             const importedGames = []
+            if(!games) {
+                resolve(importedGames)
+            }
             games.forEach(game => {
                 const importedGame = importGame([game.fen, [...game.uci.split(' ')]])
                 changePlayerSide(importedGame, true)
@@ -21,9 +25,10 @@ export function getFinishedGames() {
     })
 }
 
-export default async function showCompleteList(divHolder, userOnly) {
+export default async function showCompleteList(divHolder, user) {
     const gamesArr = [];
-    const games = await getFinishedGames()
+    const games = await getFinishedGames(user)
+    const emptyRemainders = games.length < 10 ? 10 - (games.length % 10) : 0
     const preview = document.querySelector('#game-preview')
     const emptyDivs = document.querySelectorAll('#game-history-list > div:not(#game-history-list > div:first-child')
     emptyDivs.forEach(emptyDiv => {
@@ -89,6 +94,10 @@ export default async function showCompleteList(divHolder, userOnly) {
             divHolder.appendChild(link)
         }
     });
+    for(let i = 0; i < emptyRemainders; i++) {
+        const emptyCell = document.createElement('div')
+        divHolder.appendChild(emptyCell)
+    }
     divHolder.appendChild(createPaginator(gamesArr))
     if(games[0] && games[0].div !== undefined) {
         preview.firstElementChild.replaceWith(games[0].div.parentNode)
@@ -98,8 +107,11 @@ export default async function showCompleteList(divHolder, userOnly) {
 function createPaginator(games) {
     const minPage = 0
     let currentPage = 0;
-    const maxPage = games.length - 1
+    const maxPage = games.length ? games.length - 1 : 0
     for(let i = 0; i < 10; i++) {
+        if(maxPage === 0) {
+            break
+        }
         if(games[maxPage][i] === undefined) {
             const emptyCell = document.createElement('div')
             games[maxPage][i] = emptyCell

@@ -13,12 +13,10 @@ const createGameDialog = document.querySelector('dialog')
 linkDialog(createGameDialog)
 
 async function loadGames() {
-    console.log(sessionStorage.getItem('token'));
-    const username = "<%= username %>";
-    console.log(username);
-    
+    const usernameSpan = document.querySelector('#user-dropdown > span');
+    const username = usernameSpan ? usernameSpan.textContent : null
     const live = document.querySelector('#game-list')
     const finished = document.querySelector('#game-history-list')
     createLiveBoards(live)
-    showCompleteList(finished, false)  
+    showCompleteList(finished, username)  
 } 

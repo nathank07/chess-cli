@@ -43,13 +43,18 @@ func fetchLiveGames(amount int) []int {
 	return ids
 }
 
-func fetchFinishedGames(amount int) []Game {
+func fetchFinishedGames(amount int, user string) []Game {
 	db, err := sql.Open("sqlite3", dbLoc)
 	if err != nil {
 		panic(err)
 	}
 	defer db.Close()
-	games, err := db.Query("SELECT id, fen, IFNULL(uci, ''), IFNULL(timed_uci, ''), IFNULL(whitePlayerID, '0'), IFNULL(blackPlayerID, '0'), game_created, time_control FROM game WHERE game_ended IS NOT NULL AND id IN (SELECT id FROM game_ended WHERE reason != 'Game timed out') ORDER BY id DESC LIMIT ?", amount)
+	var games *sql.Rows
+	if user == "" {
+		games, err = db.Query("SELECT id, fen, IFNULL(uci, ''), IFNULL(timed_uci, ''), IFNULL(whitePlayerID, '0'), IFNULL(blackPlayerID, '0'), game_created, time_control FROM game WHERE game_ended IS NOT NULL AND id IN (SELECT id FROM game_ended WHERE reason != 'Game timed out') ORDER BY id DESC LIMIT ?", amount)
+	} else {
+		games, err = db.Query("SELECT id, fen, IFNULL(uci, ''), IFNULL(timed_uci, ''), IFNULL(whitePlayerID, '0'), IFNULL(blackPlayerID, '0'), game_created, time_control FROM game WHERE game_ended IS NOT NULL AND id IN (SELECT id FROM game_ended WHERE reason != 'Game timed out') AND id IN (SELECT id FROM game WHERE blackPlayerID IN (SELECT id FROM user WHERE username = ?) OR whitePlayerID IN (SELECT id FROM user WHERE username = ?)) ORDER BY id DESC LIMIT ?", user, user, amount)
+	}
 	if err != nil {
 		panic(err)
 	}

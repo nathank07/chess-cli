@@ -26,7 +26,8 @@
         const dropdown = document.querySelector('#user-dropdown');
         const dropdownMenu = document.querySelector('#user-dropdown-menu');
         const dropdownIcon = document.querySelector('#user-dropdown i');
-        dropdown.addEventListener('click', () => {
+        if(dropdown) {
+            dropdown.addEventListener('click', () => {
             dropdownMenu.hidden = !dropdownMenu.hidden;
             if(!dropdownMenu.hidden) {
                 document.addEventListener('click', closeDropdown);
@@ -35,6 +36,7 @@
             }
             dropdownIcon.classList.toggle('rotate');
         });
+        }
         function closeDropdown(e) {
             const isDropdown = checkParent(e.target, dropdown) || checkParent(e.target, dropdownMenu);
             if(!isDropdown) {

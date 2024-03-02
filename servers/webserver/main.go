@@ -65,6 +65,15 @@ func main() {
 			ctx.HTML(http.StatusOK, "game.html", gin.H{"id": path, "username": username})
 		}
 	})
+	router.GET("/api/game/games/:path", func(ctx *gin.Context) {
+		path := ctx.Param("path")
+		if !dbHasUser(path) {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": "User not found."})
+		}
+		games := fetchFinishedGames(100, path)
+		fmt.Println(path)
+		ctx.JSON(http.StatusOK, games)
+	})
 	router.GET("/api/game/:path", func(ctx *gin.Context) {
 		path := ctx.Param("path")
 		if matched, _ := regexp.MatchString("^[0-9]+$", path); matched {
@@ -94,7 +103,7 @@ func main() {
 			return
 		}
 		if path == "games" {
-			games := fetchFinishedGames(100)
+			games := fetchFinishedGames(100, "")
 			ctx.JSON(http.StatusOK, games)
 			return
 		}
