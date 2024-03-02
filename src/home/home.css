@@ -135,6 +135,7 @@ h2.history {
     justify-content: center;
     align-items: center;
     gap: 1rem;
+    filter: brightness(1);
 }
 
 #game-history-list > .paginator > button {
@@ -154,11 +155,13 @@ h2.history {
     justify-content: center;
     align-items: center;
     user-select: none;
+    filter: brightness(0.8);
 }
 
 #game-history-list > .paginator > button:hover {
     color: #fff;
     background-color: var(--alt-background-hover);
+    filter: brightness(1.1);
 }
 
 #game-history-list > a, #game-history-list > div {
@@ -170,10 +173,17 @@ h2.history {
     background-color: var(--tertiary-background-color);
     border-radius: 4px;
     align-items: center;
+    filter: brightness(0.8);
+    transition: all 0.1s ease-in-out;
 }
 
-#game-history-list > div {
+#game-history-list > a.active {
+    filter: brightness(1.1);
+}
+
+#game-history-list > div:first-child {
     font-weight: bold;
+    filter: brightness(1);
 }
 
 #game-history-list > div:not(#game-history-list > div:first-child, #game-history-list > div:last-child) {

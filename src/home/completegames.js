@@ -29,6 +29,7 @@ export default async function showCompleteList(divHolder, userOnly) {
     emptyDivs.forEach(emptyDiv => {
         emptyDiv.remove()
     });
+    let activeLink;
     games.forEach((game, index) => {
         const link = document.createElement('a')
         const boardParent = document.createElement('div')
@@ -70,7 +71,16 @@ export default async function showCompleteList(divHolder, userOnly) {
         link.href = `${window.location.origin}/game/${game.id}`
         link.addEventListener('mouseenter', () => {
             preview.firstElementChild.replaceWith(boardParent);
+            if(activeLink) {
+                activeLink.classList.remove('active')
+            }
+            activeLink = link
+            activeLink.classList.add('active')
         });
+        if(index === 0) {
+            activeLink = link
+            activeLink.classList.add('active')
+        }
         if(gamesArr[Math.trunc(index / 10)] === undefined) {
             gamesArr[Math.trunc(index / 10)] = []
         }
@@ -80,7 +90,9 @@ export default async function showCompleteList(divHolder, userOnly) {
         }
     });
     divHolder.appendChild(createPaginator(gamesArr))
-    preview.firstElementChild.replaceWith(games[0].div.parentNode)
+    if(games[0] && games[0].div !== undefined) {
+        preview.firstElementChild.replaceWith(games[0].div.parentNode)
+    }
 }
 
 function createPaginator(games) {
