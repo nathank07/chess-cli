@@ -9,7 +9,6 @@ export default async function createLiveBoards(divHolder) {
         return
     }
     const games = await Promise.all(gameIDs.map(async (gameID) => {
-        console.log('hi')
         const parent = document.createElement('a')
         const whiteTimer = document.createElement('div')
         const blackTimer = document.createElement('div')

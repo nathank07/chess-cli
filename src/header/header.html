@@ -1,12 +1,56 @@
 <header>
     <nav>
         <a href="/" id="title" aria-label="NK Chess Home" title="NK Chess Home">
-            <img id="icon" alt="White Queen">
+            <img id="icon" src=<%=require("../chess/cburnett/wQ.svg")%>>
             <h1>NK Chess</h1>
         </a>
-        <div id="nav-links">
-            <a href="/login" id="login" title="Log in" aria-label="Log in">Log in</a>
-            <a href="/register" id="register" title="Register" aria-label="Register">Register</a>
-        </div>
+        {{ if .username }}
+            <div id="user-dropdown">
+                <span>{{.username}}</span><i class="material-symbols-outlined">arrow_drop_down</i>
+            </div>
+            <div id="user-dropdown-menu" hidden>
+                <div id="logout">
+                    <form action="/logout" method="POST">
+                        <button>Logout</button>
+                    </form>
+                </div>
+            </div>
+        {{ else }}
+            <div id="nav-links">
+                <a href="/login" id="login" title="Log in" aria-label="Log in">Log in</a>
+                <a href="/register" id="register" title="Register" aria-label="Register">Register</a>
+            </div>
+        {{ end }}
     </nav>
+    <script>
+        const dropdown = document.querySelector('#user-dropdown');
+        const dropdownMenu = document.querySelector('#user-dropdown-menu');
+        const dropdownIcon = document.querySelector('#user-dropdown i');
+        dropdown.addEventListener('click', () => {
+            dropdownMenu.hidden = !dropdownMenu.hidden;
+            if(!dropdownMenu.hidden) {
+                document.addEventListener('click', closeDropdown);
+            } else {
+                document.removeEventListener('click', closeDropdown);
+            }
+            dropdownIcon.classList.toggle('rotate');
+        });
+        function closeDropdown(e) {
+            const isDropdown = checkParent(e.target, dropdown) || checkParent(e.target, dropdownMenu);
+            if(!isDropdown) {
+                dropdownMenu.hidden = true;
+                dropdownIcon.classList.toggle('rotate');
+                document.removeEventListener('click', closeDropdown);
+            }
+        }
+        function checkParent(target, parent) {
+            if (target === parent) {
+                return true;
+            }
+            if (target.parentElement) {
+                return checkParent(target.parentElement, parent);
+            }
+            return false;
+        }
+    </script>
 </header>

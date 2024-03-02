@@ -99,7 +99,6 @@ function createPaginator(games) {
     const minPage = 0
     let currentPage = 0;
     const maxPage = games.length - 1
-    console.log(games)
     for(let i = 0; i < 10; i++) {
         if(games[maxPage][i] === undefined) {
             const emptyCell = document.createElement('div')

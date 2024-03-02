@@ -17,8 +17,12 @@ body {
     background-color: var(--background-color);
 }
 
-h1, h2 {
+h1, h2, h3 {
     text-align: center;
+}
+
+h3 {
+    margin-bottom: 3rem;
 }
 
 h2.history {
@@ -173,12 +177,12 @@ h2.history {
     background-color: var(--tertiary-background-color);
     border-radius: 4px;
     align-items: center;
-    filter: brightness(0.8);
+    filter: brightness(0.9);
     transition: all 0.1s ease-in-out;
 }
 
 #game-history-list > a.active {
-    filter: brightness(1.1);
+    filter: brightness(1.2);
 }
 
 #game-history-list > div:first-child {
@@ -280,9 +284,16 @@ h2.history {
         display: flex;
         justify-content: center;
         align-items: center;
+        width: 95%;
     }
-    #game-history-list {
-        width: 800px;
+    #game-history-list > a {
+        filter: brightness(1);
+    }
+    #game-history-list > a.active {
+        filter: brightness(1);
+    }
+    #game-history-list > .paginator > button {
+        filter: brightness(1);
     }
     #game-preview {
         display: none;

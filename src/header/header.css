@@ -102,6 +102,97 @@ nav #title #icon {
 }
 
 nav h1 {
+    color: inherit;
     margin: 0;
+    padding: 0;
+}
+
+#user-dropdown {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    padding: var(--nav-padding);
+    user-select: none;
+    cursor: pointer;
+    transition-duration: 0.1s;
+    transition-timing-function: ease-in-out;
+    min-width: 3rem;
+    font-weight: bold;
+    font-size: large;
+}
+
+#user-dropdown i {
+    transition-duration: 0.1s;
+    transition-timing-function: ease;
+}
+
+#user-dropdown i.rotate {
+    transform: rotate(180deg);
+}
+
+#user-dropdown:hover {
+    color: #fff;
+}
+
+#user-dropdown > * {
+    color: inherit;
+}
+
+#user-dropdown-menu {
+    position: absolute;
+    background-color: var(--quaternary-background-color);
+    /* border: var(--background-color) 1px solid; */
+    border-radius: 0.25rem;
+    top: calc(var(--nav-font-size) * 3.5);
+    right: calc(var(--nav-padding) / 2);
+    z-index: 5;
+}
+
+#user-dropdown-menu > * {
+    display: block;
+    text-decoration: none;
+    color: var(--foreground-color);
+    border: var(--background-color) 1px dotted;
+    border-left: none;
+    border-right: none;
+    padding: 0.5rem;
+    font-size: calc(var(--nav-font-size) * 0.9);
+    min-width: 10rem;
+    transition-duration: 0.1s;
+    transition-timing-function: ease-in-out;
+    cursor: pointer;
+    user-select: none;
+
+}
+
+#user-dropdown-menu > *:hover {
+    background-color: var(--secondary-background-color);
+    color: #fff;
+}
+
+#logout > form > button {
+    all: unset;
+    width: 100%;
+    height: 100%;
+    padding: 0.5rem;
+    text-decoration: none;
+    font-weight: bold;
+    color: inherit
+}
+
+#logout:hover {
+    background-color: var(--alt-background-hover);
+    color: #fff;
+}
+
+@media screen and (max-width: 600px) {
+    #user-dropdown-menu > *, #logout > form > button {
+        font-size: calc(var(--nav-font-size) * 1.1);
+        padding: 2rem;
+    }
+}
+
+#logout {
     padding: 0;
 }
