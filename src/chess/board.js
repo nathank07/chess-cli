@@ -239,17 +239,22 @@ export async function waitForMove(game) {
     }
 }
 
-export function fetchMove(game, UCI, sound = true, ignoreGameOver = false) {
+export function fetchMove(game, UCI, sound = true, ignoreGameOver = false, ignoreLegality = false) {
     const startSquare = convertNotationtoLocation(UCI.substring(0, 2).toLowerCase())
     const endSquare = convertNotationtoLocation(UCI.substring(2, 4).toLowerCase())
-    const promotion = UCI.substring(4, 5)
+    const promotion = UCI.substring(4, 5) 
     const pieces = {
         "q": "queen",
         "r": "rook",
         "n": "knight",
         "b": "bishop"
     }
-    if(animateMove(game, startSquare[0], startSquare[1], endSquare[0], endSquare[1], sound, promotion ? pieces[promotion.toLowerCase()] : false)) {
+    const promotionPiece = promotion ? pieces[promotion.toLowerCase()] : false
+    if(ignoreLegality) {
+        game.board[startSquare[0]][startSquare[1]].move(endSquare[0], endSquare[1], promotionPiece, false, true)
+        return game;
+    }
+    if(animateMove(game, startSquare[0], startSquare[1], endSquare[0], endSquare[1], sound, promotionPiece)) {
         game.export.push(UCI)
         if(!ignoreGameOver) {
             const end = gameOver(game)
@@ -332,7 +337,7 @@ export function importGame(fenUCIexport) {
                 if(move === "") {
                     return
                 } 
-                fetchMove(chessGame, move, false, true, false)
+                fetchMove(chessGame, move, false, true, true)
             });
         });
     }

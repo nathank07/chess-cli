@@ -12,7 +12,7 @@ export function getFinishedGames(user) {
                 resolve(importedGames)
             }
             games.forEach(game => {
-                const importedGame = importGame([game.fen, [...game.uci.split(' ')]])
+                const importedGame = importGame([game.fen, [...game.uci.split(' ')]], false)
                 changePlayerSide(importedGame, true)
                 Object.assign(importedGame, game)
                 importedGames.push(importedGame)

@@ -53,11 +53,11 @@ export function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) {
             return capturedPiece ? isWhite !== capturedPiece.isWhite : false
         },
 
-        move: (toX, toY, promotion, post = false) => {
-            const moves = standardMoves().filter(move => 
+        move: (toX, toY, promotion, post = false, ignoreLegality = false) => {
+            const moves = !ignoreLegality ? standardMoves().filter(move => 
                 isLegal(xPos, yPos, move[0], move[1], isWhite, game.board)
-            );
-            if(game.whitesMove === isWhite && moves.some(pos => pos[0] === toX && pos[1] === toY)) {
+            ) : standardMoves()
+            if(ignoreLegality || game.whitesMove === isWhite && moves.some(pos => pos[0] === toX && pos[1] === toY)) {
                 const index = moves.findIndex(pos => pos[0] === toX && pos[1] === toY);
                 game.history.push(cloneGame(game))
                 game.lastMove = [convertLocationToNotation(xPos, yPos), convertLocationToNotation(toX, toY)]
@@ -127,7 +127,7 @@ export function Piece ( { name, isWhite, xPos, yPos, standardMoves, game } ) {
             return standardMoves().filter(move => 
                 isLegal(xPos, yPos, move[0], move[1], isWhite, game.board)
             )
-        }
+        },
 
     }
 }
