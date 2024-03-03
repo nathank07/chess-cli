@@ -5,6 +5,7 @@
     --background-color: #0f0f0f;
     --secondary-background-color: #1b1b1b;
     --tertiary-background-color: #1f1f1f;
+    --quaternary-background-color: #2b2b2b;
     --foreground-color: #F8EDEB;
     --alt-background: #A32525;
     --alt-background-hover: #C11B1B;
@@ -12,6 +13,10 @@
     --nav-padding: 1vw;
     --board-size: unset !important;
     --game-list-padding: 0.5rem;
+}
+
+* {
+    color: var(--foreground-color)
 }
 
 body {
@@ -28,15 +33,99 @@ h3 {
     margin-bottom: 3rem;
 }
 
-h2.history {
-    margin: 8rem 0 4rem 0;
+div.history {
+    background-color: var(--tertiary-background-color);
+    padding: 0;
+    border: var(--background-color) 1px solid;
+    border-radius: 4px;
+    width: 90%;
+    margin: 8rem auto 2rem auto;
+    transition: 0.2s;
 }
 
-* {
-    color: var(--foreground-color)
+div.history > div:first-child {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--game-list-padding) 0 var(--game-list-padding) 0;
+    margin-left: 0px;
+    border-radius: 4px;
+    user-select: none;
+    cursor: pointer;
 }
 
-#game-list > .empty, #no-games {
+div.history > div:first-child:hover {
+    background-color: var(--quaternary-background-color);
+}
+
+div.history > div > i {
+    transition-duration: 0.1s;
+    transition-timing-function: ease;
+}
+
+div.history > div > i.rotate {
+    transform: rotate(180deg);
+}
+
+div.history > div:first-child>h2 {
+    padding: 4px;
+    margin: 0;
+    margin-left: var(--game-list-padding);
+}
+
+div.history > div:first-child > .dropdown {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0;
+    margin: 0;
+    margin-right: var(--game-list-padding);
+    font-size: 30px;
+}
+
+div.history > div:last-child {
+    transition: 1s;
+    max-height: 300px;
+}
+
+div.history > div.disabled {
+    max-height: 0px;
+    transition: 1s;
+}
+
+div.history > div:last-child.disabled > * {
+    opacity: 0;
+    pointer-events: none;
+    margin-top: 0;
+}
+
+div.history > div.disabled > * > * {
+    margin-top: 0;
+}
+
+div.history > div:last-child > h3 {
+    padding: 0;
+    margin: 0;
+    margin-top: var(--game-list-padding);
+}
+
+div.history > div:last-child > * {
+    margin-left: calc(var(--game-list-padding) * 2);
+}
+
+div.history > div:last-child > h4 {
+    margin-bottom: 0;
+}
+
+div.history > div:last-child > div:last-child {
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    padding: var(--game-list-padding);
+    margin: 0;
+}
+
+#game-list>.empty,
+#no-games {
     height: 350px;
 }
 
@@ -116,7 +205,7 @@ h2.history {
     margin: auto;
     width: 90%;
     max-width: 1920px;
-    gap: 4rem;
+    gap: 2rem;
 }
 
 #game-preview {
@@ -289,6 +378,9 @@ h2.history {
         align-items: center;
         width: 95%;
     }
+    div.history {
+        width: 95%;
+    }
     #game-history-list > a {
         filter: brightness(1);
     }
@@ -340,7 +432,7 @@ h2.history {
     justify-content: center;
 }
 
-#no-games button {
+#no-games button, #refresh {
     all: unset;
     background-color: var(--alt-background);
     color: var(--foreground-color);
@@ -354,7 +446,7 @@ h2.history {
     transition-timing-function: ease-in-out;
 }
 
-#no-games button:hover {
+#no-games button:hover, #refresh:hover {
     color: #fff;
     background-color: var(--alt-background-hover);
 }
@@ -362,6 +454,160 @@ h2.history {
 .large-emoji {
     font-size: 10rem;
 }
+
+.switch-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+/* 
+    Modified version of:
+    https://uiverse.io/G4b413l/giant-panther-83
+  vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv */
+
+.switch input {
+    display: none;
+}
+
+.switch {
+    --width: 40px;
+    --height: 20px;
+    --exterior-color: #848484;
+    --interior-color: #ffffff75;
+    --highlighted-color: var(--alt-background);
+    display: inherit;
+    width: var(--width);
+    height: var(--height);
+    position: relative;
+}
+
+.slider {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 30px;
+    box-shadow: 0 0 0 2px var(--exterior-color), 0 0 4px var(--exterior-color);
+    cursor: pointer;
+    border: 4px solid transparent;
+    overflow: hidden;
+    transition: 0.2s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    width: 100%;
+    height: 100%;
+    background-color: var(--interior-color);
+    border-radius: 30px;
+    transform: translateX(calc((var(--width) - var(--height)) * -1));
+    /*translateX(-(w-h))*/
+    transition: 0.2s;
+}
+
+input:checked+.slider:before {
+    transform: translateX(calc(var(--width) - var(--height)));
+    /*translateX(w-h)*/
+    background-color: var(--highlighted-color);
+}
+
+input:checked+.slider {
+    box-shadow: 0 0 0 2px var(--highlighted-color), 0 0 4px var(--highlighted-color);
+}
+
+input:checked+.slider:hover {
+    box-shadow: 0 0 0 2px var(--highlighted-color), 0 0 8px var(--highlighted-color);
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    Modified version of:
+    https://uiverse.io/G4b413l/giant-panther-83
+*/
+
+/* 
+    Modified version of:
+    https://uiverse.io/Pradeepsaranbishnoi/heavy-dragonfly-92
+ vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv */ 
+
+.tabs {
+    display: flex;
+    position: relative;
+    border: #504f4f 2px solid;
+    border-radius: 4px;
+    min-width: 8rem;
+}
+
+.tabs * {
+    z-index: 2;
+}
+
+.radio-container input[type="radio"] {
+    display: none;
+}
+
+.radio-container {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+
+.tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    color: #848484;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: color 0.15s ease-in;
+    user-select: none;
+}
+
+.radio-container input[type="radio"]:checked+label {
+    color: var(--foreground-color);
+    user-select: none;
+}
+
+.radio-container input[id="radio-1"]:checked~.glider {
+    transform: translateX(0);
+}
+
+.radio-container input[id="radio-2"]:checked~.glider {
+    transform: translateX(100%);
+}
+
+.radio-container input[id="radio-3"]:checked~.glider {
+    transform: translateX(200%);
+}
+
+.radio-container input[id="radio-4"]:checked~.glider {
+    transform: translateX(300%);
+}
+
+.glider {
+    position: absolute;
+    display: flex;
+    width: 25%;
+    height: 100%;
+    background-color: var(--alt-background);
+    z-index: 1;
+    border-radius: 2px;
+    transition: 0.2s;
+    animation-name: glide;
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    Modified version of:
+    https://uiverse.io/Pradeepsaranbishnoi/heavy-dragonfly-92
+*/
+
+
 /*!*************************************************************************!*\
   !*** css ./node_modules/css-loader/dist/cjs.js!./src/header/header.css ***!
   \*************************************************************************/

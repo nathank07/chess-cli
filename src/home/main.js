@@ -11,6 +11,12 @@ loadGames()
 
 const createGameDialog = document.querySelector('dialog')
 linkDialog(createGameDialog)
+const history = document.querySelector('.history')
+history.firstElementChild.addEventListener('click', () => {
+    history.lastElementChild.classList.toggle('disabled')
+    const dropDownArrow = history.firstElementChild.lastElementChild
+    dropDownArrow.classList.toggle('rotate')
+})
 
 async function loadGames() {
     const usernameSpan = document.querySelector('#user-dropdown > span');

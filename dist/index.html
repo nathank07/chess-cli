@@ -25,7 +25,42 @@
     <div id="game-list">
         <div class="empty"></div>
     </div>
-    <h2 class="history">Game History:</h2>
+    <div class="history">
+        <div>
+            <h2>Game History:</h2>
+            <i class="material-symbols-outlined dropdown">arrow_drop_down</i>
+        </div>
+        <div class="disabled">
+            <h3>Settings:</h3>
+            <h4>Pre-loading: </h4>
+            <div class="radio-container">
+                <span>Load a maximum of </span>
+                <div class="tabs">
+                    <input type="radio" id="radio-1" name="tabs" checked="">
+                    <label class="tab" for="radio-1">10</label>
+                    <input type="radio" id="radio-2" name="tabs">
+                    <label class="tab" for="radio-2">25</label>
+                    <input type="radio" id="radio-3" name="tabs">
+                    <label class="tab" for="radio-3">50</label>
+                    <input type="radio" id="radio-4" name="tabs">
+                    <label class="tab" for="radio-4">100</label>
+                    <span class="glider"></span>
+                </div>
+                <span> games each session</span>
+            </div>
+            <h4>Filter: </h4>
+            <div class="switch-container">
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+                <span>Show only games featuring yourself</span>
+            </div>
+            <div>
+                <button id="refresh">Refresh</button>
+            </div> 
+        </div>         
+    </div>
     <div id="game-history">
         <div id="game-history-list">
             <div>
