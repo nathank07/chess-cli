@@ -80,13 +80,13 @@ div.history > div:first-child > .dropdown {
 }
 
 div.history > div:last-child {
-    transition: 1s;
+    transition: 0.3s ease;
     max-height: 300px;
 }
 
 div.history > div.disabled {
     max-height: 0px;
-    transition: 1s;
+    transition: 0.3s ease;
 }
 
 div.history > div:last-child.disabled > * {

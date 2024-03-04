@@ -67,11 +67,19 @@ func main() {
 	})
 	router.GET("/api/game/games/:path", func(ctx *gin.Context) {
 		path := ctx.Param("path")
+		gamesParam := ctx.Query("total")
+		gamesAmount := 100
+		if gamesParam != "" {
+			var err error
+			gamesAmount, err = strconv.Atoi(gamesParam)
+			if err != nil || gamesAmount > 100 {
+				gamesAmount = 100
+			}
+		}
 		if !dbHasUser(path) {
 			ctx.JSON(http.StatusNotFound, gin.H{"error": "User not found."})
 		}
-		games := fetchFinishedGames(100, path)
-		fmt.Println(path)
+		games := fetchFinishedGames(gamesAmount, path)
 		ctx.JSON(http.StatusOK, games)
 	})
 	router.GET("/api/game/:path", func(ctx *gin.Context) {
@@ -103,7 +111,16 @@ func main() {
 			return
 		}
 		if path == "games" {
-			games := fetchFinishedGames(100, "")
+			gamesParam := ctx.Query("total")
+			gamesAmount := 100
+			if gamesParam != "" {
+				var err error
+				gamesAmount, err = strconv.Atoi(gamesParam)
+				if err != nil || gamesAmount > 100 {
+					gamesAmount = 100
+				}
+			}
+			games := fetchFinishedGames(gamesAmount, "")
 			ctx.JSON(http.StatusOK, games)
 			return
 		}

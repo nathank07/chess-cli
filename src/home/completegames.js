@@ -1,10 +1,10 @@
 import { importGame } from '../chess/board.js'
 import { changePlayerSide } from '../chess/modify.js'
 
-export function getFinishedGames(user) {
+export function getFinishedGames(user, amount = 100) {
     return new Promise(async (resolve, reject) => {
         try {
-            const endpoint = user ? `/api/game/games/${user}` : '/api/game/games'
+            const endpoint = user ? `/api/game/games/${user}?total=${amount}` : `/api/game/games/?total=${amount}`
             const res = await fetch(endpoint, { cache: "no-cache" })
             const games = await res.json()
             const importedGames = []
@@ -25,9 +25,9 @@ export function getFinishedGames(user) {
     })
 }
 
-export default async function showCompleteList(divHolder, user) {
+export default async function showCompleteList(divHolder, user, amount = 100) {
     const gamesArr = [];
-    const games = await getFinishedGames(user)
+    const games = await getFinishedGames(user, amount)
     const emptyRemainders = games.length < 10 ? 10 - (games.length % 10) : 0
     const preview = document.querySelector('#game-preview')
     const emptyDivs = document.querySelectorAll('#game-history-list > div:not(#game-history-list > div:first-child')
@@ -152,6 +152,19 @@ function createPaginator(games) {
     paginator.appendChild(prev)
     paginator.appendChild(next)
     return paginator
+}
+
+export function refresh(divHolder, user, amount) {
+    const paginator = divHolder.lastElementChild.cloneNode(true)
+    for(let i in divHolder.children) {
+        if(i > 0 && i < divHolder.children.length - 1) {
+            const emptyDiv = document.createElement('div')
+            divHolder.children[i].replaceWith(emptyDiv)
+        }
+    }
+    divHolder.lastElementChild.remove()
+    divHolder.appendChild(paginator)
+    showCompleteList(divHolder, user, amount)
 }
 
 function formatDate(date) {
