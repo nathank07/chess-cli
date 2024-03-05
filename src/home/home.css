@@ -270,6 +270,28 @@ div.history > div:last-child > div:last-child {
     transition: all 0.1s ease-in-out;
 }
 
+#game-history-list > a.win {
+    background-color: #28344E;
+}
+
+#game-history-list > a.win.active {
+    background-color: #5383E8;
+    filter: brightness(1);
+}
+
+#game-history-list > a.draw {
+    background-color: #4E4E4E;
+}
+
+#game-history-list > a.loss {
+    background-color: #59343B;
+}
+
+#game-history-list > a.loss.active {
+    background-color: var(--alt-background);
+    filter: brightness(1);
+}
+
 #game-history-list > a.active {
     filter: brightness(1.2);
 }

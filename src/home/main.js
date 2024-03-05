@@ -28,7 +28,7 @@ function checkRadio(radio) {
 
 async function loadGames() {
     const usernameSpan = document.querySelector('#user-dropdown > span');
-    const username = usernameSpan ? usernameSpan.textContent : null
+    const username = usernameSpan ? usernameSpan.textContent : false
     const live = document.querySelector('#game-list')
     const finished = document.querySelector('#game-history-list')
     createLiveBoards(live)

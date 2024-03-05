@@ -82,6 +82,28 @@ export default async function showCompleteList(divHolder, user, amount = 100) {
             activeLink = link
             activeLink.classList.add('active')
         });
+        if(!user) {
+            const usernameSpan = document.querySelector('#user-dropdown > span')
+            if(usernameSpan) {
+                user = usernameSpan.textContent
+            }
+        }
+        if(game.whitePlayer === user || game.blackPlayer === user) {
+            const winner = returnWinner(game)
+            switch(winner) {
+                case 'white':
+                    link.classList.add(game.whitePlayer === user ? 'win' : 'loss')
+                    break
+                case 'black':
+                    link.classList.add(game.blackPlayer === user ? 'win' : 'loss')
+                    break
+                case 'draw':
+                    link.classList.add('draw')
+                    break
+                default:
+                    break
+            }
+        }
         if(index === 0) {
             activeLink = link
             activeLink.classList.add('active')
@@ -192,10 +214,19 @@ function formatDate(date) {
 function trophy(isWhite, game) {
     const lwinner = game.winner ? game.winner.toLowerCase() : 'draw';
     const side = isWhite ? 'white' : 'black';
-    if (lwinner !== 'draw') {
+    if (lwinner !== 'draw' && lwinner !== 'stalemate') {
         return lwinner === side ? `<i class="material-symbols-outlined winner">check</i>` : '';
     }
     return '';
+}
+
+function returnWinner(game) {
+    const lwinner = game.winner ? game.winner.toLowerCase() : 'draw';
+    console.log(lwinner)
+    if (lwinner !== 'draw' && lwinner !== 'stalemate') {
+        return lwinner === 'white' ? 'white' : 'black';
+    }
+    return 'draw';
 }
 
 function reason(game) {
