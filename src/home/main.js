@@ -20,12 +20,6 @@ const refreshButton = history.querySelector("#refresh")
 const filter = history.querySelector(".switch > input")
 const amount = history.querySelector(".radio-container > .tabs");
 
-function checkRadio(radio) {
-    const checkBox = radio.querySelector('input[type="radio"]:checked')
-    const value = document.querySelector(`label[for="${checkBox.id}"]`).textContent
-    return value
-}
-
 async function loadGames() {
     const usernameSpan = document.querySelector('#user-dropdown > span');
     const username = usernameSpan ? usernameSpan.textContent : false
@@ -37,5 +31,12 @@ async function loadGames() {
         refresh(finished, filter.checked ? username : false, amount ? checkRadio(amount) : 100)
     })
 } 
+
+export default function checkRadio(radio) {
+    const checkBox = radio.querySelector('input[type="radio"]:checked')
+    const value = document.querySelector(`label[for="${checkBox.id}"]`).textContent
+    return value
+}
+
 
 loadGames()

@@ -52,10 +52,17 @@ export default async function createLiveBoards(divHolder) {
         divHolder.appendChild(game)
     });
     const newGameButton = document.createElement('button')
+    const createGameDialog = document.querySelector('dialog')
+    const dialogDiv = createGameDialog.firstElementChild
     newGameButton.innerHTML = '<i class="material-symbols-outlined">add</i>\nNew Game';
     newGameButton.addEventListener('click', () => {
-        const createGameDialog = document.querySelector('dialog')
         createGameDialog.showModal()
+        document.addEventListener('click', function close(e) {
+            if(!checkParent(e.target, dialogDiv) && e.target !== newGameButton && e.target !== newGameButton.firstElementChild) {
+                createGameDialog.close()
+                document.removeEventListener('click', close)
+            }
+        })
     })
     document.querySelector('.empty').remove()
     divHolder.appendChild(newGameButton)
@@ -101,17 +108,33 @@ function createLiveEmpty() {
     emoji.classList.add('large-emoji')
 
     const createGameButton = document.createElement('button')
+    const createGameDialog = document.querySelector('dialog')
+    const dialogDiv = createGameDialog.firstElementChild
     createGameButton.textContent = "Create a New Game"
     createGameButton.id = "create-game"
     createGameButton.addEventListener('click', () => {
-        const createGameDialog = document.querySelector('dialog')
         createGameDialog.showModal()
+        document.addEventListener('click', function close(e) {
+            if(!checkParent(e.target, dialogDiv) && e.target !== createGameButton) {
+                createGameDialog.close()
+                document.removeEventListener('click', close)
+            }
+        })
     })
-
     messageContainer.appendChild(emoji)
     messageContainer.appendChild(message)
     messageContainer.appendChild(createGameButton)
     messageContainer.id = "no-games"
     
     return messageContainer
+}
+
+function checkParent(target, parent) {
+    if (target === parent) {
+        return true;
+    }
+    if (target.parentElement) {
+        return checkParent(target.parentElement, parent);
+    }
+    return false;
 }

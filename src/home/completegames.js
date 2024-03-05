@@ -222,7 +222,6 @@ function trophy(isWhite, game) {
 
 function returnWinner(game) {
     const lwinner = game.winner ? game.winner.toLowerCase() : 'draw';
-    console.log(lwinner)
     if (lwinner !== 'draw' && lwinner !== 'stalemate') {
         return lwinner === 'white' ? 'white' : 'black';
     }

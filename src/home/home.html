@@ -36,14 +36,14 @@
             <div class="radio-container">
                 <span>Load a maximum of </span>
                 <div class="tabs">
-                    <input type="radio" id="radio-1" name="tabs">
-                    <label class="tab" for="radio-1">10</label>
-                    <input type="radio" id="radio-2" name="tabs">
-                    <label class="tab" for="radio-2">25</label>
-                    <input type="radio" id="radio-3" name="tabs">
-                    <label class="tab" for="radio-3">50</label>
-                    <input type="radio" id="radio-4" name="tabs" checked>
-                    <label class="tab" for="radio-4">100</label>
+                    <input id= "amount-1" type="radio" name="amount">
+                    <label for="amount-1">10</label>
+                    <input id= "amount-2" type="radio" name="amount">
+                    <label for="amount-2">25</label>
+                    <input id= "amount-3" type="radio" name="amount">
+                    <label for="amount-3">50</label>
+                    <input id= "amount-4" type="radio" name="amount" checked>
+                    <label for="amount-4">100</label>
                     <span class="glider"></span>
                 </div>
                 <span> games each session</span>
@@ -239,27 +239,60 @@
         </div>
     </div>
     <dialog>
-        <h3>Create a new game: </h3>
-        <br>
-        <h4>Length of Game</h4>
-        <label for="length">Length of Game (in seconds):</label>
-        <input type="range" id="length" name="length" min="15" max="3600" value="300">
-        <span id="length-span">300</span>
-        <br>
-        <h4>Time Increment</h4>
-        <label for="increment">Time Increment (in seconds):</label>
-        <input type="range" id="increment" name="increment" min="0" max="10" value="0">
-        <span id="increment-span">0</span>
-        <br>
-        <h4>Color</h4>
-        <input type="checkbox" id="white" name="color" value="white" checked>
-        <label for="white">White</label>
-        <br>
-        <h4>Starting FEN</h4>
-        <label for="fen">Starting FEN:</label>
-        <input type="text" id="fen" name="fen" value="">
-        <br>
-        <button id="create-final">Create Game</button>
+        <div>
+            <h3>Create a new game: </h3>
+            <h4>Game Length</h4>
+            <div class="radio-container length">
+                <div class="tabs">
+                    <input type="radio" id="length-1" name="length">
+                    <label class="tab" for="length-1">1m</label>
+                    <input type="radio" id="length-2" name="length">
+                    <label class="tab" for="length-2">3m</label>
+                    <input type="radio" id="length-3" name="length" checked>
+                    <label class="tab" for="length-3">5m</label>
+                    <input type="radio" id="length-4" name="length">
+                    <label class="tab" for="length-4">10m</label>
+                    <input type="radio" id="length-5" name="length">
+                    <label class="tab" for="length-5">30m</label>
+                    <input type="radio" id="length-6" name="length">
+                    <label class="tab" for="length-6">1h</label>
+                    <span class="glider"></span>
+                </div>
+            </div>
+            <h4>Time Increment</h4>
+            <div class="radio-container increment">
+                <div class="tabs">
+                    <input type="radio" id="increment-1" name="increment" checked>
+                    <label class="tab" for="increment-1">0</label>
+                    <input type="radio" id="increment-2" name="increment">
+                    <label class="tab" for="increment-2">1s</label>
+                    <input type="radio" id="increment-3" name="increment">
+                    <label class="tab" for="increment-3">3s</label>
+                    <input type="radio" id="increment-4" name="increment">
+                    <label class="tab" for="increment-4">5s</label>
+                    <input type="radio" id="increment-5" name="increment">
+                    <label class="tab" for="increment-5">10s</label>
+                    <span class="glider"></span>
+                </div>
+            </div>
+            <h4>Color</h4>
+            <div class="radio-container side">
+                <div class="tabs">
+                    <input type="radio" id="side-1" name="side">
+                    <label class="tab" for="side-1">White</label>
+                    <input type="radio" id="side-2" name="side">
+                    <label class="tab" for="side-2">Black</label>
+                    <input type="radio" id="side-3" name="side" checked>
+                    <label class="tab" for="side-3">Random</label>
+                    <span class="glider"></span>
+                </div>
+            </div>
+            <h4>Starting FEN</h4>
+            <label for="fen">Starting FEN:</label>
+            <input type="text" id="fen" name="fen" value="">
+            
+            <button id="create-final">Create Game</button>
+            </div>
     </dialog>
     {{ template "footer.html" . }}
 </body>
