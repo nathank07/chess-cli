@@ -67,7 +67,7 @@ function analyzeEnglundOpening(div) {
 }
 
 function moveAndMark(game, UCI, arrows, highlightedSquares) {
-    fetchMove(game, UCI, false, true)
+    fetchMove(game, UCI, false, true, false)
     if(history.length > 1) {
         game.history[game.history.length - 1].drawnArrows = game.drawnArrows
         game.history[game.history.length - 1].userHighlights = game.userHighlights

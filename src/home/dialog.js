@@ -5,7 +5,11 @@ export default function linkDialog(createGameDialog) {
     const lengthRadio = document.querySelector('.radio-container.length > .tabs')
     const incrementRadio = document.querySelector('.radio-container.increment > .tabs')
     const colorRadio = document.querySelector('.radio-container.side > .tabs')
-
+    const fenSwitch = createGameDialog.querySelector('#fenEnabled')
+    const fenInput = createGameDialog.querySelector('#fen')
+    fenSwitch.addEventListener('change', () => {
+        fenInput.disabled = !fenInput.disabled
+    })
     createGameDialog.querySelector('#create-final').addEventListener('click', async () => {
         const seconds = returnTime(checkRadio(lengthRadio))
         const increment = returnTime(checkRadio(incrementRadio))
@@ -14,8 +18,7 @@ export default function linkDialog(createGameDialog) {
             seconds: seconds,
             increment: increment
         }
-        const fen = createGameDialog.querySelector('#fen').value
-        const game = await newGame(fen, timeControl)
+        const game = await newGame(fenSwitch.checked ? fenInput.value : false, timeControl)
         window.location.href = window.location.origin + "/game/" + game.id + `${isBlack ? "?black=true" : ""}`
     })
 }

@@ -287,12 +287,19 @@
                     <span class="glider"></span>
                 </div>
             </div>
-            <h4>Starting FEN</h4>
-            <label for="fen">Starting FEN:</label>
-            <input type="text" id="fen" name="fen" value="">
-            
-            <button id="create-final">Create Game</button>
+            <h4>Starting Position</h4>
+            <div class="switch-container">
+                <label class="switch">
+                    <input id="fenEnabled" type="checkbox">
+                    <span class="slider"></span>
+                </label>
+                <span>Import FEN</span>
+                <input type="text" id="fen" name="fen" value="" placeholder="Paste FEN here..." disabled>
             </div>
+            <div class="align-center">
+                <button id="create-final">Create Game</button>
+            </div>
+        </div>
     </dialog>
     {{ template "footer.html" . }}
 </body>

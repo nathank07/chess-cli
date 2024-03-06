@@ -46,6 +46,26 @@ dialog > div {
     background-color: var(--tertiary-background-color);
     padding: 1rem;
     border-radius: 0.5rem;
+    width: 100vw;
+    max-width: 475px
+}
+
+dialog > div > .align-center {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#fen {
+    all: unset;
+    flex: 1;
+    border-bottom: #6d6c6c 2px solid;
+}
+
+#fen:disabled {
+    filter: brightness(0.5);
+    user-select: none;
+    cursor: not-allowed;
 }
 
 div.history {
@@ -452,6 +472,10 @@ div.history > div:last-child > div:last-child {
         padding-left: 0;
         padding-right: 0;
     }
+    dialog > div > * {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
 }
 
 .preview-players {
@@ -499,7 +523,11 @@ div.history > div:last-child > div:last-child {
     transition-timing-function: ease-in-out;
 }
 
-#no-games button:hover, #refresh:hover {
+#create-final {
+    margin-top: 0.75rem;
+}
+
+#no-games button:hover, #refresh:hover, #create-final:hover {
     color: #fff;
     background-color: var(--alt-background-hover);
 }
@@ -532,6 +560,7 @@ div.history > div:last-child > div:last-child {
     --highlighted-color: var(--alt-background);
     display: inherit;
     width: var(--width);
+    min-width: var(--width);
     height: var(--height);
     position: relative;
 }
