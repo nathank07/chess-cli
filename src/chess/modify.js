@@ -53,6 +53,19 @@ export function flipBoard(game) {
     } else {
         renderBoard(game)
     }
+    const whiteInfo = document.querySelector('#whiteInfo')
+    const blackInfo = document.querySelector('#blackInfo')
+    if(whiteInfo && blackInfo) {
+        swap(whiteInfo, blackInfo)
+    }
+}
+
+// https://stackoverflow.com/a/69658357
+function swap(a, b) {
+    let dummy = document.createElement("span")
+    a.before(dummy)
+    b.before(a)
+    dummy.replaceWith(b)
 }
 
 export function undoMove(game, render = true) {

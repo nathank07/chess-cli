@@ -114,6 +114,7 @@ export async function existingGame(id, parentDiv, timeFunction) {
         createWebSocket(`${id}`, timeFunction)
             .then(game => {
                 if(parentDiv) {
+                    parentDiv.innerHTML = "";
                     parentDiv.appendChild(game.div)
                 }
                 resolve(game)

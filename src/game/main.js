@@ -7,6 +7,7 @@ import { createTokenAndJoin, existingGame } from "./websockets.js"
 import { viewStartHistory, viewBackHistory, viewForwardHistory, viewCurrentGame, undoMove, flipBoard } from '../chess/modify.js'
 
 if(document.body.dataset.id) {
+    const gameContainer = document.querySelector('#game')
     const urlParams = new URLSearchParams(window.location.search);
     const isBlack = urlParams.get('black')
     window.history.replaceState({}, document.title, "/game/" + document.body.dataset.id);
@@ -14,7 +15,7 @@ if(document.body.dataset.id) {
     const gameData = await res.json()
     let game
     if(gameData.live) {
-        game = await existingGame(document.body.dataset.id, document.querySelector('#root'), createUpdate)
+        game = await existingGame(document.body.dataset.id, gameContainer, createUpdate)
         createTokenAndJoin(game, isBlack)
             .then(res => {
                 updateToast(res)
@@ -27,14 +28,14 @@ if(document.body.dataset.id) {
         game.id = gameData.id
         game.whiteUserSpan.textContent = gameData.game.whitePlayer
         game.blackUserSpan.textContent = gameData.game.blackPlayer
-        document.querySelector('#root').appendChild(game.div)
+        gameContainer.innerHTML = "";
+        gameContainer.appendChild(game.div)
     }
     addControls(game)
-    const playersDiv = document.createElement('div')
-    playersDiv.id = "players"
-    playersDiv.appendChild(game.whiteUserSpan)
-    playersDiv.appendChild(game.blackUserSpan)
-    game.div.parentNode.prepend(playersDiv)
+    const whiteInfo = document.querySelector('#whiteInfo')
+    const blackInfo = document.querySelector('#blackInfo')
+    whiteInfo.prepend(game.whiteUserSpan)
+    blackInfo.prepend(game.blackUserSpan)
 }
 
 
@@ -47,9 +48,11 @@ function addControls(chessGame){
             viewForwardHistory(chessGame)
         }
         if(e.code === "ArrowUp") {
+            e.preventDefault()
             viewStartHistory(chessGame)
         }
         if(e.code === "ArrowDown") {
+            e.preventDefault()
             viewCurrentGame(chessGame)
         } 
         if(e.code === "KeyF") {
