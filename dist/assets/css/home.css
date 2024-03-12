@@ -78,7 +78,7 @@ div.history {
     border-radius: 4px;
     width: 90%;
     margin: 8rem auto 2rem auto;
-    transition: 0.2s;
+    transition: height 0.2s;
 }
 
 div.history > div:first-child {

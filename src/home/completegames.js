@@ -1,5 +1,5 @@
 import { importGame } from '../chess/board.js'
-import { changePlayerSide } from '../chess/modify.js'
+import { changePlayerSide, flipBoard } from '../chess/modify.js'
 
 export function getFinishedGames(user, amount = 100) {
     return new Promise(async (resolve, reject) => {
@@ -89,6 +89,9 @@ export default async function showCompleteList(divHolder, user, amount = 100) {
             }
         }
         if(game.whitePlayer === user || game.blackPlayer === user) {
+            if(game.blackPlayer === user) {
+                flipBoard(game)
+            }
             const winner = returnWinner(game)
             switch(winner) {
                 case 'white':
