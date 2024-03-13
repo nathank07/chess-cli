@@ -5,6 +5,7 @@ import "../chess/cburnett/move.svg"
 import { importGame } from '../chess/board.js'
 import { createTokenAndJoin, existingGame } from "./websockets.js"
 import { viewStartHistory, viewBackHistory, viewForwardHistory, viewCurrentGame, undoMove, flipBoard } from '../chess/modify.js'
+import { lastMoveToNotation } from "../chess/notation.js"
 
 if(document.body.dataset.id) {
     const gameContainer = document.querySelector('#game')
@@ -36,6 +37,8 @@ if(document.body.dataset.id) {
     const blackInfo = document.querySelector('#blackInfo')
     whiteInfo.prepend(game.whiteUserSpan)
     blackInfo.prepend(game.blackUserSpan)
+    fillHistory(game, document.querySelector('ol'))
+    console.log(game)
 }
 
 
@@ -62,12 +65,12 @@ function addControls(chessGame){
             undoMove(chessGame)
         }
     })
-    document.querySelector('#current').addEventListener('click', () => viewCurrentGame(chessGame))
+    document.querySelector('#end').addEventListener('click', () => viewCurrentGame(chessGame))
     document.querySelector('#start').addEventListener('click', () => viewStartHistory(chessGame))
     document.querySelector('#back').addEventListener('click', () => viewBackHistory(chessGame))
-    document.querySelector('#forwards').addEventListener('click', () => viewForwardHistory(chessGame))
+    document.querySelector('#forward').addEventListener('click', () => viewForwardHistory(chessGame))
     document.querySelector('#flip').addEventListener('click', () => flipBoard(chessGame))
-    document.querySelector('#takeback').addEventListener('click', () => undoMove(chessGame))
+    // document.querySelector('#takeback').addEventListener('click', () => undoMove(chessGame))
 }
 
 export function createTimerDiv(game, isWhite, div) {
@@ -94,6 +97,36 @@ function flagTimer(timer, color) {
     timer.pause()
     updateTimer(0, div)
     // TODO: Add flag animation
+}
+
+function fillHistory(game, ol) {
+    ol.innerHTML = ""
+    const history = game.history.slice(1)
+    history.push(game)
+    const moveArr = ["", ""]
+    history.forEach((gameState, i) => {
+        const prevBoard = game.history[i].board
+        if(!moveArr[0]) {
+            moveArr[0] = lastMoveToNotation(gameState, prevBoard)
+        } else {
+            moveArr[1] = lastMoveToNotation(gameState, prevBoard)
+            const li = document.createElement('li')
+            const numSpan = document.createElement('span')
+            const moveSpan = document.createElement('span')
+            const moveSpan2 = document.createElement('span')
+            const number = Math.floor(i / 2) + 1
+            numSpan.innerText = `${number}.`
+            moveSpan.innerText = moveArr[0]
+            moveSpan2.innerText = moveArr[1]
+            li.appendChild(numSpan)
+            li.appendChild(moveSpan)
+            li.appendChild(moveSpan2)
+            ol.appendChild(li)
+            moveArr[0] = ""
+            moveArr[1] = ""
+        }
+    });
+    console.log(lastMoveToNotation(game, game.history[game.history.length - 1].board))
 }
 
 export function updateToast(text) {

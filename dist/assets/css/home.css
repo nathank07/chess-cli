@@ -1043,12 +1043,131 @@ body {
     padding: 0;
 }
 
+#game-grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    max-width: 1920px;
+    margin: auto;
+    margin-top: 1rem;
+}
+
+#game-info {
+    display: flex;
+    flex-direction: column;
+    max-height: 85vh;
+    margin: 2rem;
+}
+
+@media (max-width: 640px) {
+    #game-info {
+        margin: 1rem;
+        max-height: 50vh;
+    }
+    #game-info > ol {
+        overscroll-behavior: default;
+    }
+    #game-info > #controls {
+        order: 1;
+    }
+    #game-info > h2 {
+        order: 2;
+    }
+    #game-info > ol {
+        order: 3;
+    }
+}
+
+#controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+#controls > * {
+    color: var(--foreground-color);
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+#controls > *:hover {
+    color: #fff;
+    transition-duration: 0.3s;
+    transition-timing-function: ease-in-out;
+}
+
+#controls > button > * {
+    font-size: 2rem;
+}
+
+#toast {
+    margin: 0.5rem 0 0.5rem 0;
+}
+
+#game-info > ol {
+    overflow: scroll;
+    overscroll-behavior: contain;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+#game-info > ol > li {
+    margin: 0;
+    border-bottom: 1px solid var(--background-color);
+    display: flex;
+    justify-content: space-around;
+    filter: brightness(0.8);
+}
+
+#game-info > ol > li:hover {
+    filter: brightness(0.9);
+}
+
+#game-info > ol > li > span {
+    flex: 5;
+    width: 100%;
+    padding: 0.75rem;
+    text-align: center;
+    filter: brightness(0.8);
+    transition: filter 0.3s;
+}
+
+#game-info > ol > li > span:hover {
+    filter: brightness(1);
+    cursor: pointer;
+}
+
+#game-info > ol > li > span:first-child {
+    flex: 1;
+}
+
+#game-info > ol > li:nth-child(odd) {
+    background-color: var(--secondary-background-color);
+}
+
+#game-info > * {
+    padding: var(--game-list-padding);
+    border: var(--background-color) 1px solid;
+    background-color: var(--tertiary-background-color);
+    border-radius: 4px;
+    align-items: center;
+}
+
 #game-flex {
     display: flex;
     flex-direction: column;
-    --max-width: 88vh;
+    --max-width: 85vh;
     max-width: var(--max-width);
-    margin: 0 auto;
+    min-width: none;
+    width: 100%;
+    margin: auto;
+}
+
+#toast {
+    text-align: center;
+    margin: 0;
 }
 
 #board-container{
@@ -1063,6 +1182,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    height: 2rem;
 }
 
 #whiteInfo > *, #blackInfo > * {

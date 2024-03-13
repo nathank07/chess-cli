@@ -10,125 +10,151 @@
 </head>
 <body data-id="{{ .id }}">
     {{ template "header.html" . }}
-    <div id="game-flex">
-        <div id="blackInfo">
-            <div id="blackTimer">--:--.--</div>
-        </div>
-        <div id="game">
-            <div id="board-container">
-                <div id="board">
-                    <div notation="a8" class="square">
-                        <span class="left-notation dark">8</span>
-                    </div>
-                    <div notation="b8" class="square dark"></div>
-                    <div notation="c8" class="square"></div>
-                    <div notation="d8" class="square dark"></div>
-                    <div notation="e8" class="square"></div>
-                    <div notation="f8" class="square dark"></div>
-                    <div notation="g8" class="square"></div>
-                    <div notation="h8" class="square dark"></div>
-                    <div notation="a7" class="square dark">
-                        <span class="left-notation light">7</span>
-                    </div>
-                    <div notation="b7" class="square"></div>
-                    <div notation="c7" class="square dark"></div>
-                    <div notation="d7" class="square"></div>
-                    <div notation="e7" class="square dark"></div>
-                    <div notation="f7" class="square"></div>
-                    <div notation="g7" class="square dark"></div>
-                    <div notation="h7" class="square"></div>
-                    <div notation="a6" class="square">
-                        <span class="left-notation dark">6</span>
-                    </div>
-                    <div notation="b6" class="square dark"></div>
-                    <div notation="c6" class="square"></div>
-                    <div notation="d6" class="square dark"></div>
-                    <div notation="e6" class="square"></div>
-                    <div notation="f6" class="square dark"></div>
-                    <div notation="g6" class="square"></div>
-                    <div notation="h6" class="square dark"></div>
-                    <div notation="a5" class="square dark">
-                        <span class="left-notation light">5</span>
-                    </div>
-                    <div notation="b5" class="square"></div>
-                    <div notation="c5" class="square dark"></div>
-                    <div notation="d5" class="square"></div>
-                    <div notation="e5" class="square dark"></div>
-                    <div notation="f5" class="square"></div>
-                    <div notation="g5" class="square dark"></div>
-                    <div notation="h5" class="square"></div>
-                    <div notation="a4" class="square">
-                        <span class="left-notation dark">4</span>
-                    </div><div notation="b4" class="square dark"></div>
-                    <div notation="c4" class="square"></div>
-                    <div notation="d4" class="square dark"></div>
-                    <div notation="e4" class="square"></div>
-                    <div notation="f4" class="square dark"></div>
-                    <div notation="g4" class="square"></div>
-                    <div notation="h4" class="square dark"></div>
-                    <div notation="a3" class="square dark">
-                        <span class="left-notation light">3</span>
-                    </div>
-                    <div notation="b3" class="square"></div>
-                    <div notation="c3" class="square dark"></div>
-                    <div notation="d3" class="square"></div>
-                    <div notation="e3" class="square dark"></div>
-                    <div notation="f3" class="square"></div>
-                    <div notation="g3" class="square dark"></div>
-                    <div notation="h3" class="square"></div>
-                    <div notation="a2" class="square">
-                        <span class="left-notation dark">2</span>
-                    </div>
-                    <div notation="b2" class="square dark"></div>
-                    <div notation="c2" class="square"></div>
-                    <div notation="d2" class="square dark"></div>
-                    <div notation="e2" class="square"></div>
-                    <div notation="f2" class="square dark"></div>
-                    <div notation="g2" class="square"></div>
-                    <div notation="h2" class="square dark"></div>
-                    <div notation="a1" class="square dark">
-                        <span class="bottom-notation light">a</span>
-                        <span class="left-notation light">1</span>
-                    </div>
-                    <div notation="b1" class="square">
-                        <span class="bottom-notation dark">b</span>
-                    </div>
-                    <div notation="c1" class="square dark">
-                        <span class="bottom-notation light">c</span>
-                    </div>
-                    <div notation="d1" class="square">
-                        <span class="bottom-notation dark">d</span>
-                    </div>
-                    <div notation="e1" class="square dark">
-                        <span class="bottom-notation light">e</span>
-                    </div>
-                    <div notation="f1" class="square">
-                        <span class="bottom-notation dark">f</span>
-                    </div>
-                    <div notation="g1" class="square dark">
-                        <span class="bottom-notation light">g</span>
-                    </div>
-                    <div notation="h1" class="square">
-                        <span class="bottom-notation dark">h</span>
+    <div id="game-grid-container">
+        <div id="game-flex">
+            <div id="blackInfo">
+                <div id="blackTimer">--:--.--</div>
+            </div>
+            <div id="game">
+                <div id="board-container">
+                    <div id="board">
+                        <div notation="a8" class="square">
+                            <span class="left-notation dark">8</span>
+                        </div>
+                        <div notation="b8" class="square dark"></div>
+                        <div notation="c8" class="square"></div>
+                        <div notation="d8" class="square dark"></div>
+                        <div notation="e8" class="square"></div>
+                        <div notation="f8" class="square dark"></div>
+                        <div notation="g8" class="square"></div>
+                        <div notation="h8" class="square dark"></div>
+                        <div notation="a7" class="square dark">
+                            <span class="left-notation light">7</span>
+                        </div>
+                        <div notation="b7" class="square"></div>
+                        <div notation="c7" class="square dark"></div>
+                        <div notation="d7" class="square"></div>
+                        <div notation="e7" class="square dark"></div>
+                        <div notation="f7" class="square"></div>
+                        <div notation="g7" class="square dark"></div>
+                        <div notation="h7" class="square"></div>
+                        <div notation="a6" class="square">
+                            <span class="left-notation dark">6</span>
+                        </div>
+                        <div notation="b6" class="square dark"></div>
+                        <div notation="c6" class="square"></div>
+                        <div notation="d6" class="square dark"></div>
+                        <div notation="e6" class="square"></div>
+                        <div notation="f6" class="square dark"></div>
+                        <div notation="g6" class="square"></div>
+                        <div notation="h6" class="square dark"></div>
+                        <div notation="a5" class="square dark">
+                            <span class="left-notation light">5</span>
+                        </div>
+                        <div notation="b5" class="square"></div>
+                        <div notation="c5" class="square dark"></div>
+                        <div notation="d5" class="square"></div>
+                        <div notation="e5" class="square dark"></div>
+                        <div notation="f5" class="square"></div>
+                        <div notation="g5" class="square dark"></div>
+                        <div notation="h5" class="square"></div>
+                        <div notation="a4" class="square">
+                            <span class="left-notation dark">4</span>
+                        </div><div notation="b4" class="square dark"></div>
+                        <div notation="c4" class="square"></div>
+                        <div notation="d4" class="square dark"></div>
+                        <div notation="e4" class="square"></div>
+                        <div notation="f4" class="square dark"></div>
+                        <div notation="g4" class="square"></div>
+                        <div notation="h4" class="square dark"></div>
+                        <div notation="a3" class="square dark">
+                            <span class="left-notation light">3</span>
+                        </div>
+                        <div notation="b3" class="square"></div>
+                        <div notation="c3" class="square dark"></div>
+                        <div notation="d3" class="square"></div>
+                        <div notation="e3" class="square dark"></div>
+                        <div notation="f3" class="square"></div>
+                        <div notation="g3" class="square dark"></div>
+                        <div notation="h3" class="square"></div>
+                        <div notation="a2" class="square">
+                            <span class="left-notation dark">2</span>
+                        </div>
+                        <div notation="b2" class="square dark"></div>
+                        <div notation="c2" class="square"></div>
+                        <div notation="d2" class="square dark"></div>
+                        <div notation="e2" class="square"></div>
+                        <div notation="f2" class="square dark"></div>
+                        <div notation="g2" class="square"></div>
+                        <div notation="h2" class="square dark"></div>
+                        <div notation="a1" class="square dark">
+                            <span class="bottom-notation light">a</span>
+                            <span class="left-notation light">1</span>
+                        </div>
+                        <div notation="b1" class="square">
+                            <span class="bottom-notation dark">b</span>
+                        </div>
+                        <div notation="c1" class="square dark">
+                            <span class="bottom-notation light">c</span>
+                        </div>
+                        <div notation="d1" class="square">
+                            <span class="bottom-notation dark">d</span>
+                        </div>
+                        <div notation="e1" class="square dark">
+                            <span class="bottom-notation light">e</span>
+                        </div>
+                        <div notation="f1" class="square">
+                            <span class="bottom-notation dark">f</span>
+                        </div>
+                        <div notation="g1" class="square dark">
+                            <span class="bottom-notation light">g</span>
+                        </div>
+                        <div notation="h1" class="square">
+                            <span class="bottom-notation dark">h</span>
+                        </div>
                     </div>
                 </div>
             </div>
+            <div id="whiteInfo">
+                <div id="whiteTimer">--:--.--</div>
+            </div>
         </div>
-        <div id="whiteInfo">
-            <div id="whiteTimer">--:--.--</div>
-        </div>
-    </div>
-    <div id="controls">
-        <div id="toast">Hello world!</div>
-        <div>
-            <button id="current">Current</button>
-            <button id="start">Start</button>
-            <button id="back">Back</button>
-            <button id="forwards">Forwards</button>
-            <button id="flip">Flip Board</button>
-            <button id="takeback">Takeback</button>
-            <button id="resign">Resign</button>
-            <button id="draw">Draw</button>
+        <div id="game-info">
+            <h2 id="toast">Hello {{ .username }}!</h2>
+            <ol>
+                <li><span>1.</span><span>----</span><span>----</span></li>
+                <li><span>2.</span><span>----</span><span>----</span></li>
+                <li><span>3.</span><span>----</span><span>----</span></li>
+                <li><span>4.</span><span>----</span><span>----</span></li>
+                <li><span>5.</span><span>----</span><span>----</span></li>
+                <li><span>6.</span><span>----</span><span>----</span></li>
+                <li><span>7.</span><span>----</span><span>----</span></li>
+                <li><span>8.</span><span>----</span><span>----</span></li>
+                <li><span>9.</span><span>----</span><span>----</span></li>
+                <li><span>10.</span><span>----</span><span>----</span></li>
+                <li><span>11.</span><span>----</span><span>----</span></li>
+                <li><span>12.</span><span>----</span><span>----</span></li>
+                <li><span>13.</span><span>----</span><span>----</span></li>
+                <li><span>14.</span><span>----</span><span>----</span></li>
+                <li><span>15.</span><span>----</span><span>----</span></li>
+                <li><span>16.</span><span>----</span><span>----</span></li>
+                <li><span>17.</span><span>----</span><span>----</span></li>
+                <li><span>18.</span><span>----</span><span>----</span></li>
+                <li><span>19.</span><span>----</span><span>----</span></li>
+            </ol>
+            <div id="controls">
+                <button id="start" aria-label="Start">
+                    <i class="material-symbols-outlined">first_page</i>
+                </button><button id="back" aria-label="Back">
+                    <i class="material-symbols-outlined">arrow_back</i>
+                </button><button id="forward" aria-label="Forward">
+                    <i class="material-symbols-outlined">arrow_forward</i>
+                </button><button id="end" aria-label="End">
+                    <i class="material-symbols-outlined">last_page</i>
+                </button><button id="flip" aria-label="Flip">
+                    <i class="material-symbols-outlined">flip</i>
+                </button>
+            </div>
         </div>
     </div>
     {{ template "footer.html" .}}
