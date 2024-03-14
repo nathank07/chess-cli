@@ -18,11 +18,15 @@ export function animateHistory(chessGame, prevHistory) {
     if(Math.abs(prevHistory - history) !== 1) {
         if(history === 0) {
             renderBoard(chessGame)
+            return
         }
         if(history === current) {
             chessGame.history[0].showingWhiteSide = chessGame.showingWhiteSide 
             renderBoard(chessGame.history[0])
+            return
         }
+        chessGame.history[chessGame.history.length - chessGame.timeline].showingWhiteSide = chessGame.showingWhiteSide
+        renderBoard(chessGame.history[chessGame.history.length - chessGame.timeline])
         return
     }
 

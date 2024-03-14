@@ -2,10 +2,11 @@ import "./game.css"
 import "../header/header.css"
 import "../footer/footer.css"
 import "../chess/cburnett/move.svg"
-import { importGame } from '../chess/board.js'
+import { importGame, renderBoard } from '../chess/board.js'
 import { createTokenAndJoin, existingGame } from "./websockets.js"
 import { viewStartHistory, viewBackHistory, viewForwardHistory, viewCurrentGame, undoMove, flipBoard } from '../chess/modify.js'
 import { lastMoveToNotation } from "../chess/notation.js"
+import { animateHistory } from "../chess/animations.js"
 
 if(document.body.dataset.id) {
     const gameContainer = document.querySelector('#game')
@@ -45,32 +46,67 @@ if(document.body.dataset.id) {
 function addControls(chessGame){
     document.addEventListener('keydown', (e) => {
         if(e.code === "ArrowLeft") {
-            viewBackHistory(chessGame)
+            backButton(chessGame)
         }
         if(e.code === "ArrowRight") {
-            viewForwardHistory(chessGame)
+            forwardButton(chessGame)
         }
         if(e.code === "ArrowUp") {
             e.preventDefault()
-            viewStartHistory(chessGame)
+            startButton(chessGame)
         }
         if(e.code === "ArrowDown") {
             e.preventDefault()
-            viewCurrentGame(chessGame)
+            endButton(chessGame)
         } 
         if(e.code === "KeyF") {
             flipBoard(chessGame)
         }
-        if(e.code === "KeyZ") {
-            undoMove(chessGame)
-        }
+        // if(e.code === "KeyZ") {
+        //     undoMove(chessGame)
+        // }
     })
-    document.querySelector('#end').addEventListener('click', () => viewCurrentGame(chessGame))
-    document.querySelector('#start').addEventListener('click', () => viewStartHistory(chessGame))
-    document.querySelector('#back').addEventListener('click', () => viewBackHistory(chessGame))
-    document.querySelector('#forward').addEventListener('click', () => viewForwardHistory(chessGame))
+    document.querySelector('#end').addEventListener('click', () => endButton(chessGame))
+    document.querySelector('#start').addEventListener('click', () => startButton(chessGame))
+    document.querySelector('#back').addEventListener('click', () => backButton(chessGame))
+    document.querySelector('#forward').addEventListener('click', () => forwardButton(chessGame))
     document.querySelector('#flip').addEventListener('click', () => flipBoard(chessGame))
     // document.querySelector('#takeback').addEventListener('click', () => undoMove(chessGame))
+}
+
+function endButton(game) {
+    viewCurrentGame(game)
+    const nodes = document.querySelectorAll('ol > li > span')
+    if(nodes[nodes.length - 1].innerHTML !== "") { 
+        nodes[nodes.length - 1].classList.add('active')
+    } else {
+        nodes[nodes.length - 2].classList.add('active')
+    }
+    document.querySelector('ol').scrollTo({
+        top: document.querySelector('ol').scrollHeight,
+        behavior: 'smooth'
+    });
+}
+
+function startButton(game) {
+    viewStartHistory(game)
+    document.querySelectorAll('ol > li > span').forEach(span => {
+        span.classList.remove('active')
+    })
+    document.querySelector('ol').scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
+
+function backButton(game) {
+    const currentHistory = game.history.length - game.timeline - 1
+    goToHistory(game, currentHistory - 1)
+}
+
+function forwardButton(game) {
+    const currentHistory = game.history.length - game.timeline - 1
+    goToHistory(game, currentHistory + 1)
 }
 
 export function createTimerDiv(game, isWhite, div) {
@@ -113,7 +149,11 @@ function fillHistory(game, ol) {
             const li = document.createElement('li')
             const numSpan = document.createElement('span')
             const moveSpan = document.createElement('span')
+            moveSpan.addEventListener('click', (e) => goToHistory(game, i - 1))
+            moveSpan.setAttribute('history-index', i - 1)
             const moveSpan2 = document.createElement('span')
+            moveSpan2.addEventListener('click', (e) => goToHistory(game, i))
+            moveSpan2.setAttribute('history-index', i)
             const number = Math.floor(i / 2) + 1
             numSpan.innerText = `${number}.`
             moveSpan.innerText = moveArr[0]
@@ -126,7 +166,47 @@ function fillHistory(game, ol) {
             moveArr[1] = ""
         }
     });
-    console.log(lastMoveToNotation(game, game.history[game.history.length - 1].board))
+    if(moveArr[0]) {
+        const li = document.createElement('li')
+        const numSpan = document.createElement('span')
+        const moveSpan = document.createElement('span')
+        moveSpan.addEventListener('click', (e) => goToHistory(game, history.length - 1))
+        moveSpan.setAttribute('history-index', history.length - 1)
+        moveSpan.classList.add('active')
+        const emptySpan = document.createElement('span')
+        const number = Math.floor(history.length / 2) + 1
+        numSpan.innerText = `${number}.`
+        moveSpan.innerText = moveArr[0]
+        li.appendChild(numSpan)
+        li.appendChild(moveSpan)
+        li.appendChild(emptySpan)
+        ol.appendChild(li)
+    } else {
+        const nodes = document.querySelectorAll('ol > li > span')
+        nodes[nodes.length - 1].classList.add('active')
+    }
+}
+
+function goToHistory(game, historyIndex) {
+    const prevHistory = game.timeline
+    game.timeline = game.history.length - (historyIndex + 1)
+    if(game.timeline <= 0) {
+        game.timeline = 0
+        historyIndex = game.history.length - 1
+    }
+    if(game.timeline >= game.history.length) {
+        game.timeline = game.history.length
+        historyIndex -= 1
+    }
+    animateHistory(game, prevHistory)
+    document.querySelectorAll('ol > li > span').forEach(span => {
+        span.classList.remove('active')
+    })
+    const activeSpan = document.querySelector(`[history-index="${historyIndex}"]`)
+    if(activeSpan) { 
+        activeSpan.classList.add('active')
+        activeSpan.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    }
 }
 
 export function updateToast(text) {

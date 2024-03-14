@@ -1111,6 +1111,7 @@ body {
     margin: 0;
     padding: 0;
     height: 100%;
+    background-color: #22222222;
 }
 
 #game-info > ol > li {
@@ -1121,8 +1122,12 @@ body {
     filter: brightness(0.8);
 }
 
+#game-info > ol > li:last-child {
+    border-bottom: none;
+}
+
 #game-info > ol > li:hover {
-    filter: brightness(0.9);
+    filter: brightness(1);
 }
 
 #game-info > ol > li > span {
@@ -1131,16 +1136,24 @@ body {
     padding: 0.75rem;
     text-align: center;
     filter: brightness(0.8);
-    transition: filter 0.3s;
 }
 
 #game-info > ol > li > span:hover {
-    filter: brightness(1);
+    filter: brightness(2);
     cursor: pointer;
+}
+
+#game-info > ol > li > span.active {
+    filter: brightness(1);
+    font-weight: bold;
 }
 
 #game-info > ol > li > span:first-child {
     flex: 1;
+}
+
+#game-info > ol > li:nth-child(even) {
+    background-color: var(--tertiary-background-color);
 }
 
 #game-info > ol > li:nth-child(odd) {
