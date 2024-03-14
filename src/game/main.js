@@ -71,6 +71,18 @@ function addControls(chessGame){
     document.querySelector('#back').addEventListener('click', () => backButton(chessGame))
     document.querySelector('#forward').addEventListener('click', () => forwardButton(chessGame))
     document.querySelector('#flip').addEventListener('click', () => flipBoard(chessGame))
+    
+    const chessBoard = document.querySelector('#game')
+    if(chessBoard) {
+        chessBoard.addEventListener('wheel', (e) => {
+            e.preventDefault()
+            if(e.deltaY > 0) {
+                forwardButton(chessGame)
+            } else {
+                backButton(chessGame)
+            }
+        })
+    }
     // document.querySelector('#takeback').addEventListener('click', () => undoMove(chessGame))
 }
 
