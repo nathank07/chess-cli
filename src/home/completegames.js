@@ -53,8 +53,7 @@ export default async function showCompleteList(divHolder, user, amount = 100) {
         white.classList.add('white-player')
         black.classList.add('black-player')
         boardParent.id = 'preview-board'
-
-        date.innerHTML = formatDate(game.game_created)
+        date.innerHTML = formatDate(game.game_ended)
         timeControlText.innerHTML = game.time_control.slice(-2) === '+0' ? game.time_control.slice(0, -2) : game.time_control
         timeControlIcon.innerHTML = 'schedule'
         if(game.time_control.slice(-2) !== "+0") {

@@ -17,6 +17,7 @@ type Game struct {
 	Winner      string `json:"winner"`
 	Reason      string `json:"reason"`
 	GameCreated string `json:"game_created"`
+	GameEnded   string `json:"game_ended"`
 }
 
 // fetchLiveGames only needs id because node websocket will fetch the rest
@@ -63,7 +64,7 @@ func fetchFinishedGames(amount int, user string) []Game {
 		var game Game
 		var whitePlayerID, blackPlayerID int
 		err = games.Scan(&game.ID, &game.Fen, &game.Uci, &game.TimedUci, &whitePlayerID, &blackPlayerID, &game.GameCreated, &game.TimeControl)
-		game.Winner, game.Reason = fetchResult(game.ID)
+		game.Winner, game.Reason, game.GameEnded = fetchResult(game.ID)
 		game.White = idToUsername(whitePlayerID)
 		game.Black = idToUsername(blackPlayerID)
 		if err != nil {
@@ -94,18 +95,18 @@ func idToUsername(id int) string {
 	return username
 }
 
-func fetchResult(id int) (string, string) {
+func fetchResult(id int) (string, string, string) {
 	db, err := sql.Open("sqlite3", dbLoc)
 	if err != nil {
 		panic(err)
 	}
 	defer db.Close()
-	var winner, reason string
-	err = db.QueryRow("SELECT winner, reason FROM game_ended WHERE id=?", id).Scan(&winner, &reason)
+	var winner, reason, date string
+	err = db.QueryRow("SELECT winner, reason, game_ended FROM game_ended WHERE id=?", id).Scan(&winner, &reason, &date)
 	if err != nil {
 		panic(err)
 	}
-	return winner, reason
+	return winner, reason, date
 }
 
 func fetchSingleGame(id int) (bool, Game, error) {
@@ -123,7 +124,7 @@ func fetchSingleGame(id int) (bool, Game, error) {
 		return live, game, err
 	}
 	if game_ended != 0 {
-		game.Winner, game.Reason = fetchResult(game.ID)
+		game.Winner, game.Reason, game.GameEnded = fetchResult(game.ID)
 		live = false
 	}
 	game.White = idToUsername(whitePlayerID)

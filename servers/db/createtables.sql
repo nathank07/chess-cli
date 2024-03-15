@@ -17,7 +17,8 @@ CREATE TABLE game (
 CREATE TABLE game_ended (
     id INTEGER PRIMARY KEY,
     winner TEXT,
-    reason TEXT
+    reason TEXT,
+    game_ended TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE user (
