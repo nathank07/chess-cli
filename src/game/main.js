@@ -89,6 +89,9 @@ function addControls(chessGame){
 function endButton(game) {
     viewCurrentGame(game)
     const nodes = document.querySelectorAll('ol > li > span')
+    nodes.forEach(span => {
+        span.classList.remove('active')
+    })
     if(nodes[nodes.length - 1].innerHTML !== "") { 
         nodes[nodes.length - 1].classList.add('active')
     } else {
@@ -160,11 +163,12 @@ function fillHistory(game, ol) {
             moveArr[1] = lastMoveToNotation(gameState, prevBoard)
             const li = document.createElement('li')
             const numSpan = document.createElement('span')
+            numSpan.addEventListener('click', () => goToHistory(game, i - 1))
             const moveSpan = document.createElement('span')
-            moveSpan.addEventListener('click', (e) => goToHistory(game, i - 1))
+            moveSpan.addEventListener('click', () => goToHistory(game, i - 1))
             moveSpan.setAttribute('history-index', i - 1)
             const moveSpan2 = document.createElement('span')
-            moveSpan2.addEventListener('click', (e) => goToHistory(game, i))
+            moveSpan2.addEventListener('click', () => goToHistory(game, i))
             moveSpan2.setAttribute('history-index', i)
             const number = Math.floor(i / 2) + 1
             numSpan.innerText = `${number}.`
@@ -181,8 +185,9 @@ function fillHistory(game, ol) {
     if(moveArr[0]) {
         const li = document.createElement('li')
         const numSpan = document.createElement('span')
+        moveSpan.addEventListener('click', () => goToHistory(game, history.length - 1))
         const moveSpan = document.createElement('span')
-        moveSpan.addEventListener('click', (e) => goToHistory(game, history.length - 1))
+        moveSpan.addEventListener('click', () => goToHistory(game, history.length - 1))
         moveSpan.setAttribute('history-index', history.length - 1)
         moveSpan.classList.add('active')
         const emptySpan = document.createElement('span')
@@ -197,6 +202,9 @@ function fillHistory(game, ol) {
         const nodes = document.querySelectorAll('ol > li > span')
         nodes[nodes.length - 1].classList.add('active')
     }
+    ol.scrollTo({
+        top: ol.scrollHeight,
+    });
 }
 
 function goToHistory(game, historyIndex) {
