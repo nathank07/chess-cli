@@ -206,7 +206,7 @@ function fillHistoryCell(game, ol, notation, i) {
         moveSpan2.setAttribute('history-index', i)
         moveSpan2.innerText = notation
     }
-    goToHistory(game, i)
+    goToHistory(game, i, false)
 }
 
 export function newHistoryCell(game, ol) {
@@ -215,7 +215,7 @@ export function newHistoryCell(game, ol) {
     fillHistoryCell(game, ol, prevMove, game.history.length - 1)
 }
 
-function goToHistory(game, historyIndex) {
+function goToHistory(game, historyIndex, sound = true) {
     const prevHistory = game.timeline
     game.timeline = game.history.length - (historyIndex + 1)
     if(game.timeline <= 0) {
@@ -226,7 +226,7 @@ function goToHistory(game, historyIndex) {
         game.timeline = game.history.length
         historyIndex -= 1
     }
-    animateHistory(game, prevHistory)
+    animateHistory(game, prevHistory, sound)
     document.querySelectorAll('ol > li > span').forEach(span => {
         span.classList.remove('active')
     })
@@ -234,9 +234,18 @@ function goToHistory(game, historyIndex) {
     const oldPos = window.scrollY
     if(activeSpan) { 
         activeSpan.classList.add('active')
-        activeSpan.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+        scrollIntoView(document.querySelector('ol'), activeSpan.parentElement)
     }
     window.scrollTo(0, oldPos)
+}
+
+// scrollIntoView with window.scrollTo does not behave as expected on Chrome
+function scrollIntoView(ol, li) {
+    const liLocation = li.offsetTop
+    ol.scrollTo({
+        top: liLocation - ol.offsetTop,
+        behavior: 'smooth'
+    });
 }
 
 export function updateToast(text) {

@@ -23,6 +23,7 @@
     --nav-padding: 1vw;
     --board-size: unset !important;
     --game-list-padding: 0.5rem;
+    color-scheme: dark;
 }
 
 * {
@@ -34,6 +35,7 @@ body {
     color: var(--foreground-color);
     margin: 0;
     padding: 0;
+    overflow-x: clip;
 }
 
 #game-grid-container {
@@ -100,6 +102,7 @@ body {
 
 #game-info > ol {
     overflow: scroll;
+    overflow-x: hidden;
     overscroll-behavior: contain;
     margin: 0;
     padding: 0;
@@ -382,6 +385,7 @@ body {
     --alt-background-hover: #C11B1B;
     --nav-font-size: 1.1rem;
     --nav-padding: 1vw;
+    color-scheme: dark;
 }
 
 #icon {

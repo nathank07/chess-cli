@@ -6,7 +6,7 @@ const speed = 1
 // Speed when a new move is made
 const moveSpeed = 0.8
 
-export function animateHistory(chessGame, prevHistory) {
+export function animateHistory(chessGame, prevHistory, enabledSound = true) {
     const current = chessGame.history.length
     const history = chessGame.timeline
     if(history === prevHistory) {
@@ -46,7 +46,7 @@ export function animateHistory(chessGame, prevHistory) {
     const animating = chessGame.div.querySelector('.animating')
     // Don't render animation if another board was already rendered
     if(!animating) {
-        if(history < prevHistory) {
+        if(history < prevHistory && enabledSound) {
             playSound(game)
         }
         animatePiece(end, begin, game.div.firstChild)
@@ -66,12 +66,12 @@ export function animateHistory(chessGame, prevHistory) {
         if(chessGame.timeline) {
             chessGame.history[chessGame.history.length - chessGame.timeline].showingWhiteSide = chessGame.showingWhiteSide
             renderBoard(chessGame.history[chessGame.history.length - chessGame.timeline])
-            if(sound) {
+            if(sound && enabledSound) {
                 playSound(chessGame.history[chessGame.history.length - chessGame.timeline])
             }
         } else {
             renderBoard(chessGame)
-            if(sound) {
+            if(sound && enabledSound) {
                 playSound(chessGame)
             }
         }

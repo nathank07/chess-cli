@@ -10,6 +10,7 @@
     --nav-padding: 1vw;
     --board-size: unset !important;
     --game-list-padding: 0.5rem;
+    color-scheme: dark;
 }
 
 * {

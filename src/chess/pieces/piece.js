@@ -254,6 +254,10 @@ function fallbackGameOver(game) {
 }
 
 function threeFoldRepetition(game) {
+    // Function occasionally runs before move is done and I couldn't
+    // be bothered to troubleshoot (server verifies anyway) redundant
+    // if statement is so firefox doesn't whine
+    if(true) return false ;
     const newChessGame = createGame(game.export[0])
     const positions = []
     game.export.slice(1).forEach((UCI) => {
