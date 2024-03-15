@@ -2,9 +2,9 @@ import "./game.css"
 import "../header/header.css"
 import "../footer/footer.css"
 import "../chess/cburnett/move.svg"
-import { importGame, renderBoard } from '../chess/board.js'
+import { importGame } from '../chess/board.js'
 import { createTokenAndJoin, existingGame } from "./websockets.js"
-import { viewStartHistory, viewBackHistory, viewForwardHistory, viewCurrentGame, undoMove, flipBoard } from '../chess/modify.js'
+import { viewStartHistory, viewCurrentGame, undoMove, flipBoard } from '../chess/modify.js'
 import { lastMoveToNotation } from "../chess/notation.js"
 import { animateHistory } from "../chess/animations.js"
 
@@ -27,9 +27,20 @@ if(document.body.dataset.id) {
             })
     } else {
         game = importGame([gameData.game.fen, [...gameData.game.uci.split(' ')]])
+        console.log(gameData.game)
         game.id = gameData.id
         game.whiteUserSpan.textContent = gameData.game.whitePlayer
         game.blackUserSpan.textContent = gameData.game.blackPlayer
+        game.result = {
+            result: gameData.game.winner,
+            reason: gameData.game.reason.toLowerCase()
+        }
+        if(gameData.game.winner.toLowerCase() === "white") {
+            game.result.result = gameData.game.whitePlayer 
+        }
+        if(gameData.game.winner.toLowerCase() === "black") {
+            game.result.result = gameData.game.blackPlayer 
+        }
         gameContainer.innerHTML = "";
         gameContainer.appendChild(game.div)
     }
@@ -63,7 +74,7 @@ function addControls(chessGame){
             flipBoard(chessGame)
         }
         // if(e.code === "KeyZ") {
-        //     undoMove(chessGame)
+        //     undoMove(chessGame, true, true)
         // }
     })
     document.querySelector('#end').addEventListener('click', () => endButton(chessGame))
@@ -97,10 +108,13 @@ function endButton(game) {
     } else {
         nodes[nodes.length - 2].classList.add('active')
     }
+    const oldPos = window.scrollY
     document.querySelector('ol').scrollTo({
         top: document.querySelector('ol').scrollHeight,
         behavior: 'smooth'
     });
+    window.scrollTo(0, oldPos)
+
 }
 
 function startButton(game) {
@@ -108,10 +122,12 @@ function startButton(game) {
     document.querySelectorAll('ol > li > span').forEach(span => {
         span.classList.remove('active')
     })
+    const oldPos = window.scrollY
     document.querySelector('ol').scrollTo({
         top: 0,
         behavior: 'smooth'
     });
+    window.scrollTo(0, oldPos)
 }
 
 function backButton(game) {
@@ -154,57 +170,49 @@ function fillHistory(game, ol) {
     ol.innerHTML = ""
     const history = game.history.slice(1)
     history.push(game)
-    const moveArr = ["", ""]
     history.forEach((gameState, i) => {
         const prevBoard = game.history[i].board
-        if(!moveArr[0]) {
-            moveArr[0] = lastMoveToNotation(gameState, prevBoard)
-        } else {
-            moveArr[1] = lastMoveToNotation(gameState, prevBoard)
-            const li = document.createElement('li')
-            const numSpan = document.createElement('span')
-            numSpan.addEventListener('click', () => goToHistory(game, i - 1))
-            const moveSpan = document.createElement('span')
-            moveSpan.addEventListener('click', () => goToHistory(game, i - 1))
-            moveSpan.setAttribute('history-index', i - 1)
-            const moveSpan2 = document.createElement('span')
-            moveSpan2.addEventListener('click', () => goToHistory(game, i))
-            moveSpan2.setAttribute('history-index', i)
-            const number = Math.floor(i / 2) + 1
-            numSpan.innerText = `${number}.`
-            moveSpan.innerText = moveArr[0]
-            moveSpan2.innerText = moveArr[1]
-            li.appendChild(numSpan)
-            li.appendChild(moveSpan)
-            li.appendChild(moveSpan2)
-            ol.appendChild(li)
-            moveArr[0] = ""
-            moveArr[1] = ""
-        }
+        const prevMove = lastMoveToNotation(gameState, prevBoard)
+        fillHistoryCell(game, ol, prevMove, i)
     });
-    if(moveArr[0]) {
-        const li = document.createElement('li')
+    const oldPos = window.scrollY
+    ol.scrollTo({
+        top: ol.scrollHeight,
+    });
+    window.scrollTo(0, oldPos)
+}
+
+function fillHistoryCell(game, ol, notation, i) {
+    let li = ol.querySelectorAll('li')
+    li = li.length !== 0 ? li[li.length - 1] : null
+    if(!li || li.querySelector('span:last-child').innerText !== "") {
+        li = document.createElement('li')
         const numSpan = document.createElement('span')
-        moveSpan.addEventListener('click', () => goToHistory(game, history.length - 1))
+        numSpan.addEventListener('click', () => goToHistory(game, i))
         const moveSpan = document.createElement('span')
-        moveSpan.addEventListener('click', () => goToHistory(game, history.length - 1))
-        moveSpan.setAttribute('history-index', history.length - 1)
-        moveSpan.classList.add('active')
-        const emptySpan = document.createElement('span')
-        const number = Math.floor(history.length / 2) + 1
+        moveSpan.addEventListener('click', () => goToHistory(game, i))
+        moveSpan.setAttribute('history-index', i)
+        const number = Math.floor(i / 2) + 1
         numSpan.innerText = `${number}.`
-        moveSpan.innerText = moveArr[0]
+        moveSpan.innerText = notation
+        const emptySpan = document.createElement('span')
         li.appendChild(numSpan)
         li.appendChild(moveSpan)
         li.appendChild(emptySpan)
         ol.appendChild(li)
     } else {
-        const nodes = document.querySelectorAll('ol > li > span')
-        nodes[nodes.length - 1].classList.add('active')
+        const moveSpan2 = li.querySelector('span:last-child')
+        moveSpan2.addEventListener('click', () => goToHistory(game, i))
+        moveSpan2.setAttribute('history-index', i)
+        moveSpan2.innerText = notation
     }
-    ol.scrollTo({
-        top: ol.scrollHeight,
-    });
+    goToHistory(game, i)
+}
+
+export function newHistoryCell(game, ol) {
+    const prevBoard = game.history[game.history.length - 1].board
+    const prevMove = lastMoveToNotation(game, prevBoard)
+    fillHistoryCell(game, ol, prevMove, game.history.length - 1)
 }
 
 function goToHistory(game, historyIndex) {
@@ -223,10 +231,12 @@ function goToHistory(game, historyIndex) {
         span.classList.remove('active')
     })
     const activeSpan = document.querySelector(`[history-index="${historyIndex}"]`)
+    const oldPos = window.scrollY
     if(activeSpan) { 
         activeSpan.classList.add('active')
         activeSpan.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
     }
+    window.scrollTo(0, oldPos)
 }
 
 export function updateToast(text) {
@@ -236,9 +246,9 @@ export function updateToast(text) {
     } 
     if(text.result) {
         if(text.result === "Stalemate") {
-            toast.innerHTML = `Game ended in Stalemate due to ${text.reason}.`
+            toast.innerHTML = `Game ended in stalemate due to ${text.reason.toLowerCase()}.`
         } else {
-            toast.innerHTML = `${text.result} has won due to ${text.reason}`
+            toast.innerHTML = `${text.result} has won due to ${text.reason.toLowerCase()}`
         }
     } else {
         toast.innerHTML = text

@@ -8,7 +8,7 @@ import capture from "./sounds/Capture.ogg"
 import check from "./sounds/Check.wav"
 import randomMove from "../game/random.js"
 import { undoMove } from "./modify.js"
-import { updateToast } from "../game/main.js"
+import { newHistoryCell, updateToast } from "../game/main.js"
 
 const sounds = {
     "place": place,
@@ -262,6 +262,10 @@ export function fetchMove(game, UCI, sound = true, ignoreGameOver = false, ignor
                 game.result = { result: end.result, reason: end.reason }
             }
         }
+        const ol = document.querySelector('ol')
+        if(ol) {
+            newHistoryCell(game, ol)
+        }
         return game
     } else {
         throw new Error("Could not complete move.")
@@ -283,6 +287,10 @@ export function postMove(game, promotion, socket) {
         }))
         if(game.timer) {
             game.timer.alternate()
+        }
+        const ol = document.querySelector('ol')
+        if(ol) {
+            newHistoryCell(game, ol)
         }
     }
     const end = gameOver(game)

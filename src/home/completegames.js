@@ -258,7 +258,7 @@ function reason(game) {
             break
         // Stalemate due to no moves
         case "no":
-            iconInner = 'horizontal-rule'
+            iconInner = 'horizontal_rule'
             textInner = 'Stalemate'
             break
         case "insufficient":

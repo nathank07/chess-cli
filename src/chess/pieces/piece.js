@@ -266,7 +266,7 @@ function threeFoldRepetition(game) {
             "n": "knight",
             "b": "bishop"
         }
-        newChessGame.board[startSquare[0]][startSquare[1]].move(endSquare[0], endSquare[1], promotion ? pieces[promotion.toLowerCase()] : false)
+        newChessGame.board[startSquare[0]][startSquare[1]].move(endSquare[0], endSquare[1], promotion ? pieces[promotion.toLowerCase()] : false, false, true)
         positions.push(gametoFEN(newChessGame).split(" ")[0])
     })
     let numberOfPositions = 0

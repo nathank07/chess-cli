@@ -68,11 +68,19 @@ function swap(a, b) {
     dummy.replaceWith(b)
 }
 
-export function undoMove(game, render = true) {
+export function undoMove(game, render = true, takeback = false) {
     if(game.history.length < 1) {
         return false;
     }
-
+    const ol = document.querySelector('ol')
+    if(ol && takeback) {
+        const span = ol.querySelector('li:last-child > span:last-child')
+        if(span.textContent === "") {
+            ol.querySelector('li:last-child').remove()
+        } else {
+            span.textContent = ""
+        }
+    }
     const animation = game.lastMove
     if(render) {
         renderBoard(game)
