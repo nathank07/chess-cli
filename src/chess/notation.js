@@ -57,17 +57,23 @@ function checkRowsAndColumns(game, prevBoard, initialSq, finalSq, finalPiece) {
     let columnFlag = false;
     let rowFlag = false;
     for(let i = 0; i < 8; i++) {
-        if(oldBoard[initX][i] && oldBoard[initX][i].isWhite === isWhite 
-            && oldBoard[initX][i].name === finalPiece && i !== initY) {
-            if(stdMovesHasSquare(game.board[initX][i].standardMoves(), finalX, finalY)) {
-                columnFlag = true;
-            }
-        }
-        if(oldBoard[i][initY] && oldBoard[i][initY].isWhite === isWhite 
-            && oldBoard[i][initY].name === finalPiece && i !== initX) {
-            if(stdMovesHasSquare(game.board[i][initY].standardMoves(), finalX, finalY)) {
-                rowFlag = true;
-                break;
+        for(let j = 0; j < 8; j++){
+            const sq = oldBoard[i][j]
+            if(sq && sq.name === finalPiece && sq.isWhite === isWhite && i !== initX && j !== initY) {
+                if(stdMovesHasSquare(sq.standardMoves(), finalX, finalY)){
+                    if(j === initY) {
+                        columnFlag = true;
+                    }
+                    if(i === initX) {
+                        rowFlag = true;
+                    }
+                    if(rowFlag && columnFlag) {
+                        break;
+                    }
+                    if(!columnFlag && !rowFlag) {
+                        columnFlag = true;
+                    }
+                }
             }
         }
     }
