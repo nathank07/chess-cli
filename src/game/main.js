@@ -35,6 +35,8 @@ if(document.body.dataset.id) {
             result: gameData.game.winner,
             reason: gameData.game.reason.toLowerCase()
         }
+        game.timeSpent = gameData.game.timed_uci.split(" ")
+        game.timeControl = gameData.game.time_control
         if(gameData.game.winner.toLowerCase() === "white") {
             game.result.result = gameData.game.whitePlayer 
         }
@@ -50,6 +52,9 @@ if(document.body.dataset.id) {
     whiteInfo.prepend(game.whiteUserSpan)
     blackInfo.prepend(game.blackUserSpan)
     fillHistory(game, document.querySelector('ol'))
+    if(!gameData.live) {
+        startButton(game)
+    }
     console.log(game)
 }
 
@@ -114,7 +119,7 @@ function endButton(game) {
         behavior: 'smooth'
     });
     window.scrollTo(0, oldPos)
-
+    changeClock(game, game.history.length)
 }
 
 function startButton(game) {
@@ -128,6 +133,7 @@ function startButton(game) {
         behavior: 'smooth'
     });
     window.scrollTo(0, oldPos)
+    changeClock(game, 0)
 }
 
 function backButton(game) {
@@ -156,7 +162,8 @@ function updateTimer(time, div) {
     const minutes = Math.floor(time / 60000)
     const seconds = Math.floor((time - minutes * 60000) / 1000)
     const milliseconds = Math.floor((time - minutes * 60000 - seconds * 1000) / 100)
-    div.innerText = `${minutes}:${seconds}.${milliseconds}`
+    const leadingZero = seconds < 10 ? "0" : ""
+    div.innerText = `${minutes}:${leadingZero}${seconds}.${milliseconds}`
 }
 
 function flagTimer(timer, color) {
@@ -237,6 +244,30 @@ function goToHistory(game, historyIndex, sound = true) {
         scrollIntoView(document.querySelector('ol'), activeSpan.parentElement)
     }
     window.scrollTo(0, oldPos)
+    changeClock(game, historyIndex + 1)
+}
+
+function changeClock(game, index) {
+    if(game.timeSpent) {
+        const startingSideWhite = game.history[0].whitesMove
+        const time = game.timeControl.split('+')[0] * 1000;
+        const increment = game.timeControl.split('+')[1] * 1000
+        const whiteClock = document.querySelector('#whiteTimer')
+        const blackClock = document.querySelector('#blackTimer')
+        let whiteTime = time
+        let blackTime = time
+        for(let i = 0; i < index; i++) {
+            if(startingSideWhite && i % 2 === 0) {
+                whiteTime -= game.timeSpent[i]
+                whiteTime += increment
+            } else {
+                blackTime -= game.timeSpent[i]
+                blackTime += increment
+            }
+        }
+        updateTimer(whiteTime, whiteClock)
+        updateTimer(blackTime, blackClock)
+    }
 }
 
 // scrollIntoView with window.scrollTo does not behave as expected on Chrome

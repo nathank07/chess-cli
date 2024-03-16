@@ -1007,6 +1007,10 @@ footer > * {
     border-radius: 0;
 }
 
+#end-footer > * {
+    text-decoration: none;
+}
+
 /*!*********************************************************************!*\
   !*** css ./node_modules/css-loader/dist/cjs.js!./src/game/game.css ***!
   \*********************************************************************/

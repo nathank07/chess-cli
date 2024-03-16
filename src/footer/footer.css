@@ -28,3 +28,7 @@ footer > * {
     background-color: var(--secondary-background-color);
     border-radius: 0;
 }
+
+#end-footer > * {
+    text-decoration: none;
+}

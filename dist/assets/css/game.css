@@ -609,3 +609,7 @@ footer > * {
     border-radius: 0;
 }
 
+#end-footer > * {
+    text-decoration: none;
+}
+

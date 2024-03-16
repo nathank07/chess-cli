@@ -119,7 +119,7 @@ func fetchSingleGame(id int) (bool, Game, error) {
 
 	var whitePlayerID, blackPlayerID, game_ended int
 	var live = true
-	err = db.QueryRow("SELECT id, fen, IFNULL(uci, ''), IFNULL(timed_uci, ''), IFNULL(whitePlayerID, '0'), IFNULL(blackPlayerID, '0'), IFNULL(game_ended, '0') FROM game WHERE id=?", id).Scan(&game.ID, &game.Fen, &game.Uci, &game.TimedUci, &whitePlayerID, &blackPlayerID, &game_ended)
+	err = db.QueryRow("SELECT id, fen, IFNULL(uci, ''), IFNULL(timed_uci, ''), IFNULL(whitePlayerID, '0'), IFNULL(blackPlayerID, '0'), IFNULL(game_ended, '0'), IFNULL(time_control, '0') FROM game WHERE id=?", id).Scan(&game.ID, &game.Fen, &game.Uci, &game.TimedUci, &whitePlayerID, &blackPlayerID, &game_ended, &game.TimeControl)
 	if err != nil {
 		return live, game, err
 	}
