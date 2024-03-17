@@ -54,5 +54,9 @@
             }
             return false;
         }
+        const logout = document.querySelector('#logout');
+        logout.addEventListener('click', () => {
+            localStorage.removeItem('token');
+        });
     </script>
 </header>
