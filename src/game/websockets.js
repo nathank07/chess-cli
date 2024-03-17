@@ -12,6 +12,12 @@ export async function createWSGame(fen, timeControl) {
                 socket.send(JSON.stringify({fen: fen ? fen : "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", timeControl: timeControl ? timeControl : { seconds: 300, increment: 1 }}))
             };
             socket.onmessage = (event) => {
+                const invalid = JSON.parse(event.data).invalid
+                if(invalid) {
+                    reject(invalid)
+                    socket.close();
+                    return;
+                }
                 chessGame.id = event.data
                 resolve(chessGame.id)
             };

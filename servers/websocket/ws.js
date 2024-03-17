@@ -89,7 +89,15 @@ async function joinGame(ws, query) {
     }
 }
 
-function sendNewGame(ws, query) {
+async function sendNewGame(ws, query) {
+    let playerID;
+    try {   
+        playerID = await tokenToID(query.token)
+    }
+    catch {
+        ws.send(JSON.stringify({ invalid: "Token error" }))
+        return
+    }
     createNewGame(query.fen, query.timeControl)
         .then(id => {
             if(query.timeControl.seconds <= 15) {
