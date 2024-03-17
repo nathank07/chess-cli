@@ -285,8 +285,8 @@ export function updateToast(text) {
         return
     } 
     if(text.result) {
-        if(text.result === "Stalemate") {
-            toast.innerHTML = `Game ended in stalemate due to ${text.reason.toLowerCase()}.`
+        if(text.result === "Stalemate" || text.result.toLowerCase() === "draw"){
+            toast.innerHTML = `Game ended in a draw due to ${text.reason.toLowerCase()}.`
         } else {
             toast.innerHTML = `${text.result} has won due to ${text.reason.toLowerCase()}`
         }

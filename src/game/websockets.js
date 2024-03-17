@@ -4,12 +4,15 @@ import { updateToast } from "./main.js";
 import ChessTimer from "../chess/timer.js";
 
 export async function createWSGame(fen, timeControl) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         const chessGame = createGame(fen)
+        const token = await getToken()
         try {
             const socket = new WebSocket('ws://localhost:8080')
             socket.onopen = () => {
-                socket.send(JSON.stringify({fen: fen ? fen : "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", timeControl: timeControl ? timeControl : { seconds: 300, increment: 1 }}))
+                socket.send(JSON.stringify({fen: fen ? fen : "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", 
+                                            timeControl: timeControl ? timeControl : { seconds: 300, increment: 1 },
+                                            token: token }));
             };
             socket.onmessage = (event) => {
                 const invalid = JSON.parse(event.data).invalid
@@ -170,6 +173,29 @@ export async function joinGame(game, joinAsBlack) {
 }
 
 export function createTokenAndJoin(game, joinAsBlack) {
+    return new Promise(async (resolve, reject) => {
+        getToken().then(() => {
+            joinGame(game, joinAsBlack)
+                .then(isWhite => {
+                    game.playerIsWhite = isWhite
+                    const spectating = isWhite == null
+                    let toastString = "You are " + (spectating ? "spectating" : `playing as ${isWhite ? "white" : "black"}`)
+                    if(isWhite === false) {
+                        flipBoard(game)
+                    }
+                    resolve(toastString)
+                })
+                .catch(err => {
+                    reject(err)
+                })
+        })
+        .catch(err => {
+            reject(err)
+        })
+    })
+}
+
+function getToken() {
     return new Promise((resolve, reject) => {
         let auth
         if(localStorage.getItem('token')) {
@@ -194,19 +220,7 @@ export function createTokenAndJoin(game, joinAsBlack) {
                     return
                 }
                 localStorage.setItem('token', res.token)
-                joinGame(game, joinAsBlack)
-                    .then(isWhite => {
-                        game.playerIsWhite = isWhite
-                        const spectating = isWhite == null
-                        let toastString = "You are " + (spectating ? "spectating" : `playing as ${isWhite ? "white" : "black"}`)
-                        if(isWhite === false) {
-                            flipBoard(game)
-                        }
-                        resolve(toastString)
-                    })
-                    .catch(err => {
-                        reject(err)
-                    })
+                resolve(res.token)
             })
             .catch(err => {
                 reject(err)

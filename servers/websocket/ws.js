@@ -121,6 +121,10 @@ async function sendNewGame(ws, query) {
                 blackTimer: blackTimer,
                 startClock: false,
             }
+            const minute = 60000
+            setTimeout(() => {
+                expireGame(id)
+            }, minute * 5)
             ws.send(id);
         })
         .catch(err => {
@@ -320,6 +324,15 @@ function flagPlayer(id, isWhite) {
         .catch(err => {
             console.log(err)
         })
+}
+
+async function expireGame(id) {
+    const game = await exportGame(id)
+    if(game.length === 1 || game[1].length < 2) {
+        console.log(`Timed out game ID ${id}`)
+        endGame(wss, id, "draw", "Game timed out")
+        return
+    }
 }
 
 function handleClose(ws) {
