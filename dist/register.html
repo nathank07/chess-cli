@@ -6,16 +6,21 @@
     <title>Chess</title>
 <link rel="icon" href="assets/favicon.svg"><script defer src="assets/js/register.js"></script><link href="assets/css/register.css" rel="stylesheet"></head>
 <body>
-    <form action="/register" method="POST">
-        <label for="username">Username</label>
-        <input name="username" required>
-        <label for="email">Email (Optional)</label>
-        <input type="email" name="email">
-        <label for="password">Password</label>
-        <input type="password" name="password" id="password" required>
-        <label for="confirm">Confirm Password</label>
-        <input type="password" name="confirm" id="confirm" required>
-        <button type="submit">Submit</button>
-    </form>
+    {{ template "header.html" . }}
+    <main>
+        <div>
+            <h1>Register for NK Chess</h1>
+            <form action="/register" method="POST" autocomplete="off">
+                <label for="username">Username</label>
+                <input name="username" placeholder="Username" id="username" required>
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" placeholder="Password" autocomplete="new-password" required>
+                <label for="confirm">Confirm Password</label>
+                <input type="password" name="confirm" id="confirm" placeholder="Confirm Password" autocomplete="new-password" required>
+                <button type="submit">Register and Sign in</button>
+            </form>
+        </div>
+    </main>
+    {{ template "footer.html" . }}
 </body>
 </html>

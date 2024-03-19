@@ -900,6 +900,11 @@ footer > * {
 }
 
 #end-footer > * {
+    color: var(--foreground-color);
     text-decoration: none;
+}
+
+#end-footer > *:hover {
+    color: #fff;
 }
 
