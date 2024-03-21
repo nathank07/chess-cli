@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"net/http"
 	"regexp"
 	"strings"
 
@@ -147,6 +148,8 @@ func createSession(ctx *gin.Context, username string) {
 	}
 	session.Values["username"] = username
 	session.Values["id"] = id
+	session.Options.SameSite = http.SameSiteNoneMode
+	session.Options.Secure = true
 	err = session.Save(ctx.Request, ctx.Writer)
 	if err != nil {
 		panic(err)
