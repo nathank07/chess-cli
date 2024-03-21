@@ -1,6 +1,6 @@
 import { createGame, fetchMove, importGame } from "../chess/board";
 import { undoMove, flipBoard, changePlayerSide } from "../chess/modify";
-import { updateToast } from "./main.js";
+import { updateToast, updateTitle } from "./main.js";
 import ChessTimer from "../chess/timer.js";
 
 export async function createWSGame(fen, timeControl) {
@@ -77,9 +77,11 @@ export async function createWebSocket(id, timeFunction) {
                         }
                         if(response.whiteUser) {
                             importedGame.whiteUserSpan.textContent = response.whiteUser
+                            updateTitle(importedGame)
                         }
                         if(response.blackUser) {
                             importedGame.blackUserSpan.textContent = response.blackUser
+                            updateTitle(importedGame)
                         }
                         if(response.whiteClock && response.blackClock) {
                             whiteClock = ChessTimer(response.whiteClock, response.increment)

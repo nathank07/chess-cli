@@ -21,12 +21,16 @@ if(document.body.dataset.id) {
         createTokenAndJoin(game, isBlack)
             .then(res => {
                 updateToast(res)
+                updateTitle(game)
             })
             .catch(error => {
                 updateToast(error)
+                updateTitle(game)
             })
     } else {
         game = importGame([gameData.game.fen, [...gameData.game.uci.split(' ')]])
+        const usernameSpan = document.querySelector('#user-dropdown > span');
+        const username = usernameSpan ? usernameSpan.textContent : false
         console.log(gameData.game)
         game.id = gameData.id
         game.whiteUserSpan.textContent = gameData.game.whitePlayer
@@ -43,8 +47,12 @@ if(document.body.dataset.id) {
         if(gameData.game.winner.toLowerCase() === "black") {
             game.result.result = gameData.game.blackPlayer 
         }
+        if(gameData.game.blackPlayer === username) {
+            flipBoard(game)   
+        }
         gameContainer.innerHTML = "";
         gameContainer.appendChild(game.div)
+        updateTitle(game)
     }
     addControls(game)
     const whiteInfo = document.querySelector('#whiteInfo')
@@ -55,7 +63,6 @@ if(document.body.dataset.id) {
     if(!gameData.live) {
         startButton(game)
     }
-    console.log(game)
 }
 
 
@@ -295,6 +302,16 @@ export function updateToast(text) {
     }   
 }
 
+export function updateTitle(game) {
+    const username = document.querySelector('#user-dropdown > span').textContent
+    const whiteUser = game.whiteUserSpan.textContent
+    const blackUser = game.blackUserSpan.textContent
+    if(username !== whiteUser && username !== blackUser) {
+        document.title = `${blackUser} vs. ${whiteUser} - NK Chess`
+    } else {
+        document.title = `${username === whiteUser ? blackUser : whiteUser} vs. ${username} - NK Chess`
+    }
+}
 
 
 
