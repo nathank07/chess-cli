@@ -2,11 +2,27 @@ package main
 
 import (
 	"database/sql"
+	"regexp"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 )
+
+// Username regex doesn't check for consecutive spaces because database trims anyways
+const usernameRegex = "^[a-zA-Z0-9 _-]{2,16}$"
+
+type PasswordRequirements struct {
+	MinLength    int
+	HasUppercase *regexp.Regexp
+	HasDigit     *regexp.Regexp
+}
+
+func (pr *PasswordRequirements) Validate(password string) bool {
+	return len(password) >= pr.MinLength &&
+		pr.HasUppercase.MatchString(password) &&
+		pr.HasDigit.MatchString(password)
+}
 
 func handleLogin(ctx *gin.Context) {
 	username := ctx.PostForm("username")
@@ -46,6 +62,15 @@ func handleRegistry(ctx *gin.Context) {
 	}
 	if password != confirm {
 		ctx.JSON(400, gin.H{"status": "Passwords do not match."})
+		return
+	}
+	if !regexp.MustCompile(usernameRegex).MatchString(username) {
+		ctx.JSON(400, gin.H{"status": "Invalid username."})
+		return
+	}
+	pwReq := PasswordRequirements{8, regexp.MustCompile("[A-Z]"), regexp.MustCompile("[a-z]")}
+	if !pwReq.Validate(password) {
+		ctx.JSON(400, gin.H{"status": "Invalid password."})
 		return
 	}
 	registerUser(username, password, email)
