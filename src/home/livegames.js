@@ -104,7 +104,8 @@ function createLiveEmpty() {
     const message = document.createElement('h2')
     message.textContent = "No Live Games"
     const emoji = document.createElement('div')
-    emoji.textContent = "😢"
+    //emoji.innerHTML = "😢"
+    emoji.innerHTML = twemoji.parse("😢", { folder: 'svg', ext: ".svg" });
     emoji.classList.add('large-emoji')
 
     const createGameButton = document.createElement('button')

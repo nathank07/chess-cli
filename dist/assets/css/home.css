@@ -537,7 +537,14 @@ div.history > div:last-child > div:last-child {
 }
 
 .large-emoji {
+    display: flex;
     font-size: 10rem;
+}
+
+.large-emoji > img {
+    width: 10rem;
+    align-self: flex-end;
+    padding-top: 5rem;
 }
 
 .switch-container {
