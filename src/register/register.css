@@ -13,6 +13,7 @@ body {
     margin: 0;
     justify-content: space-around;
     background-repeat: round;
+    overflow-x: clip;
 }
 
 main {

@@ -53,7 +53,7 @@ func handleRegistry(ctx *gin.Context) {
 	email := ctx.PostForm("email")
 
 	if dbHasUser(username) {
-		ctx.JSON(400, gin.H{"status": "Username was taken."})
+		ctx.JSON(400, gin.H{"status": "Username is taken."})
 		return
 	}
 	if email != "" && dbHasEmail(email) {
