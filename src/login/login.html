@@ -6,12 +6,20 @@
     <title>Chess</title>
 </head>
 <body>
-    <form action="/login" method="POST">
-        <label for="username">Username</label>
-        <input name="username" required>
-        <label for="password">Password</label>
-        <input type="password" name="password" required>
-        <button type="submit">Submit</button>
-    </form>
+    {{ template "header.html" . }}
+    <main>
+        <div>
+            <h1>Log into NK Chess</h1>
+            <form action="/login" method="POST">
+                <label for="username">Username</label>
+                <input name="username" required>
+                <label for="password">Password</label>
+                <input type="password" name="password" required>
+                <button type="submit" id="register">Log in</button>
+            </form>
+        </div>
+
+    </main>
+    {{ template "footer.html" . }}
 </body>
 </html>

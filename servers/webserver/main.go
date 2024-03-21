@@ -43,7 +43,7 @@ func main() {
 			ctx.Redirect(http.StatusNotFound, "/")
 			panic(err)
 		}
-		if path == "login" {
+		if path == "login" || path == "register" {
 			if username == nil {
 				ctx.HTML(http.StatusOK, path+".html", gin.H{"username": username})
 			} else {
