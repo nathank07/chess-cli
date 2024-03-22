@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
-const isProduction = process.env.NODE_ENV == 'production';
+const isProduction = true;
 const stylesHandler = MiniCssExtractPlugin.loader;
 
 const pages = ['game', 'login', 'register', 'landing', 'header', 'footer']
@@ -14,6 +14,7 @@ pages.forEach(page => {
         filename: `${page}.html`,
         template: path.join(__dirname, `./src/${page}/${page}.html`),
         chunks: [`${page}`],
+        inject: page === 'header' || page === 'footer' ? false : true
     }))
     js[`${page}`] = `./src/${page}/main.js`
 });
@@ -28,6 +29,7 @@ html.push(new HtmlWebpackPlugin({
 delete js['header']
 delete js['footer']
 
+
 const config = {
     entry: js,
     output: {
@@ -36,12 +38,16 @@ const config = {
         assetModuleFilename: 'assets/[type][ext]'
     },
     plugins: [
+        new FaviconsWebpackPlugin({
+            logo: './src/chess/cburnett/wQ.svg',
+            cache: true,
+            inject: true,
+        }),
         ...html,
         new MiniCssExtractPlugin({
             filename: 'assets/css/[name].css'
         }),
-        new CleanWebpackPlugin(),
-        new FaviconsWebpackPlugin('./src/chess/cburnett/wQ.svg')
+        new CleanWebpackPlugin()
     ],
     module: {
         rules: [

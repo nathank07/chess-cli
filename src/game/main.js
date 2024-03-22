@@ -31,7 +31,6 @@ if(document.body.dataset.id) {
         game = importGame([gameData.game.fen, [...gameData.game.uci.split(' ')]])
         const usernameSpan = document.querySelector('#user-dropdown > span');
         const username = usernameSpan ? usernameSpan.textContent : false
-        console.log(gameData.game)
         game.id = gameData.id
         game.whiteUserSpan.textContent = gameData.game.whitePlayer
         game.blackUserSpan.textContent = gameData.game.blackPlayer

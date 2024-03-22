@@ -17,7 +17,6 @@ export async function createWSGame(fen, timeControl) {
             socket.onmessage = (event) => {
                 const invalid = JSON.parse(event.data).invalid
                 if(invalid) {
-                    console.log(invalid)
                     reject(invalid)
                     socket.close();
                     return;
@@ -110,7 +109,6 @@ export async function createWebSocket(id, timeFunction) {
                                 blackClock.timerStarted = response.update.blackClockUpdate.timerStarted
                             }
                         }
-                        console.log(response)
                     })
                     socket.removeEventListener('message', fetchGame)
                     resolve(importedGame);
@@ -157,7 +155,6 @@ export default async function newGame(fen, timeControl) {
 
 export async function joinGame(game, joinAsBlack) {
     return new Promise((resolve, reject) => {
-        console.log(joinAsBlack)
         game.socket.send(JSON.stringify({ token: localStorage.getItem('token'), id: game.id, joinAsBlack: joinAsBlack }));
         game.socket.addEventListener('message', sendSide)
 
@@ -215,7 +212,6 @@ function getToken() {
                 const statusCode = res.status
                 res = await res.json()
                 res.statusCode = statusCode
-                console.log(res)
                 return res
             })
             .then(res => {

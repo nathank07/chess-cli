@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -17,7 +16,6 @@ func generateJWT(id int) (string, error) {
 		"id":  id,
 		"exp": expirationTime.Unix(),
 	})
-	fmt.Println(key)
 	tokenString, err := token.SignedString(key)
 	return tokenString, err
 }

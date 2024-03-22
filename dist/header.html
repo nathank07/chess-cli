@@ -1,29 +1,4 @@
-<head><link rel="icon" href="assets/favicon.svg"></head><header>
-    <nav>
-        <a href="/" id="title" aria-label="NK Chess Home" title="NK Chess Home">
-            <img id="icon" src=assets/images/30871ebbc0ad7f46a1c7.svg>
-            <h1>NK Chess</h1>
-        </a>
-        {{ if .username }}
-            <div id="user-dropdown">
-                <span>{{.username}}</span><i class="material-symbols-outlined">arrow_drop_down</i>
-            </div>
-            <div id="user-dropdown-menu" hidden>
-                <div id="logout">
-                    <form action="/logout" method="POST">
-                        <button>Logout</button>
-                    </form>
-                </div>
-            </div>
-        {{ else }}
-            <div id="nav-links">
-                <a href="/login" id="login" title="Log in" aria-label="Log in">Log in</a>
-                <a href="/register" id="register" title="Register" aria-label="Register">Register</a>
-            </div>
-        {{ end }}
-    </nav>
-    <script>
-        const dropdown = document.querySelector('#user-dropdown');
+<header><nav><a href="/" id="title" aria-label="NK Chess Home" title="NK Chess Home"><img id="icon" src="assets/images/30871ebbc0ad7f46a1c7.svg"><h1>NK Chess</h1></a>{{ if .username }}<div id="user-dropdown"><span>{{.username}}</span><i class="material-symbols-outlined">arrow_drop_down</i></div><div id="user-dropdown-menu" hidden><div id="logout"><form action="/logout" method="POST"><button>Logout</button></form></div></div>{{ else }}<div id="nav-links"><a href="/login" id="login" title="Log in" aria-label="Log in">Log in</a> <a href="/register" id="register" title="Register" aria-label="Register">Register</a></div>{{ end }}</nav><script>const dropdown = document.querySelector('#user-dropdown');
         const dropdownMenu = document.querySelector('#user-dropdown-menu');
         const dropdownIcon = document.querySelector('#user-dropdown i');
         if(dropdown) {
@@ -59,6 +34,4 @@
             logout.addEventListener('click', () => {
                 localStorage.removeItem('token');
             });
-        }
-    </script>
-</header>
+        }</script></header>
