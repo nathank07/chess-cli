@@ -9,6 +9,8 @@ const { ChessTimer } = require('./timer.js')
 const http = require('http');
 const WebSocket = require('ws');
 
+require('dotenv').config() 
+
 const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/html' });
     res.end('Hello, world!');

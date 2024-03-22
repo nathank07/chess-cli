@@ -17,6 +17,7 @@ export async function createWSGame(fen, timeControl) {
             socket.onmessage = (event) => {
                 const invalid = JSON.parse(event.data).invalid
                 if(invalid) {
+                    console.log(invalid)
                     reject(invalid)
                     socket.close();
                     return;
@@ -214,6 +215,7 @@ function getToken() {
                 const statusCode = res.status
                 res = await res.json()
                 res.statusCode = statusCode
+                console.log(res)
                 return res
             })
             .then(res => {

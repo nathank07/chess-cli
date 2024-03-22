@@ -1,13 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var key = []byte("secret")
+var key []byte
 
 func generateJWT(id int) (string, error) {
 	expirationTime := time.Now().Add(12 * time.Hour)
@@ -16,7 +17,7 @@ func generateJWT(id int) (string, error) {
 		"id":  id,
 		"exp": expirationTime.Unix(),
 	})
-
+	fmt.Println(key)
 	tokenString, err := token.SignedString(key)
 	return tokenString, err
 }
@@ -67,9 +68,6 @@ func checkIfTokenNeeded(ctx *gin.Context) bool {
 	if userToken == "" {
 		return true
 	}
-	if checkJWTexpiry(&jwt.Token{}) {
-		return true
-	}
 	token, err := jwt.Parse(userToken, func(token *jwt.Token) (interface{}, error) {
 		return key, nil
 	})
@@ -77,6 +75,9 @@ func checkIfTokenNeeded(ctx *gin.Context) bool {
 		return true
 	}
 	if !token.Valid {
+		return true
+	}
+	if checkJWTexpiry(token) {
 		return true
 	}
 	if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {

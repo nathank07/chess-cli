@@ -10,14 +10,21 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
+	"github.com/joho/godotenv"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 const dbLoc = "./servers/db/data.db"
 
-var store = sessions.NewCookieStore([]byte("secret"))
+var store *sessions.CookieStore
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		panic("Error loading .env file")
+	}
+	store = sessions.NewCookieStore([]byte(os.Getenv("SESSION_KEY")))
+	key = []byte(os.Getenv("JWT_KEY"))
 	router := gin.Default()
 	router.LoadHTMLGlob("./dist/*.html")
 	router.Static("./assets", "./dist/assets")
