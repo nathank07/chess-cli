@@ -34,3 +34,4 @@ Once running go and node, access the website at:
 ```
 http://localhost:8081/
 ```
+**Tip:** Create multiple accounts and use a different browser or incognito mode to play against yourself and test the multiplayer functionality!
