@@ -1,15 +1,36 @@
-# 🚀 Welcome to your new awesome project!
+# websocket-chess
 
-This project has been created using **webpack-cli**, you can now run
-
+## Bundling and running the front-end
+Install dependencies with 
+```
+npm i
+```
+Run 
 ```
 npm run build
 ```
-
 or
-
 ```
-yarn build
+npm run watch
+```
+to bundle dist/
+
+## Creating keys and running the back-end
+
+First you need the keys, set JWT_KEY and SESSION_KEY or simply run
+```
+./make-env.sh
+```
+Once you have the keys, run the go server with
+```
+go run servers/webserver/*.go
+```
+and in another terminal window, run the websocket handler with
+```
+node servers/websocket/ws.js
 ```
 
-to bundle your application
+Once running go and node, access the website at: 
+```
+http://localhost:8081/
+```
