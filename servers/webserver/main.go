@@ -19,6 +19,12 @@ const dbLoc = "./servers/db/data.db"
 var store *sessions.CookieStore
 
 func main() {
+	var port string
+	if len(os.Args) > 1 {
+		port = os.Args[1]
+	} else {
+		port = "8081"
+	}
 	err := godotenv.Load()
 	if err != nil {
 		panic("Error loading .env file")
@@ -136,5 +142,5 @@ func main() {
 	router.POST("/logout", handleLogout)
 	router.POST("/register", handleRegistry)
 	router.POST("/token", handleToken)
-	router.Run(":8081")
+	router.Run(":" + port)
 }

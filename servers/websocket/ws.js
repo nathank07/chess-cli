@@ -341,6 +341,8 @@ function handleClose(ws) {
     console.log(`One client of ${ws.gameId} has disconnected`)
 }
 
-server.listen(8080, () => {
-    console.log('Server is running on port 8080');
+const PORT = process.env.WS_PORT || 8080
+
+server.listen(PORT, () => {
+    console.log(`Websocket running on ${PORT}`);
 });
