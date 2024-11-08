@@ -1,37 +1,30 @@
 # websocket-chess
 
-## Bundling and running the front-end
-Install dependencies with 
-```
-npm i
-```
-Run 
-```
-npm run build
-```
-or
-```
-npm run watch
-```
-to bundle dist/
+## Project Description
 
-## Creating keys and running the back-end
+websocket-chess is a multiplayer Chess web application created using Webpack, Gin, and Node. A live demo is available at https://nkchess.net.
 
-First you need the keys, set JWT_KEY and SESSION_KEY or simply run
+## Setup
+
+Install npm dependencies with ```npm i```
+
+Before starting servers, set JWT_KEY and SESSION_KEY or simply run
 ```
 ./make-env.sh
 ```
-Once you have the keys, run the go server with
+Once you have the keys you should be able to run both servers with the `start.sh` script
 ```
-go run servers/webserver/*.go
+./start.sh <host_address> <websocket_port> <https_port> <rebundle webpack [YyNn]>
 ```
-and in another terminal window, run the websocket handler with
+or simply
 ```
-node servers/websocket/ws.js
+./start.sh
 ```
+to run on localhost:8080 (websocket) and localhost:8081 (http) respectively.
 
-Once running go and node, access the website at: 
+If no `start.sh` parameters are defined, access the website at: 
 ```
 http://localhost:8081/
 ```
+
 **Tip:** Create multiple accounts and use a different browser or incognito mode to play against yourself and test the multiplayer functionality!
