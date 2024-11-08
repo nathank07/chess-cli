@@ -42,7 +42,7 @@ function validateForm() {
     }
     const passwordRegex = /^(?=.*[A-Z])(?=.*\d)[\s\S]{8,}$/
     if(!passwordRegex.test(password)){
-        alert("Invalid password\n\nPassword Requirements:\n8 Characters\nAt least 1 Letter\nAt least 1 Number\n")
+        alert("Invalid password\n\nPassword Requirements:\n8 Characters\nAt least 1 capital letter\nAt least 1 number\n")
         return false
     }
     return {

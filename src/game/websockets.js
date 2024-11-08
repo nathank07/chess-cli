@@ -3,12 +3,16 @@ import { undoMove, flipBoard, changePlayerSide } from "../chess/modify";
 import { updateToast, updateTitle } from "./main.js";
 import ChessTimer from "../chess/timer.js";
 
+const SOCKET_URL = process.env.WS_HOST !== undefined ? `ws://${process.env.WS_HOST}:${process.env.WS_PORT}` : `ws://localhost:8080`
+
+console.log(SOCKET_URL)
+
 export async function createWSGame(fen, timeControl) {
     return new Promise(async (resolve, reject) => {
         const chessGame = createGame(fen)
         const token = await getToken()
         try {
-            const socket = new WebSocket('ws://localhost:8080')
+            const socket = new WebSocket(SOCKET_URL)
             socket.onopen = () => {
                 socket.send(JSON.stringify({fen: fen ? fen : "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", 
                                             timeControl: timeControl ? timeControl : { seconds: 300, increment: 1 },
@@ -32,7 +36,7 @@ export async function createWSGame(fen, timeControl) {
 
 export async function createWebSocket(id, timeFunction) {
     return new Promise((resolve, reject) => {
-        const socket = new WebSocket('ws://localhost:8080')
+        const socket = new WebSocket(SOCKET_URL)
     
         socket.onopen = () => {
             socket.send(JSON.stringify({ id: id }));

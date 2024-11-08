@@ -1,3 +1,4 @@
+const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -47,7 +48,12 @@ const config = {
         new MiniCssExtractPlugin({
             filename: 'assets/css/[name].css'
         }),
-        new CleanWebpackPlugin()
+        new CleanWebpackPlugin(),
+        new FaviconsWebpackPlugin('./src/chess/cburnett/wQ.svg'),
+        new webpack.DefinePlugin({
+            'process.env.WS_HOST': JSON.stringify(process.env.WS_HOST),
+            'process.env.WS_PORT': JSON.stringify(process.env.WS_PORT)
+        })
     ],
     module: {
         rules: [
