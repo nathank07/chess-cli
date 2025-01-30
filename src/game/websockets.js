@@ -3,7 +3,14 @@ import { undoMove, flipBoard, changePlayerSide } from "../chess/modify";
 import { updateToast, updateTitle } from "./main.js";
 import ChessTimer from "../chess/timer.js";
 
-const SOCKET_URL = process.env.WS_HOST !== undefined ? `ws://${process.env.WS_HOST}:${process.env.WS_PORT}` : `ws://localhost:8080`
+const SOCKET_URL = (() => {
+    if (process.env.WS_HOST && process.env.WS_PORT) {
+        return `ws://${process.env.WS_HOST}:${process.env.WS_PORT}`;
+    } 
+	else {
+        return 'ws://localhost:8080';
+    }
+})();
 
 console.log(SOCKET_URL)
 
